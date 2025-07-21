@@ -48,8 +48,8 @@ namespace esroops {
                 int tu = 0;
                 int tv = 0;
 
-                float tx = x * tilesize.x;
-                float ty = y * tilesize.y;
+                float tx = static_cast<float>(x * tilesize.x);
+                float ty = static_cast<float>(y * tilesize.y);
 
                 float texX = static_cast<float>(tu * tilesize.x);
                 float texY = static_cast<float>(tv * tilesize.y);

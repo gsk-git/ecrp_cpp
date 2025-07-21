@@ -82,7 +82,6 @@ int main() {
 
         // Move player
         playerbody.move(direction * totalspeed * deltatime);
-
         sf::Vector2f currentCenter = view.getCenter();
         sf::Vector2f targetCenter = playerbody.getPosition();
         float lerpFactor = 5.0f * deltatime;
