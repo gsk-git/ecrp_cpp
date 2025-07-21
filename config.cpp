@@ -37,7 +37,7 @@ namespace esroops {
         
         // Set vertex properties
         m_grid.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
-        m_grid.resize(width * height * 6);
+        m_grid.resize(static_cast<size_t>(width) * height * 6);
 
         // Instantiating vertex grid
         for (int y = 0; y < height; ++y) {

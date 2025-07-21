@@ -18,7 +18,9 @@ int main() {
     
     // Load world tile
     tilemap.load("res/tile.png",sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
-
+    tilemap.setPosition(sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) / 2.f));
+    tilemap.setOrigin({ 400.0, 400.0 });
+    
     //Player
     sf::RectangleShape playerbody;
     playerbody.setSize(sf::Vector2f({ esrovar::player_size, esrovar::player_size }));
