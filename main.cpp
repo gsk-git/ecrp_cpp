@@ -82,11 +82,19 @@ int main() {
 
         // Move player
         playerbody.move(direction * totalspeed * deltatime);
+
+        sf::Vector2f currentCenter = view.getCenter();
+        sf::Vector2f targetCenter = playerbody.getPosition();
+        float lerpFactor = 5.0f * deltatime;
+
+        view.setCenter(currentCenter + (targetCenter - currentCenter) * lerpFactor);
         
         // Window initialization
         window.clear();
+        window.setView(view);
         window.draw(tilemap);
         window.draw(playerbody);
+        window.setView(window.getDefaultView());
         window.display();
      }
 
