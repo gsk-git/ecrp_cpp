@@ -8,6 +8,7 @@ namespace esrovar {
     float player_size = 50.0f;
     float timer = 0.0f;
     float speed = 100.0f;
+    int chunkarea = CHUNK_SIZE * pixel_size;
 }
 
 namespace esroops {

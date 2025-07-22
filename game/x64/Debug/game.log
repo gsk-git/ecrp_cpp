@@ -6,4 +6,23 @@ C:\lib\SFML3\include\SFML\System\Exception.hpp(41,47): warning C4275: non dll-in
       C:\lib\SFML3\include\SFML\System\Exception.hpp(41,23):
       see declaration of 'sf::Exception'
   
+  main.cpp
+C:\lib\SFML3\include\SFML\System\Exception.hpp(41,47): warning C4275: non dll-interface class 'std::runtime_error' used as base for dll-interface class 'sf::Exception'
+  (compiling source file 'main.cpp')
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\stdexcept(100,30):
+      see declaration of 'std::runtime_error'
+      C:\lib\SFML3\include\SFML\System\Exception.hpp(41,23):
+      see declaration of 'sf::Exception'
+  
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(29,85): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(29,85): warning C4244:         with
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(29,85): warning C4244:         [
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(29,85): warning C4244:             T=float
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(29,85): warning C4244:         ]
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(28,85): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(28,85): warning C4244:         with
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(28,85): warning C4244:         [
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(28,85): warning C4244:             T=float
+C:\Users\Sevarkodiyon\OneDrive\Documents\game\main.cpp(28,85): warning C4244:         ]
+  Generating Code...
   game.vcxproj -> C:\Users\Sevarkodiyon\OneDrive\Documents\game\x64\Debug\game.exe

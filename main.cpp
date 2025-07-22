@@ -18,15 +18,17 @@ int main() {
     
     // Load world tile
     tilemap.load("res/tile.png",sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
-    tilemap.setPosition(sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) / 2.f));
-    tilemap.setOrigin({ 400.0, 400.0 });
+    tilemap.setPosition(sf::Vector2f(static_cast<float>(window.getSize().x) * 0.5f, static_cast<float>(window.getSize().y) * 0.5f));
+    //tilemap.setOrigin({ 400.0, 400.0 });
     
     //Player
     sf::RectangleShape playerbody;
     playerbody.setSize(sf::Vector2f({ esrovar::player_size, esrovar::player_size }));
     playerbody.setFillColor(sf::Color::Cyan);
-    playerbody.setPosition(sf::Vector2f(static_cast<float>(window.getSize().x) / 2.f, static_cast<float>(window.getSize().y) / 2.f));
-    playerbody.setOrigin({(playerbody.getSize().x / 2), (playerbody.getSize().y / 2)});
+    playerbody.setPosition(sf::Vector2f(static_cast<float>(tilemap.getPosition().x + (esrovar::chunkarea) * 0.5), 
+                                        static_cast<float>(tilemap.getPosition().y + (esrovar::chunkarea) * 0.5)));
+
+    playerbody.setOrigin({(playerbody.getSize().x * 0.5f), (playerbody.getSize().y * 0.5f)});
     //Init View
     sf::View view;
     sf::Vector2f viewArea = {esrovar::SCRWDT, esrovar::SCRHGT};
@@ -53,19 +55,15 @@ int main() {
 
         //LOG("Hello from debug string!" << totalspeed << "\n");
 
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
             movediry = -totalspeed;
         }
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {         
             movediry = totalspeed;
         }
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
             movedirx = -totalspeed;
         }
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
             movedirx = totalspeed;
         }
@@ -82,11 +80,12 @@ int main() {
 
         // Move player
         playerbody.move(direction * totalspeed * deltatime);
-        sf::Vector2f currentCenter = view.getCenter();
-        sf::Vector2f targetCenter = playerbody.getPosition();
-        float lerpFactor = 5.0f * deltatime;
-
-        view.setCenter(currentCenter + (targetCenter - currentCenter) * lerpFactor);
+        sf::Vector2f viewcenter = view.getCenter();
+        sf::Vector2f targetcenter = playerbody.getPosition();
+        float lerpfactor = 5.0f * deltatime;
+        view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
+        
+        //view.setCenter({ playerbody.getPosition() });
         
         // Window initialization
         window.clear();

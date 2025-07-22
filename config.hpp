@@ -15,6 +15,7 @@ namespace esrovar {
     extern float player_size;
     extern float timer;
     extern float speed;
+    extern int chunkarea;
 }
 
 namespace esroops {
