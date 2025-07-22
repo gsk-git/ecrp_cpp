@@ -19,6 +19,12 @@ namespace esrovar {
 }
 
 namespace esroops {
+    class IUpdatable {
+        public: 
+            virtual void update(float dt) = 0;
+            virtual ~IUpdatable() = default;
+    };
+
     enum BlockType {
         plains,
         beach,
@@ -49,5 +55,9 @@ namespace esroops {
             // Member variables
             sf::VertexArray m_grid;
             sf::Texture m_tileset;
+    };
+
+    class WorldManager {
+
     };
 }

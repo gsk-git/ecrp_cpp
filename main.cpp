@@ -15,7 +15,8 @@ int main() {
     sf::Clock clock;
     esroops::Chunk chunk;
     esroops::TileMap tilemap;
-    
+    std::vector<esroops::IUpdatable*> systems;
+
     // Load world tile
     tilemap.load("res/tile.png",sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
     tilemap.setPosition(sf::Vector2f(static_cast<float>(window.getSize().x) * 0.5f, static_cast<float>(window.getSize().y) * 0.5f));
@@ -50,8 +51,12 @@ int main() {
         float movedirx = 0.f;
         float movediry = 0.f;
         float boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.0f;
-        float deltatime = clock.restart().asSeconds();
+        float dt = clock.restart().asSeconds();
         float totalspeed = esrovar::speed * boost;
+
+        for (auto system : systems) {
+            system->update(dt);
+        }
 
         //LOG("Hello from debug string!" << totalspeed << "\n");
 
@@ -79,10 +84,10 @@ int main() {
         }
 
         // Move player
-        playerbody.move(direction * totalspeed * deltatime);
+        playerbody.move(direction * totalspeed * dt);
         sf::Vector2f viewcenter = view.getCenter();
         sf::Vector2f targetcenter = playerbody.getPosition();
-        float lerpfactor = 5.0f * deltatime;
+        float lerpfactor = 5.0f * dt;
         view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
         
         //view.setCenter({ playerbody.getPosition() });
