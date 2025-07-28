@@ -4,25 +4,20 @@
 #include <FastNoise/FastNoise.h>
 #include <windows.h>
 #include <iostream>
+#include <map>
 
 #define LOG(x) { std::ostringstream oss; oss << x; OutputDebugStringA(oss.str().c_str()); }
 
+// Global Variables
 namespace esrovar {
+
     // Compile-time constants
     constexpr unsigned int SCRWDT = 1920u;
     constexpr unsigned int SCRHGT = 1080u;
     constexpr unsigned int FPS = 60u;
     constexpr int CHUNK_SIZE = 16;
-    extern std::string TileImagePATH = "res/tile.png";
-    extern bool KeyPressed_w;
-    extern bool KeyPressed_a;
-    extern bool KeyPressed_s;
-    extern bool KeyPressed_d;
-    extern bool KeyPressed_up;
-    extern bool KeyPressed_left;
-    extern bool KeyPressed_down;
-    extern bool KeyPressed_right;
-    extern bool KeyPressed_esc;
+    extern std::string TileImagePATH;
+    extern std::string PlayerSpriteImagePATH;
 
     // Runtime variables (declared with extern, defined in .cpp)
     extern unsigned int pixel_size;
@@ -38,9 +33,15 @@ namespace esrovar {
     extern float dt;
     extern float totalspeed;
     extern sf::RenderWindow GameWindow;
+    extern std::map<std::string, std::string> ActionSprites;
+    extern std::map <std::string, sf::Texture> DirectionFace;
+    extern std::string states[5];
+
 }
 
+// Global objects and classes
 namespace esroops {
+
     class IUpdatable {
         public: 
             virtual void update(float dt) = 0;
@@ -50,7 +51,14 @@ namespace esroops {
     enum BlockType {
         plains,
         beach,
-        ocean,
+        ocean
+    };
+
+    enum directions {
+        up,
+        left,
+        down,
+        right
     };
 
     struct Tile {
@@ -81,13 +89,25 @@ namespace esroops {
 
     class Player : public sf::Drawable, public sf::Transformable, public sf::Texture {
         public:
+            bool m_IsMoving;
+            std::string m_State;
+            sf::Vector2f m_playerXY;
+
+
             Player();
             ~Player();
+            void update(std::string face);
             
         private:
             sf::Texture m_playerbody;
             std::optional<sf::Sprite> m_playersprite;
             virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
     };
+
+}
+
+namespace esrofn {
+
+    void LoadSpriteSheets();
 
 }

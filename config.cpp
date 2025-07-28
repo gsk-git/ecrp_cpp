@@ -1,5 +1,6 @@
 #include "config.hpp"
 #include <sfml/Graphics.hpp>
+#include <sfml/Window.hpp>
 #include <FastNoise/FastNoise.h>
 #include <windows.h>
 #include <iostream>
@@ -12,26 +13,35 @@ namespace esrovar {
     float player_size = 50.0f;
     float timer = 0.0f;
     float speed = 100.0f;
-    int chunkarea = CHUNK_SIZE * pixel_size;
+    int Chunkrea = CHUNK_SIZE * pixel_size;
     float movedirx;
     float movediry;
     float boost;
     float dt;
     float totalspeed;
-
-    bool KeyPressed_w = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W);
-    bool KeyPressed_a = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A);
-    bool KeyPressed_s = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S);
-    bool KeyPressed_d = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D);
-    bool KeyPressed_up = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up);
-    bool KeyPressed_left = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left);
-    bool KeyPressed_down = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down);
-    bool KeyPressed_right = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right);
-    bool KeyPressed_esc = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape);
-
-    
+    std::string TileImagePATH = "res/tile.png";
+    std::string PlayerSpriteImagePATH = "res/player_sprite/";
+    std::string states[5] = { "idle","walking","attack","jump","sit" };
     sf::VideoMode desktop = desktop.getDesktopMode();
     sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
+    std::map <std::string, sf::Texture> TextureFace;
+    std::map<std::string, std::string> TexturePath = {
+        {"idle", PlayerSpriteImagePATH+"idle.png"}
+    };
+
+}
+
+namespace esrofn {
+
+    void LoadSpriteSheets() {
+        for (auto& [name, path] : esrovar::TexturePath) {
+            sf::Texture img;
+            if (!img.loadFromFile(path))
+                LOG("Image Path or File not found");
+            esrovar::TextureFace.emplace(name, std::move(img));
+        }
+    }
+
 }
 
 namespace esroops {
@@ -106,11 +116,15 @@ namespace esroops {
     }
 
     Player::Player(){
-        
-        if (!m_playerbody.loadFromFile("res/player_sprite/walk.png"))
-            LOG("Image file not found");
-        m_playersprite.emplace(m_playerbody);
-        m_playersprite->setPosition(sf::Vector2f(static_cast<float>(esrovar::GameWindow.getPosition().x * 0.5f), static_cast<float>(esrovar::GameWindow.getPosition().y * 0.5f)));
+
+        // Default movement state
+        m_IsMoving = false;
+        m_State = esrovar::states[0];
+        m_playerXY = sf::Vector2f(static_cast<float>(esrovar::GameWindow.getPosition().x * 0.5f), static_cast<float>(esrovar::GameWindow.getPosition().y * 0.5f));
+
+        // Default sprite and position
+        m_playersprite.emplace(esrovar::TextureFace[m_State]);
+        m_playersprite->setPosition(m_playerXY);
     }
 
     Player::~Player() {}

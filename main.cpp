@@ -2,6 +2,8 @@
 
 //  Game Main Function
 int main() {
+    // Load Assets
+    esrofn::LoadSpriteSheets();
 
     // Initializing esrovar::GameWindow and framerate
     sf::Clock clock;
@@ -24,11 +26,14 @@ int main() {
         
         //Close esrovar::GameWindow on close
         while (const std::optional event = esrovar::GameWindow.pollEvent()) {
+
             if (event -> is <sf::Event::Closed>())
                 esrovar::GameWindow.close();
-            if (esrovar::KeyPressed_esc) {
+
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
                 esrovar::GameWindow.close();
             }
+
         }
 
         esrovar::movedirx = 0.f;
@@ -40,8 +45,6 @@ int main() {
         for (auto system : systems) {
             system->update(esrovar::dt);
         }
-
-        //LOG("Hello from debug string!" << totalspeed << "\n");
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
             esrovar::movediry = -esrovar::totalspeed;
@@ -62,7 +65,7 @@ int main() {
         // Check if directions are not 0
         if (direction.x != 0.f || direction.y != 0.f) {
             // Getting hypotenuse length
-            float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+            float length = std::sqrt((direction.x * direction.x) + (direction.y * direction.y));
             // Normalize
             direction /= length;
         }
@@ -76,7 +79,7 @@ int main() {
         float lerpfactor = 5.0f * esrovar::dt;
         view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
         
-        // esrovar::GameWindow initialization
+        // GameWindow initialization
         esrovar::GameWindow.clear();
         esrovar::GameWindow.setView(view);
         esrovar::GameWindow.draw(tilemap);

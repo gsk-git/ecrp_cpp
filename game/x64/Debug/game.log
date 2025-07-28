@@ -6,13 +6,4 @@ C:\lib\SFML\System\Exception.hpp(41,47): warning C4275: non dll-interface class 
       C:\lib\SFML\System\Exception.hpp(41,23):
       see declaration of 'sf::Exception'
   
-  main.cpp
-C:\lib\SFML\System\Exception.hpp(41,47): warning C4275: non dll-interface class 'std::runtime_error' used as base for dll-interface class 'sf::Exception'
-  (compiling source file 'main.cpp')
-      D:\vs\VC\Tools\MSVC\14.44.35207\include\stdexcept(100,30):
-      see declaration of 'std::runtime_error'
-      C:\lib\SFML\System\Exception.hpp(41,23):
-      see declaration of 'sf::Exception'
-  
-  Generating Code...
   game.vcxproj -> C:\Users\asus\Documents\esrocpp\x64\Debug\game.exe
