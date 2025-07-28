@@ -1,7 +1,11 @@
 #include "config.hpp"
 #include <sfml/Graphics.hpp>
+#include <FastNoise/FastNoise.h>
+#include <windows.h>
+#include <iostream>
 
 namespace esrovar {
+
     unsigned int pixel_size = 50u;
     unsigned int frame_count = 0u;
     unsigned int scale = 2u;
@@ -9,6 +13,20 @@ namespace esrovar {
     float timer = 0.0f;
     float speed = 100.0f;
     int chunkarea = CHUNK_SIZE * pixel_size;
+    float movedirx;
+    float movediry;
+    float boost;
+    float dt;
+    float totalspeed;
+
+    bool KeyPressed_w = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W);
+    bool KeyPressed_a = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A);
+    bool KeyPressed_s = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S);
+    bool KeyPressed_d = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D);
+    bool KeyPressed_up = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up);
+    bool KeyPressed_left = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left);
+    bool KeyPressed_down = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down);
+    bool KeyPressed_right = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right);
 }
 
 namespace esroops {
@@ -26,8 +44,8 @@ namespace esroops {
         // Cleanup if needed
     }
 
-    Tile* Chunk::getTileData() {
-        return &tiles[0][0];
+    Tile* Chunk::getTileData(int x, int y) {
+        return &tiles[x][y];
     }
 
     bool TileMap::load(const std::string& tilesheet, sf::Vector2u tilesize, const Tile* tile, int width, int height) {
@@ -80,6 +98,10 @@ namespace esroops {
         states.transform *= getTransform();
         states.texture = &m_tileset;
         target.draw(m_grid, states);
+    }
+
+    Player::Player() {
+   
     }
 
 }

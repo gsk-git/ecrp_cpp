@@ -1,5 +1,11 @@
 #pragma once
 #include <sfml/Graphics.hpp>
+#include <sfml/Window.hpp>
+#include <FastNoise/FastNoise.h>
+#include <windows.h>
+#include <iostream>
+
+#define LOG(x) { std::ostringstream oss; oss << x; OutputDebugStringA(oss.str().c_str()); }
 
 namespace esrovar {
     // Compile-time constants
@@ -7,6 +13,14 @@ namespace esrovar {
     constexpr unsigned int SCRHGT = 1080u;
     constexpr unsigned int FPS = 60u;
     constexpr int CHUNK_SIZE = 16;
+    extern bool KeyPressed_w;
+    extern bool KeyPressed_a;
+    extern bool KeyPressed_s;
+    extern bool KeyPressed_d;
+    extern bool KeyPressed_up;
+    extern bool KeyPressed_left;
+    extern bool KeyPressed_down;
+    extern bool KeyPressed_right;
 
     // Runtime variables (declared with extern, defined in .cpp)
     extern unsigned int pixel_size;
@@ -16,6 +30,11 @@ namespace esrovar {
     extern float timer;
     extern float speed;
     extern int chunkarea;
+    extern float movedirx;
+    extern float movediry;
+    extern float boost;
+    extern float dt;
+    extern float totalspeed;
 }
 
 namespace esroops {
@@ -39,7 +58,7 @@ namespace esroops {
     public:
         Chunk();   // Declare constructor
         ~Chunk();  // Declare destructor
-        Tile* getTileData();
+        Tile* getTileData(int x, int y);
         Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
     };
 
@@ -60,4 +79,22 @@ namespace esroops {
     class WorldManager {
 
     };
+
+    class Entity: public sf::Drawable, public sf::Transformable {
+
+        public:
+            virtual void update() = 0;
+            Entity () {}
+            ~Entity () {}
+        
+        private:
+            virtual void draw(sf::RenderTarget& target) const override;
+    };
+
+    class Player : public Entity {
+        public:
+            Player() {}
+            ~Player() {}
+    };
+
 }
