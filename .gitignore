@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 .vs/
+.game/
 # Compiled Object files
 *.slo
 *.lo
@@ -39,3 +40,5 @@
 
 # debug information files
 *.dwo
+.git/
+
