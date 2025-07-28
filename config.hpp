@@ -96,7 +96,7 @@ namespace esroops {
 
             Player();
             ~Player();
-            void update(std::string face);
+            void update(std::string, sf::Vector2f);
             
         private:
             sf::Texture m_playerbody;

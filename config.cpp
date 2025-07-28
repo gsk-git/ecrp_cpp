@@ -117,7 +117,7 @@ namespace esroops {
 
     Player::Player(){
 
-        // Default movement state
+        // Default init
         m_IsMoving = false;
         m_State = esrovar::states[0];
         m_playerXY = sf::Vector2f(static_cast<float>(esrovar::GameWindow.getPosition().x * 0.5f), static_cast<float>(esrovar::GameWindow.getPosition().y * 0.5f));
@@ -128,6 +128,22 @@ namespace esroops {
     }
 
     Player::~Player() {}
+
+    void Player::update(std::string face, sf::Vector2f playerXY) {
+
+        // Flag check for player movement
+        m_IsMoving = (playerXY.x != 0 && playerXY.y != 0);
+
+        if (m_IsMoving) 
+            m_State = esrovar::states[1];
+        else
+            m_State = esrovar::states[0];
+
+		// Update sprite and position
+		m_playersprite.emplace(esrovar::TextureFace[m_State]);
+		m_playersprite->setPosition(m_playerXY);
+
+    }
     
     void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
         states.transform *= getTransform();

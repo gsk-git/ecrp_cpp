@@ -41,6 +41,7 @@ int main() {
         esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.0f;
         esrovar::dt = clock.restart().asSeconds();
         esrovar::totalspeed = esrovar::speed * esrovar::boost;
+        std::string CurrentFace;
 
         for (auto system : systems) {
             system->update(esrovar::dt);
@@ -48,15 +49,19 @@ int main() {
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
             esrovar::movediry = -esrovar::totalspeed;
+            CurrentFace = "up";
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {         
             esrovar::movediry = esrovar::totalspeed;
+            CurrentFace = "down";
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
             esrovar::movedirx = -esrovar::totalspeed;
+            CurrentFace = "left";
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
             esrovar::movedirx = esrovar::totalspeed;
+            CurrentFace = "right";
         }
 
         // Get directions vector
@@ -72,8 +77,9 @@ int main() {
 
         // Move player
         player.move(direction * esrovar::totalspeed * esrovar::dt);
+        player.update(CurrentFace, {esrovar::movediry, esrovar::movedirx});
 
-        // Smoot scrolling view
+        // Smooth scrolling view
         sf::Vector2f viewcenter = view.getCenter();
         sf::Vector2f targetcenter = player.getPosition();
         float lerpfactor = 5.0f * esrovar::dt;
