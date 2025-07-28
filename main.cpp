@@ -3,25 +3,15 @@
 //  Game Main Function
 int main() {
 
-    // Initializing window and framerate
-    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-    sf::RenderWindow window(desktop, "ESRO", sf::Style::None);
+    // Initializing esrovar::GameWindow and framerate
     sf::Clock clock;
     esroops::Chunk chunk;
     esroops::TileMap tilemap;
+    esroops::Player player;
     std::vector <esroops::IUpdatable*> systems;
 
     // Load world tile
-    tilemap.load("res/tile.png",sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
-    //tilemap.setPosition(sf::Vector2f(static_cast<float>(window.getSize().x) * 0.5f, static_cast<float>(window.getSize().y) * 0.5f));
-    //tilemap.setOrigin({ 400.0, 400.0 });
-    
-    //Player
-    sf::RectangleShape playerbody;
-    playerbody.setSize(sf::Vector2f({ esrovar::player_size, esrovar::player_size }));
-    playerbody.setFillColor(sf::Color::Cyan);
-    playerbody.setPosition(sf::Vector2f(static_cast<float>(window.getPosition().x * 0.5f), static_cast<float>(window.getPosition().y * 0.5f)));
-    playerbody.setOrigin({(playerbody.getSize().x * 0.5f), (playerbody.getSize().y * 0.5f)});
+    tilemap.load(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
 
     //Init View
     sf::View view;
@@ -29,15 +19,15 @@ int main() {
     view.setSize(viewArea);
 
     //Main game loop
-    while (window.isOpen()) {
-        window.setFramerateLimit(esrovar::FPS);
+    while (esrovar::GameWindow.isOpen()) {
+        esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
         
-        //Close window on close
-        while (const std::optional event = window.pollEvent()) {
+        //Close esrovar::GameWindow on close
+        while (const std::optional event = esrovar::GameWindow.pollEvent()) {
             if (event -> is <sf::Event::Closed>())
-                window.close();
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
-                window.close();
+                esrovar::GameWindow.close();
+            if (esrovar::KeyPressed_esc) {
+                esrovar::GameWindow.close();
             }
         }
 
@@ -78,21 +68,21 @@ int main() {
         }
 
         // Move player
-        playerbody.move(direction * esrovar::totalspeed * esrovar::dt);
+        player.move(direction * esrovar::totalspeed * esrovar::dt);
 
         // Smoot scrolling view
         sf::Vector2f viewcenter = view.getCenter();
-        sf::Vector2f targetcenter = playerbody.getPosition();
+        sf::Vector2f targetcenter = player.getPosition();
         float lerpfactor = 5.0f * esrovar::dt;
         view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
         
-        // Window initialization
-        window.clear();
-        window.setView(view);
-        window.draw(tilemap);
-        window.draw(playerbody);
-        window.setView(window.getDefaultView());
-        window.display();
+        // esrovar::GameWindow initialization
+        esrovar::GameWindow.clear();
+        esrovar::GameWindow.setView(view);
+        esrovar::GameWindow.draw(tilemap);
+        esrovar::GameWindow.draw(player);
+        esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
+        esrovar::GameWindow.display();
     }
 
     return EXIT_SUCCESS;

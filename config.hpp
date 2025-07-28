@@ -13,6 +13,7 @@ namespace esrovar {
     constexpr unsigned int SCRHGT = 1080u;
     constexpr unsigned int FPS = 60u;
     constexpr int CHUNK_SIZE = 16;
+    extern std::string TileImagePATH = "res/tile.png";
     extern bool KeyPressed_w;
     extern bool KeyPressed_a;
     extern bool KeyPressed_s;
@@ -21,6 +22,7 @@ namespace esrovar {
     extern bool KeyPressed_left;
     extern bool KeyPressed_down;
     extern bool KeyPressed_right;
+    extern bool KeyPressed_esc;
 
     // Runtime variables (declared with extern, defined in .cpp)
     extern unsigned int pixel_size;
@@ -35,6 +37,7 @@ namespace esrovar {
     extern float boost;
     extern float dt;
     extern float totalspeed;
+    extern sf::RenderWindow GameWindow;
 }
 
 namespace esroops {
@@ -76,25 +79,15 @@ namespace esroops {
             sf::Texture m_tileset;
     };
 
-    class WorldManager {
-
-    };
-
-    class Entity: public sf::Drawable, public sf::Transformable {
-
+    class Player : public sf::Drawable, public sf::Transformable, public sf::Texture {
         public:
-            virtual void update() = 0;
-            Entity () {}
-            ~Entity () {}
-        
+            Player();
+            ~Player();
+            
         private:
-            virtual void draw(sf::RenderTarget& target) const override;
-    };
-
-    class Player : public Entity {
-        public:
-            Player() {}
-            ~Player() {}
+            sf::Texture m_playerbody;
+            std::optional<sf::Sprite> m_playersprite;
+            virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
     };
 
 }

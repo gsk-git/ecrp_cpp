@@ -27,6 +27,11 @@ namespace esrovar {
     bool KeyPressed_left = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left);
     bool KeyPressed_down = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down);
     bool KeyPressed_right = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right);
+    bool KeyPressed_esc = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape);
+
+    
+    sf::VideoMode desktop = desktop.getDesktopMode();
+    sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
 }
 
 namespace esroops {
@@ -100,8 +105,19 @@ namespace esroops {
         target.draw(m_grid, states);
     }
 
-    Player::Player() {
-   
+    Player::Player(){
+        
+        if (!m_playerbody.loadFromFile("res/player_sprite/walk.png"))
+            LOG("Image file not found");
+        m_playersprite.emplace(m_playerbody);
+        m_playersprite->setPosition(sf::Vector2f(static_cast<float>(esrovar::GameWindow.getPosition().x * 0.5f), static_cast<float>(esrovar::GameWindow.getPosition().y * 0.5f)));
+    }
+
+    Player::~Player() {}
+    
+    void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+        states.transform *= getTransform();
+        target.draw(*m_playersprite, states);
     }
 
 }
