@@ -16,10 +16,9 @@ namespace esrovar {
     constexpr unsigned int SCRHGT = 1080u;
     constexpr unsigned int FPS = 60u;
     constexpr int CHUNK_SIZE = 16;
-    extern std::string TileImagePATH;
-    extern std::string PlayerSpriteImagePATH;
+    constexpr int PLAYER_SPRITE = 64;
 
-    // Runtime variables (declared with extern, defined in .cpp)
+    // Runtime variables
     extern unsigned int pixel_size;
     extern unsigned int frame_count;
     extern unsigned int scale;
@@ -33,9 +32,12 @@ namespace esrovar {
     extern float dt;
     extern float totalspeed;
     extern sf::RenderWindow GameWindow;
-    extern std::map<std::string, std::string> ActionSprites;
-    extern std::map <std::string, sf::Texture> DirectionFace;
+    extern std::map <std::string, std::string> TexturePath;
+    extern std::map <std::string, sf::Texture> TextureFace;
+	extern std::string TileImagePATH;
+	extern std::string PlayerSpriteImagePATH;
     extern std::string states[5];
+    extern std::string FaceDirection[4];
 
 }
 
@@ -66,11 +68,11 @@ namespace esroops {
     };
 
     class Chunk {
-    public:
-        Chunk();   // Declare constructor
-        ~Chunk();  // Declare destructor
-        Tile* getTileData(int x, int y);
-        Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
+        public:
+            Chunk();   // Declare constructor
+            ~Chunk();  // Declare destructor
+            Tile* getTileData(int x, int y);
+            Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
     };
 
     class TileMap: public sf::Drawable, public sf::Transformable {
@@ -81,7 +83,7 @@ namespace esroops {
             bool load(const std::string& tilesheet, sf::Vector2u tilesize, const Tile* tile, int x, int y);
         private:
             // Member functions
-            virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+            void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
             // Member variables
             sf::VertexArray m_grid;
             sf::Texture m_tileset;
@@ -91,17 +93,18 @@ namespace esroops {
         public:
             bool m_IsMoving;
             std::string m_State;
+            std::string m_direction;
             sf::Vector2f m_playerXY;
 
 
             Player();
             ~Player();
-            void update(std::string, sf::Vector2f);
+            void update();
             
         private:
             sf::Texture m_playerbody;
             std::optional<sf::Sprite> m_playersprite;
-            virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+            void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
 
 }

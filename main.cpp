@@ -36,6 +36,10 @@ int main() {
 
         }
 
+		for (auto system : systems) {
+			system->update(esrovar::dt);
+		}
+
         esrovar::movedirx = 0.f;
         esrovar::movediry = 0.f;
         esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.0f;
@@ -43,26 +47,25 @@ int main() {
         esrovar::totalspeed = esrovar::speed * esrovar::boost;
         std::string CurrentFace;
 
-        for (auto system : systems) {
-            system->update(esrovar::dt);
-        }
-
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
             esrovar::movediry = -esrovar::totalspeed;
             CurrentFace = "up";
         }
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
+			esrovar::movedirx = -esrovar::totalspeed;
+			CurrentFace = "left";
+		}
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {         
             esrovar::movediry = esrovar::totalspeed;
             CurrentFace = "down";
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-            esrovar::movedirx = -esrovar::totalspeed;
-            CurrentFace = "left";
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
             esrovar::movedirx = esrovar::totalspeed;
             CurrentFace = "right";
         }
+
+        // Update player attributes
+        player.m_direction = CurrentFace;
 
         // Get directions vector
         sf::Vector2f direction({ esrovar::movedirx, esrovar::movediry });
@@ -75,16 +78,16 @@ int main() {
             direction /= length;
         }
 
-        // Move player
+        // Move and update player
         player.move(direction * esrovar::totalspeed * esrovar::dt);
-        player.update(CurrentFace, {esrovar::movediry, esrovar::movedirx});
+        player.update();
 
         // Smooth scrolling view
         sf::Vector2f viewcenter = view.getCenter();
         sf::Vector2f targetcenter = player.getPosition();
         float lerpfactor = 5.0f * esrovar::dt;
         view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
-        
+
         // GameWindow initialization
         esrovar::GameWindow.clear();
         esrovar::GameWindow.setView(view);
