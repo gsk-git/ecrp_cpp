@@ -20,6 +20,7 @@ namespace esrovar {
     float boost;
     float dt;
     float totalspeed;
+    const char format[5] = ".png";
     std::string TileImagePATH = "res/tile.png";
     std::string PlayerSpriteImagePATH = "res/player_sprite/";
     std::string states[5] = { "idle","walk","slash","jump","sit" };
@@ -28,11 +29,11 @@ namespace esrovar {
     sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
     std::map <std::string, sf::Texture> TextureFace;
     std::map<std::string, std::string> TexturePath = {
-        {"idle", PlayerSpriteImagePATH+"idle.png"},
-        {"walk", PlayerSpriteImagePATH + "walk.png"},
-        {"jump", PlayerSpriteImagePATH + "jump.png"},
-        {"sit", PlayerSpriteImagePATH + "sit.png"},
-        {"slash", PlayerSpriteImagePATH + "slash.png"}
+        {states[0], PlayerSpriteImagePATH + states[0] + format},
+        {states[1], PlayerSpriteImagePATH + states[1] + format},
+        {states[3], PlayerSpriteImagePATH + states[3] + format},
+        {states[4], PlayerSpriteImagePATH + states[4] + format},
+        {states[2], PlayerSpriteImagePATH + states[2] + format}
     };
     std::map<std::string, sf::IntRect> TextureRects = {
       {"up",    sf::IntRect({0, 0 * 64}, {64, 64})},

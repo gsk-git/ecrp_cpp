@@ -56,13 +56,6 @@ namespace esroops {
         ocean
     };
 
-    enum directions {
-        up,
-        left,
-        down,
-        right
-    };
-
     struct Tile {
         BlockType type;
     };
