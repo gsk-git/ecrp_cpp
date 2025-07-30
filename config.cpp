@@ -36,10 +36,10 @@ namespace esrovar {
         {states[2], PlayerSpriteImagePATH + states[2] + format}
     };
     std::map<std::string, sf::IntRect> TextureRects = {
-      {"up",    sf::IntRect({0, 0 * 64}, {64, 64})},
-      {"left",  sf::IntRect({0, 1 * 64}, {64, 64})},
-      {"down",  sf::IntRect({0, 2 * 64}, {64, 64})},
-      {"right", sf::IntRect({0, 3 * 64}, {64, 64})}
+      {"up",    sf::IntRect({0 * PLAYER_SPRITE, 0 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
+      {"left",  sf::IntRect({0 * PLAYER_SPRITE, 1 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
+      {"down",  sf::IntRect({0 * PLAYER_SPRITE, 2 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
+      {"right", sf::IntRect({0 * PLAYER_SPRITE, 3 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})}
     };
 }// namespace esrovar ends
 
