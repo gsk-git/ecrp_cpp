@@ -14,7 +14,7 @@ namespace esrovar {
     float player_size = 50.0f;
     float timer = 0.0f;
     float speed = 100.0f;
-    int Chunkrea = CHUNK_SIZE * pixel_size;
+    int chunkrea = CHUNK_SIZE * pixel_size;
     float movedirx;
     float movediry;
     float boost;
@@ -22,7 +22,7 @@ namespace esrovar {
     float totalspeed;
     std::string TileImagePATH = "res/tile.png";
     std::string PlayerSpriteImagePATH = "res/player_sprite/";
-    std::string states[5] = { "idle","walking","attack","jump","sit" };
+    std::string states[5] = { "idle","walk","slash","jump","sit" };
     std::string FaceDirection[4] = { "up","left","down","right"};
     sf::VideoMode desktop = desktop.getDesktopMode();
     sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
@@ -32,7 +32,7 @@ namespace esrovar {
         {"walk", PlayerSpriteImagePATH + "walk.png"},
         {"jump", PlayerSpriteImagePATH + "jump.png"},
         {"sit", PlayerSpriteImagePATH + "sit.png"},
-        {"attack", PlayerSpriteImagePATH + "slash.png"}
+        {"slash", PlayerSpriteImagePATH + "slash.png"}
     };
     std::map<std::string, sf::IntRect> TextureRects = {
       {"up",    sf::IntRect({0, 0 * 64}, {64, 64})},
@@ -40,13 +40,12 @@ namespace esrovar {
       {"down",  sf::IntRect({0, 2 * 64}, {64, 64})},
       {"right", sf::IntRect({0, 3 * 64}, {64, 64})}
     };
-
-
-}
+}// namespace esrovar ends
 
 namespace esrofn {
 
     void LoadSpriteSheets() {
+
         try {
 
 			for (auto& [name, path] : esrovar::TexturePath) {
@@ -55,18 +54,16 @@ namespace esrofn {
 				if (!img.loadFromFile(path))
 					LOG("Image Path or File not found")
 				esrovar::TextureFace.emplace(name, std::move(img));
-
 			}
         }
 
         catch (const std::exception& e) {
 
             std::cerr << "Error: " << e.what() << "\n";
-        }
-        
+        }        
     }
 
-}
+}// namespace esrofn ends
 
 namespace esroops {
 
@@ -77,10 +74,6 @@ namespace esroops {
                 tiles[x][y].type = BlockType::plains;
 			}
         Tile* getTileData(int x, int y);
-    }
-
-    Chunk::~Chunk() {
-        // Cleanup if needed
     }
 
     Tile* Chunk::getTileData(int x, int y) {
@@ -146,11 +139,15 @@ namespace esroops {
 
     Player::Player(){
 
-        // Default init
+        // Initializing member variables
         m_IsMoving = false;
         m_State = esrovar::states[0];
         m_direction = esrovar::FaceDirection[2];
         m_playerXY = sf::Vector2f(static_cast<float>(esrovar::GameWindow.getPosition().x * 0.5f), static_cast<float>(esrovar::GameWindow.getPosition().y * 0.5f));
+        m_TotalFrames = 0;
+        m_CurrentFrame = 0;
+        m_AnimTimer = 0.0f;
+        m_AnimDuration = 0.0f;
 
         // Default sprite and position
         m_playersprite.emplace(esrovar::TextureFace[m_State]);
@@ -158,20 +155,20 @@ namespace esroops {
         m_playersprite->setPosition(m_playerXY);
     }
 
-    Player::~Player() = default;
-
-    void Player::update() {
+    void Player::update(float dt) {
 
         // Flag check for player movement
-        m_IsMoving = (m_playerXY.x != 0 && m_playerXY.y != 0);
+        m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
 
-        if (m_IsMoving) 
-            m_State = esrovar::states[0];
+        if (m_IsMoving)
+            // Player is walking
+            m_State = esrovar::states[1];
         else
+            // Player is idle
             m_State = esrovar::states[0];
 
 		// Update sprite and position
-		m_playersprite->setTexture(esrovar::TextureFace[m_State]);
+        m_playersprite->setTexture(esrovar::TextureFace[m_State]);
         m_playersprite->setTextureRect(esrovar::TextureRects[m_direction]);
 		m_playersprite->setPosition(m_playerXY);
     }
@@ -182,5 +179,4 @@ namespace esroops {
         states.transform *= getTransform();
         target.draw(*m_playersprite, states);
     }
-
-}
+}// namespace esroops ends

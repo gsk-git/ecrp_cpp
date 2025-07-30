@@ -70,7 +70,7 @@ namespace esroops {
     class Chunk {
         public:
             Chunk();   // Declare constructor
-            ~Chunk();  // Declare destructor
+            ~Chunk() = default;  // Declare destructor
             Tile* getTileData(int x, int y);
             Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
     };
@@ -89,24 +89,31 @@ namespace esroops {
             sf::Texture m_tileset;
     };
 
-    class Player : public sf::Drawable, public sf::Transformable, public sf::Texture {
+    class Player : public sf::Drawable, public sf::Transformable, public sf::Texture, public IUpdatable {
+        
         public:
+            // Member variables
             bool m_IsMoving;
             std::string m_State;
             std::string m_direction;
             sf::Vector2f m_playerXY;
+            int m_TotalFrames;
+            int m_CurrentFrame;
+            float m_AnimTimer;
+            float m_AnimDuration;
+            int health;
 
-
+            // Member constructor and functions
             Player();
-            ~Player();
-            void update();
-            
+            ~Player() = default;
+            void update(float dt) override;
+            void animatesprite(float dt);
+
         private:
             sf::Texture m_playerbody;
             std::optional<sf::Sprite> m_playersprite;
             void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
-
 }
 
 namespace esrofn {

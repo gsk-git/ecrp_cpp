@@ -11,6 +11,7 @@ int main() {
     esroops::TileMap tilemap;
     esroops::Player player;
     std::vector <esroops::IUpdatable*> systems;
+    systems.push_back(&player);
 
     // Load world tile
     tilemap.load(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
@@ -22,6 +23,8 @@ int main() {
 
     //Main game loop
     while (esrovar::GameWindow.isOpen()) {
+
+        esrovar::dt = clock.restart().asSeconds();
         esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
         
         //Close esrovar::GameWindow on close
@@ -33,7 +36,6 @@ int main() {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
                 esrovar::GameWindow.close();
             }
-
         }
 
 		for (auto system : systems) {
@@ -43,29 +45,25 @@ int main() {
         esrovar::movedirx = 0.f;
         esrovar::movediry = 0.f;
         esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.0f;
-        esrovar::dt = clock.restart().asSeconds();
         esrovar::totalspeed = esrovar::speed * esrovar::boost;
-        std::string CurrentFace;
+
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
             esrovar::movediry = -esrovar::totalspeed;
-            CurrentFace = "up";
+            player.m_direction = esrovar::FaceDirection[0];
         }
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
 			esrovar::movedirx = -esrovar::totalspeed;
-			CurrentFace = "left";
+            player.m_direction = esrovar::FaceDirection[1];
 		}
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {         
             esrovar::movediry = esrovar::totalspeed;
-            CurrentFace = "down";
+            player.m_direction = esrovar::FaceDirection[2];
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
             esrovar::movedirx = esrovar::totalspeed;
-            CurrentFace = "right";
+            player.m_direction = esrovar::FaceDirection[3];
         }
-
-        // Update player attributes
-        player.m_direction = CurrentFace;
 
         // Get directions vector
         sf::Vector2f direction({ esrovar::movedirx, esrovar::movediry });
@@ -80,7 +78,7 @@ int main() {
 
         // Move and update player
         player.move(direction * esrovar::totalspeed * esrovar::dt);
-        player.update();
+        player.update(esrovar::dt);
 
         // Smooth scrolling view
         sf::Vector2f viewcenter = view.getCenter();
