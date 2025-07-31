@@ -15,12 +15,12 @@ namespace esrovar {
     float timer = 0.0f;
     float speed = 100.0f;
     int chunkrea = CHUNK_SIZE * pixel_size;
-    float movedirx;
-    float movediry;
-    float boost;
-    float dt;
-    float totalspeed;
-    const char format[5] = ".png";
+    float movedirx = 0.0f;
+    float movediry = 0.0f;
+    float boost = 0.0f;
+    float dt = 0.0f;
+    float totalspeed = 0.0f;
+    char format[5] = ".png";
     std::string TileImagePATH = "res/tile.png";
     std::string PlayerSpriteImagePATH = "res/player_sprite/";
     std::string states[5] = { "idle","walk","slash","jump","sit" };
@@ -36,12 +36,12 @@ namespace esrovar {
         {states[2], PlayerSpriteImagePATH + states[2] + format}
     };
     std::map<std::string, sf::IntRect> TextureRects = {
-      {"up",    sf::IntRect({0 * PLAYER_SPRITE, 0 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
-      {"left",  sf::IntRect({0 * PLAYER_SPRITE, 1 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
-      {"down",  sf::IntRect({0 * PLAYER_SPRITE, 2 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
-      {"right", sf::IntRect({0 * PLAYER_SPRITE, 3 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})}
+    {"up",    sf::IntRect({0 * PLAYER_SPRITE, 0 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
+    {"left",  sf::IntRect({0 * PLAYER_SPRITE, 1 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
+    {"down",  sf::IntRect({0 * PLAYER_SPRITE, 2 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
+    {"right", sf::IntRect({0 * PLAYER_SPRITE, 3 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})}
     };
-}// namespace esrovar ends
+} // namespace esrovar ends
 
 namespace esrofn {
 
@@ -49,22 +49,22 @@ namespace esrofn {
 
         try {
 
-			for (auto& [name, path] : esrovar::TexturePath) {
+			for (const auto& [name, path] : esrovar::TexturePath) {
 
 				sf::Texture img;
 				if (!img.loadFromFile(path))
 					LOG("Image Path or File not found")
-				esrovar::TextureFace.emplace(name, std::move(img));
+				esrovar::TextureFace.try_emplace(name, std::move(img));
 			}
         }
 
-        catch (const std::exception& e) {
+        catch (const std::system_error& e) {
 
             std::cerr << "Error: " << e.what() << "\n";
         }        
     }
 
-}// namespace esrofn ends
+} // namespace esrofn ends
 
 namespace esroops {
 
@@ -74,7 +74,6 @@ namespace esroops {
             for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
                 tiles[x][y].type = BlockType::plains;
 			}
-        Tile* getTileData(int x, int y);
     }
 
     Tile* Chunk::getTileData(int x, int y) {
@@ -103,12 +102,12 @@ namespace esroops {
                 int tv = 0;
 
                 // XY of independent tile
-                float tx = static_cast<float>(x * tilesize.x);
-                float ty = static_cast<float>(y * tilesize.y);
+                auto tx = static_cast<float>(x * tilesize.x);
+                auto ty = static_cast<float>(y * tilesize.y);
 
                 // XY for independent tile texture
-                float texX = static_cast<float>(tu * tilesize.x);
-                float texY = static_cast<float>(tv * tilesize.y);
+                auto texX = static_cast<float>(tu * tilesize.x);
+                auto texY = static_cast<float>(tv * tilesize.y);
 
                 // Triangle 1
                 m_grid[ static_cast<size_t>(tileIndex) + 0].position    = sf::Vector2f(tx, ty);
@@ -144,11 +143,12 @@ namespace esroops {
         m_IsMoving = false;
         m_State = esrovar::states[0];
         m_direction = esrovar::FaceDirection[2];
-        m_playerXY = sf::Vector2f(static_cast<float>(esrovar::GameWindow.getPosition().x * 0.5f), static_cast<float>(esrovar::GameWindow.getPosition().y * 0.5f));
+        m_playerXY = sf::Vector2f(static_cast<float>(esrovar::GameWindow.getPosition().x) * 0.5f, static_cast<float>(esrovar::GameWindow.getPosition().y) * 0.5f);
         m_TotalFrames = 0;
         m_CurrentFrame = 0;
         m_AnimTimer = 0.0f;
         m_AnimDuration = 0.0f;
+        m_health = 500u;
 
         // Default sprite and position
         m_playersprite.emplace(esrovar::TextureFace[m_State]);
@@ -180,4 +180,4 @@ namespace esroops {
         states.transform *= getTransform();
         target.draw(*m_playersprite, states);
     }
-}// namespace esroops ends
+} // namespace esroops ends

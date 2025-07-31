@@ -151,15 +151,6 @@ sfml-system.lib;FastNoise.lib;%(AdditionalDependencies)</AdditionalDependencies
   <ItemGroup>
     <ClInclude Include="config.hpp" />
   </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="..\..\..\..\lib\FastNoise\lib\FastNoise.lib">
-      <FileType>Document</FileType>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\..\..\..\lib\FastNoise\lib\FastNoiseD.lib">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
-    </CopyFileToFolders>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

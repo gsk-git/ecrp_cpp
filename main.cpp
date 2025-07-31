@@ -17,6 +17,7 @@ int main() {
     tilemap.load(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
 
     //Init View
+
     sf::View view;
     sf::Vector2f viewArea = {esrovar::SCRWDT, esrovar::SCRHGT};
     view.setSize(viewArea);

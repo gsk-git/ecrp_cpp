@@ -70,7 +70,6 @@ namespace esroops {
 
     class TileMap: public sf::Drawable, public sf::Transformable {
     // Objective
-    // tile.load("res/tile.png", sf::Vectoru(50,50), &chunk.tiles[0][0], CHUNK_SIZE, CHUNK_SIZE);
         public:
             // Member functions
             bool load(const std::string& tilesheet, sf::Vector2u tilesize, const Tile* tile, int x, int y);
@@ -94,7 +93,7 @@ namespace esroops {
             int m_CurrentFrame;
             float m_AnimTimer;
             float m_AnimDuration;
-            int health;
+            int m_health;
 
             // Member constructor and functions
             Player();
@@ -112,5 +111,4 @@ namespace esroops {
 namespace esrofn {
 
     void LoadSpriteSheets();
-
 }

@@ -1,9 +1,18 @@
 ﻿  config.cpp
-C:\lib\SFML\System\Exception.hpp(41,47): warning C4275: non dll-interface class 'std::runtime_error' used as base for dll-interface class 'sf::Exception'
+C:\lib\SFML3\include\SFML\System\Exception.hpp(41,47): warning C4275: non dll-interface class 'std::runtime_error' used as base for dll-interface class 'sf::Exception'
   (compiling source file 'config.cpp')
-      D:\vs\VC\Tools\MSVC\14.44.35207\include\stdexcept(100,30):
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\stdexcept(100,30):
       see declaration of 'std::runtime_error'
-      C:\lib\SFML\System\Exception.hpp(41,23):
+      C:\lib\SFML3\include\SFML\System\Exception.hpp(41,23):
       see declaration of 'sf::Exception'
   
-  game.vcxproj -> C:\Users\asus\Documents\esrocpp\x64\Debug\game.exe
+  main.cpp
+C:\lib\SFML3\include\SFML\System\Exception.hpp(41,47): warning C4275: non dll-interface class 'std::runtime_error' used as base for dll-interface class 'sf::Exception'
+  (compiling source file 'main.cpp')
+      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\stdexcept(100,30):
+      see declaration of 'std::runtime_error'
+      C:\lib\SFML3\include\SFML\System\Exception.hpp(41,23):
+      see declaration of 'sf::Exception'
+  
+  Generating Code...
+  game.vcxproj -> C:\Users\Sevarkodiyon\OneDrive\Documents\game\x64\Debug\game.exe
