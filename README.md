@@ -52,25 +52,6 @@ Welcome to the **Tile World Game**, a procedurally generated 2D tile-based world
 
 ---
 
-## 📁 Project Structure
-
-game/
-├── res/ # Game assets (textures, sprites)
-│ ├── player_sprite/
-│ └── text/
-│ ├── Space.png
-│ └── tile.png
-├── config.hpp # Game configuration header
-├── config.cpp # Game configuration source
-├── main.cpp # Game entry point
-├── LICENSE # License file
-├── README.md # This file
-├── .gitignore # Git ignored files
-└── .vs/, x64/ # IDE and build folders (ignored)
-
-
----
-
 ## 📸 Screenshots
 
 > *Coming soon: Add sample in-game screenshots here*
