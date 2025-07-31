@@ -1,3 +1,5 @@
+![Game Screenshot](res/esro.png)
+
 # 🕹️ Tile World Game (C++ / SFML)
 
 Welcome to the **Tile World Game**, a procedurally generated 2D tile-based world built using **C++** and **SFML**. Inspired by sandbox games like Minecraft, this project demonstrates chunk-based world generation, Perlin noise terrain, dynamic camera systems, and modular architecture — all from the ground up.
