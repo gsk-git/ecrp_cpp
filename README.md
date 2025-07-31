@@ -34,7 +34,7 @@ Welcome to the **Tile World Game**, a procedurally generated 2D tile-based world
 ### ✅ Prerequisites
 
 - **C++17 or newer**
-- [SFML 2.5+](https://www.sfml-dev.org/download.php)
+- [SFML 3.0+](https://www.sfml-dev.org/download.php)
 - A C++ compiler (MSVC, g++, clang++)
 - Visual Studio or any modern C++ IDE
 
