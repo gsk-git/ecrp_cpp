@@ -41,4 +41,35 @@
 # debug information files
 *.dwo
 .git/
+# Ignore build folders
+x64/
+game/x64/
+.vs/
+
+# Ignore temporary and build files
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.log
+*.tmp
+*.user
+*.suo
+
+# Ignore Visual Studio cache/config
+*.VC.db
+*.VC.opendb
+
+# Optional: CMake, if you use it
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Optional: backup or temp files
+*~
+*.swp
+.DS_Store
+Thumbs.db
+
 

@@ -50,7 +50,6 @@ namespace esrofn {
         try {
 
 			for (const auto& [name, path] : esrovar::TexturePath) {
-
 				sf::Texture img;
 				if (!img.loadFromFile(path))
 					LOG("Image Path or File not found")
@@ -59,7 +58,6 @@ namespace esrofn {
         }
 
         catch (const std::system_error& e) {
-
             std::cerr << "Error: " << e.what() << "\n";
         }        
     }
@@ -111,7 +109,7 @@ namespace esroops {
 
                 // Triangle 1
                 m_grid[ static_cast<size_t>(tileIndex) + 0].position    = sf::Vector2f(tx, ty);
-                m_grid[ static_cast<size_t>(tileIndex) + 1].position    = sf::Vector2f(tx + tilesize.x, ty);
+                m_grid[static_cast<size_t>(tileIndex) + 1].position     = sf::Vector2f(tx + static_cast<float>(tilesize.x), ty);
                 m_grid[ static_cast<size_t>(tileIndex) + 2].position    = sf::Vector2f(tx, ty + tilesize.y);
                 m_grid[ static_cast<size_t>(tileIndex) + 0].texCoords   = sf::Vector2f(texX, texY);
                 m_grid[ static_cast<size_t>(tileIndex) + 1].texCoords   = sf::Vector2f(texX + tilesize.x, texY);
