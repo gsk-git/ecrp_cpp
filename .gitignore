@@ -1,75 +1,52 @@
-# Prerequisites
-*.d
-.vs/
-.game/
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# debug information files
-*.dwo
-.git/
-# Ignore build folders
-x64/
-game/x64/
-.vs/
-
-# Ignore temporary and build files
-*.obj
-*.exe
-*.pdb
-*.ilk
-*.log
-*.tmp
+# ===== Visual Studio =====
+## User-specific files
 *.user
 *.suo
 
-# Ignore Visual Studio cache/config
+## Build artifacts and cache
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.idb
+*.log
+*.tlog
+*.lastbuildstate
+*.tmp
+*.cache
+*.ipch
+*.aps
+
+## IntelliSense and DB
 *.VC.db
 *.VC.opendb
 
-# Optional: CMake, if you use it
+# ========== Project Folders ==========
+# Visual Studio temporary folder
+.vs/
+
+# Build output folders (e.g., Debug/Release under x64)
+x64/
+game/x64/
+
+# Optional: ignore any local-only settings folders
+*.DS_Store
+Thumbs.db
+
+# ========== Backup Files ==========
+*~
+*.swp
+
+# ========== CMake (optional) ==========
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 Makefile
 
-# Optional: backup or temp files
-*~
-*.swp
-.DS_Store
-Thumbs.db
+# ========== Logs and Crash Dumps ==========
+*.stackdump
+*.dmp
 
-
+# ========== Git ==========
+# Ignore local Git configuration
+.gitignore
