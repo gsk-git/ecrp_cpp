@@ -103,7 +103,7 @@ If you want to suggest a feature, open an issue or fork the project and create a
 
 ## 📜 License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GPL 3.0 License.
 
 ---
 
