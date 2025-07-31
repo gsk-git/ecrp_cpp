@@ -54,3 +54,74 @@ Welcome to the **Tile World Game**, a procedurally generated 2D tile-based world
 
 ## 📁 Project Structure
 
+game/
+├── res/ # Game assets (textures, sprites)
+│ ├── player_sprite/
+│ └── text/
+│ ├── Space.png
+│ └── tile.png
+├── config.hpp # Game configuration header
+├── config.cpp # Game configuration source
+├── main.cpp # Game entry point
+├── LICENSE # License file
+├── README.md # This file
+├── .gitignore # Git ignored files
+└── .vs/, x64/ # IDE and build folders (ignored)
+
+
+---
+
+## 📸 Screenshots
+
+> *Coming soon: Add sample in-game screenshots here*
+
+---
+
+## 🧠 Design Concepts
+
+- **std::optional for Player**: Player is only created when the game starts — uses `std::optional` to avoid dangling references.
+- **Lazy chunk loading**: Generates chunks *only when needed*, based on player movement direction.
+- **SFML VertexArray**: Minimizes draw calls by batching tile rendering.
+- **Config-driven world**: Game behavior is driven by settings in a centralized config file.
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome!  
+If you want to suggest a feature, open an issue or fork the project and create a PR.
+
+**To contribute:**
+
+1. Fork the repo
+2. Create your feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin feature/my-feature`)
+5. Create a pull request
+
+---
+
+## 📜 License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙌 Acknowledgments
+
+- [SFML](https://www.sfml-dev.org/)
+- [Ken Perlin](https://mrl.cs.nyu.edu/~perlin/) for the noise algorithm
+- Open-source game developers for inspiration and ideas
+
+---
+
+## 📌 Future Plans
+
+- [ ] Add NPCs / Entities
+- [ ] Implement basic AI
+- [ ] World saving/loading
+- [ ] Collision and physics
+- [ ] UI and inventory system
+- [ ] Sound and music support
+
+
