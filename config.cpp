@@ -4,6 +4,19 @@
 #include <FastNoise/FastNoise.h>
 #include <windows.h>
 #include <iostream>
+#include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowEnums.hpp>
+#include <map>
+#include <string>
+#include <system_error>
+#include <utility>
 
 
 namespace esrovar {
@@ -72,13 +85,15 @@ namespace esroops {
             for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
                 tiles[x][y].type = BlockType::plains;
 			}
+        chunkX = 0;
+        chunkY = 0;
     }
 
     Tile* Chunk::getTileData(int x, int y) {
         return &tiles[x][y];
     }
 
-    bool TileMap::load(const std::string& tilesheet, sf::Vector2u tilesize, const Tile* tile, int width, int height) {
+    bool Chunk::generate(const std::string& tilesheet, sf::Vector2u tilesize) {
         
         // Loading input tilesheet
         if (!m_tileset.loadFromFile(tilesheet))
@@ -86,14 +101,14 @@ namespace esroops {
         
         // Set vertex properties
         m_grid.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
-        m_grid.resize(static_cast<size_t>(width) * height * 6);
+        m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
 
         // Instantiating vertex grid
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
+        for (int y = 0; y < esrovar::CHUNK_SIZE; ++y) {
+            for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
                 
                 // tileIndex identifies where the tile will sit in this grid
-                int tileIndex = (x + y * width) * 6;
+                int tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
 
                 // Tile sheet index
                 int tu = 0;
@@ -122,13 +137,16 @@ namespace esroops {
                 m_grid[ static_cast<size_t>(tileIndex) + 4].texCoords   = sf::Vector2f(texX + tilesize.x, texY + tilesize.y);
                 m_grid[ static_cast<size_t>(tileIndex) + 5].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
 
+                // Setting cell's type as a plain
+                tiles[x][y].type = BlockType::plains;
+
             }
         }
 
         return true;
     }
 
-    void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
         states.transform *= getTransform();
         states.texture = &m_tileset;

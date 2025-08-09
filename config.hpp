@@ -5,6 +5,20 @@
 #include <windows.h>
 #include <iostream>
 #include <map>
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Transformable.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <debugapi.h>
+#include <optional>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #define LOG(x) { std::ostringstream oss; oss << x; OutputDebugStringA(oss.str().c_str()); }
 
@@ -53,26 +67,29 @@ namespace esroops {
     enum BlockType {
         plains,
         beach,
-        ocean
+        ocean,
+        dirt,
+        forest,
+        jungle,
+        swamp,
+        mountain,
+        frozenplain,
+        snow
     };
 
     struct Tile {
         BlockType type;
     };
 
-    class Chunk {
+    class Chunk: public sf::Drawable, public sf::Transformable {
         public:
             Chunk();   // Declare constructor
             ~Chunk() = default;  // Declare destructor
+            int chunkX;
+            int chunkY;
             Tile* getTileData(int x, int y);
             Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
-    };
-
-    class TileMap: public sf::Drawable, public sf::Transformable {
-    // Objective
-        public:
-            // Member functions
-            bool load(const std::string& tilesheet, sf::Vector2u tilesize, const Tile* tile, int x, int y);
+            bool generate(const std::string& tilesheet, sf::Vector2u tilesize);
         private:
             // Member functions
             void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -81,7 +98,7 @@ namespace esroops {
             sf::Texture m_tileset;
     };
 
-    class Player : public sf::Drawable, public sf::Transformable, public sf::Texture, public IUpdatable {
+    class Player: public sf::Drawable, public sf::Transformable, public sf::Texture, public IUpdatable {
         
         public:
             // Member variables

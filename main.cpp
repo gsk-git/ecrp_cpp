@@ -1,4 +1,13 @@
 #include "config.hpp"
+#include <cstdio>
+#include <SFML/Graphics/View.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <cmath>
+#include <cstdlib>
+#include <vector>
 
 //  Game Main Function
 int main() {
@@ -8,13 +17,14 @@ int main() {
     // Initializing esrovar::GameWindow and framerate
     sf::Clock clock;
     esroops::Chunk chunk;
-    esroops::TileMap tilemap;
     esroops::Player player;
+    //esroops::WorldManager world;
     std::vector <esroops::IUpdatable*> systems;
     systems.push_back(&player);
 
     // Load world tile
-    tilemap.load(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
+    //tilemap.load(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
+    chunk.generate(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size));
 
     //Init View
 
@@ -90,7 +100,7 @@ int main() {
         // GameWindow initialization
         esrovar::GameWindow.clear();
         esrovar::GameWindow.setView(view);
-        esrovar::GameWindow.draw(tilemap);
+        esrovar::GameWindow.draw(chunk);
         esrovar::GameWindow.draw(player);
         esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
         esrovar::GameWindow.display();
