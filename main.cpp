@@ -65,11 +65,11 @@ void makeWindowTransparent(sf::RenderWindow& window) {
 
 // Runs the splash screen
 void runSplash() {
-    sf::RenderWindow splash(sf::VideoMode({ 800, 600 }), "Splash", sf::Style::None);
+    sf::RenderWindow splash(sf::VideoMode({ 600, 600 }), "Splash", sf::Style::None);
     makeWindowTransparent(splash);
 
     sf::Texture logoTexture;
-    if (!logoTexture.loadFromFile("res/esro.png"))
+    if (!logoTexture.loadFromFile("res/splash.png"))
 		LOG("Logo not found or path is incorrect");
     sf::Sprite logoSprite(logoTexture);
 
