@@ -1,6 +1,4 @@
 #include "config.hpp"
-#include <cstdio>
-#include <SFML/Graphics/View.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
@@ -8,6 +6,41 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
+#include <SFML/Graphics/View.hpp>
+
+// Helper funtions
+void InputHandler(esroops::Player& player) {
+    esrovar::movedirx = 0.f;
+    esrovar::movediry = 0.f;
+    esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.0f;
+    esrovar::totalspeed = esrovar::speed * esrovar::boost;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
+        esrovar::movediry = -esrovar::totalspeed;
+        player.m_direction = esrovar::FaceDirection[0];
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
+        esrovar::movedirx = -esrovar::totalspeed;
+        player.m_direction = esrovar::FaceDirection[1];
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
+        esrovar::movediry = esrovar::totalspeed;
+        player.m_direction = esrovar::FaceDirection[2];
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
+        esrovar::movedirx = esrovar::totalspeed;
+        player.m_direction = esrovar::FaceDirection[3];
+    }
+}
+void ProcessWindowEvents() {
+    // Process window events
+    while (const std::optional event = esrovar::GameWindow.pollEvent()) {
+        if (event -> is <sf::Event::Closed>())
+            esrovar::GameWindow.close();
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
+            esrovar::GameWindow.close();
+        }
+    }
+}
 
 //  Game Main Function
 int main() {
@@ -34,45 +67,18 @@ int main() {
         esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
 
         //Close esrovar::GameWindow on close
-        while (const std::optional event = esrovar::GameWindow.pollEvent()) {
-
-            if (event -> is <sf::Event::Closed>())
-                esrovar::GameWindow.close();
-
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
-                esrovar::GameWindow.close();
-            }
-        }
+		ProcessWindowEvents();
 
 		// Spike for maintain system wide delta time management
         for (auto system : systemdelta) {
 			system->update(esrovar::dt);
 		}
 
-        esrovar::movedirx = 0.f;
-        esrovar::movediry = 0.f;
-        esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.0f;
-        esrovar::totalspeed = esrovar::speed * esrovar::boost;
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
-            esrovar::movediry = -esrovar::totalspeed;
-            player.m_direction = esrovar::FaceDirection[0];
-        }
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-			esrovar::movedirx = -esrovar::totalspeed;
-            player.m_direction = esrovar::FaceDirection[1];
-		}
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {         
-            esrovar::movediry = esrovar::totalspeed;
-            player.m_direction = esrovar::FaceDirection[2];
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-            esrovar::movedirx = esrovar::totalspeed;
-            player.m_direction = esrovar::FaceDirection[3];
-        }
+		// Handle inputs
+        InputHandler(player);
 
         // Get directions vector
-        sf::Vector2f direction({ esrovar::movedirx, esrovar::movediry });
+        sf::Vector2f direction({esrovar::movedirx, esrovar::movediry});
 
         // Check if directions are not 0
         if (direction.x != 0.f || direction.y != 0.f) {
@@ -102,4 +108,3 @@ int main() {
     }
     return EXIT_SUCCESS;
 }
-    

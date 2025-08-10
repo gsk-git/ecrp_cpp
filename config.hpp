@@ -24,6 +24,8 @@
 #include <random>
 #include <set>
 #include <utility>
+
+// Debugging macro to log messages
 #define LOG(x) { std::ostringstream oss; oss << x; OutputDebugStringA(oss.str().c_str()); }
 
 // Global variables

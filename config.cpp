@@ -1,3 +1,4 @@
+// Including necessary libraries
 #include "config.hpp"
 #include <sfml/Graphics.hpp>
 #include <sfml/Window.hpp>
@@ -99,7 +100,6 @@ namespace esroops {
         m_chunkX = x;
         m_chunkY = y;
 		m_isGenerated = false;
-		std::cout << "Chunk created at: " << m_chunkX << ", " << m_chunkY << "\n";
     }
 
     Player::Player() {
@@ -152,8 +152,6 @@ namespace esroops {
 
                 float chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE * tilesize.x);
                 float chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE * tilesize.y);
-
-				std::cout << chunkOffsetX << ", " << chunkOffsetY << "\n";
 
                 // Tile sheet index
                 int tu = 0;
