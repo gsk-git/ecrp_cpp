@@ -21,10 +21,6 @@ int main() {
     esroops::Player player;
     std::vector <esroops::IUpdatable*> systemdelta;
     systemdelta.push_back(&player);
-    
-
-    // Generate chunk
-    //chunk.generate(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size));
 
     //Init View
     sf::View view;
@@ -97,9 +93,9 @@ int main() {
         view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
 
         // GameWindow initialization
-        esrovar::GameWindow.clear();
+        esrovar::GameWindow.clear();        
         esrovar::GameWindow.setView(view);
-        world._drawChunks(esrovar::GameWindow);
+        world.f_drawChunks(esrovar::GameWindow);
         esrovar::GameWindow.draw(player);
         esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
         esrovar::GameWindow.display();

@@ -36,11 +36,10 @@ namespace esrovar {
     constexpr int CHUNK_SIZE = 16;
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
-    // Runtime variables
-    extern unsigned int pixel_size;
-    extern unsigned int frame_count;
-    extern unsigned int scale;
-    extern unsigned int seed;
+    extern int pixel_size;
+    extern int frame_count;
+    extern int scale;
+    extern int seed;
     extern float player_size;
     extern float timer;
     extern float speed;
@@ -96,13 +95,14 @@ namespace esroops {
     class Chunk : public sf::Drawable, public sf::Transformable {
     public:
         Chunk() = default;
-        Chunk(int x, int y);   // Declare constructor
-        ~Chunk() = default;  // Declare destructor
+        Chunk(int x, int y);
+        ~Chunk() = default;
         int m_chunkX;
         int m_chunkY;
+		bool m_isGenerated;
         Tile* getTileData(int x, int y);
         Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
-        bool generate(const std::string& tilesheet, sf::Vector2u tilesize);
+        void generate(const std::string& tilesheet, sf::Vector2i tilesize);
     private:
         // Member functions
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -123,11 +123,10 @@ namespace esroops {
         float m_AnimTimer;
         float m_AnimDuration;
         int m_health;
-        // Member constructor and functions
         Player();
         ~Player() = default;
         void update(float dt) override;
-        void animatesprite(float dt);
+        //void animatesprite(float dt);
     private:
         sf::Texture m_playerbody;
         std::optional<sf::Sprite> m_playersprite;
@@ -136,15 +135,16 @@ namespace esroops {
 
     class WorldManager {
         public:
+			WorldManager() = default;
             WorldManager(std::pair<int, int>);
             ~WorldManager() = default;
-            int _player_X;
-            int _player_Y;
-            std::map<std::pair<int, int>, Chunk> _active_chunks;
-            unsigned int _world_seed;
-            void _drawChunks(sf::RenderWindow& window);
+            int m_playerchunk_X;
+            int m_playerchunk_Y;
+            std::map<std::pair<int, int>, Chunk> m_active_chunks;
+            unsigned int m_world_seed;
+            void f_drawChunks(sf::RenderWindow& window);
         private:
-            void _initialize_world();
+            void f_initialize_world();
             //void _update_world();
     };
 }
