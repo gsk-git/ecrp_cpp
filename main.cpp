@@ -11,23 +11,22 @@
 
 //  Game Main Function
 int main() {
+
     // Load Assets
     esrofn::LoadSpriteSheets();
 
     // Initializing esrovar::GameWindow and framerate
     sf::Clock clock;
-    esroops::Chunk chunk;
+    esroops::WorldManager world(esrovar::PLAYER_POSITION);
     esroops::Player player;
-    //esroops::WorldManager world;
-    std::vector <esroops::IUpdatable*> systems;
-    systems.push_back(&player);
+    std::vector <esroops::IUpdatable*> systemdelta;
+    systemdelta.push_back(&player);
+    
 
-    // Load world tile
-    //tilemap.load(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size), &chunk.tiles[0][0], esrovar::CHUNK_SIZE, esrovar::CHUNK_SIZE);
-    chunk.generate(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size));
+    // Generate chunk
+    //chunk.generate(esrovar::TileImagePATH, sf::Vector2u(esrovar::pixel_size, esrovar::pixel_size));
 
     //Init View
-
     sf::View view;
     sf::Vector2f viewArea = {esrovar::SCRWDT, esrovar::SCRHGT};
     view.setSize(viewArea);
@@ -37,7 +36,7 @@ int main() {
 
         esrovar::dt = clock.restart().asSeconds();
         esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
-        
+
         //Close esrovar::GameWindow on close
         while (const std::optional event = esrovar::GameWindow.pollEvent()) {
 
@@ -49,7 +48,8 @@ int main() {
             }
         }
 
-		for (auto system : systems) {
+		// Spike for maintain system wide delta time management
+        for (auto system : systemdelta) {
 			system->update(esrovar::dt);
 		}
 
@@ -57,7 +57,6 @@ int main() {
         esrovar::movediry = 0.f;
         esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.0f;
         esrovar::totalspeed = esrovar::speed * esrovar::boost;
-
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
             esrovar::movediry = -esrovar::totalspeed;
@@ -91,7 +90,7 @@ int main() {
         player.move(direction * esrovar::totalspeed * esrovar::dt);
         player.update(esrovar::dt);
 
-        // Smooth scrolling view
+        // Smooth scroll view
         sf::Vector2f viewcenter = view.getCenter();
         sf::Vector2f targetcenter = player.getPosition();
         float lerpfactor = 5.0f * esrovar::dt;
@@ -100,12 +99,11 @@ int main() {
         // GameWindow initialization
         esrovar::GameWindow.clear();
         esrovar::GameWindow.setView(view);
-        esrovar::GameWindow.draw(chunk);
+        world._drawChunks(esrovar::GameWindow);
         esrovar::GameWindow.draw(player);
         esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
         esrovar::GameWindow.display();
     }
-
     return EXIT_SUCCESS;
 }
     
