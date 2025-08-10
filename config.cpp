@@ -4,13 +4,31 @@
 #include <FastNoise/FastNoise.h>
 #include <windows.h>
 #include <iostream>
+#include <random>
+#include <vector>
+#include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowEnums.hpp>
+#include <map>
+#include <set>
+#include <ranges>
+#include <string>
+#include <system_error>
+#include <utility>
 
-
+// Global variables
 namespace esrovar {
 
     unsigned int pixel_size = 50u;
     unsigned int frame_count = 0u;
     unsigned int scale = 2u;
+    unsigned int seed = 23091995;
     float player_size = 50.0f;
     float timer = 0.0f;
     float speed = 100.0f;
@@ -41,8 +59,10 @@ namespace esrovar {
     {"down",  sf::IntRect({0 * PLAYER_SPRITE, 2 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
     {"right", sf::IntRect({0 * PLAYER_SPRITE, 3 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})}
     };
+    std::pair<int, int> PLAYER_POSITION = {0,0};
 } // namespace esrovar ends
 
+// Global functions
 namespace esrofn {
 
     void LoadSpriteSheets() {
@@ -62,23 +82,60 @@ namespace esrofn {
         }        
     }
 
+    int GenerateWorldSeed() {
+        std::random_device randev;
+        std::mt19937 gen(randev());
+        std::uniform_int_distribution<int> dist(0, 2100000000);
+        return dist(gen);
+    }
 } // namespace esrofn ends
 
+// Global objects and classes
 namespace esroops {
 
-    Chunk::Chunk() {
+    Chunk::Chunk(int x, int y) {
 
         for (int y = 0; y < esrovar::CHUNK_SIZE; ++y)
             for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
                 tiles[x][y].type = BlockType::plains;
 			}
+        m_chunkX = x;
+        m_chunkY = y;
+    }
+
+    Player::Player() {
+
+        // Initializing member variables
+        m_IsMoving = false;
+        m_State = esrovar::states[0];
+        m_direction = esrovar::FaceDirection[2];
+        m_playerXY = sf::Vector2f(static_cast<float>(esrovar::GameWindow.getPosition().x) * 0.5f, static_cast<float>(esrovar::GameWindow.getPosition().y) * 0.5f);
+        m_TotalFrames = 0;
+        m_CurrentFrame = 0;
+        m_AnimTimer = 0.0f;
+        m_AnimDuration = 0.0f;
+        m_health = 500u;
+
+        // Default sprite and position
+        m_playersprite.emplace(esrovar::TextureFace[m_State]);
+        m_playersprite->setTextureRect(esrovar::TextureRects[m_direction]);
+        m_playersprite->setPosition(m_playerXY);
+    }
+
+    WorldManager::WorldManager(std::pair<int, int> PLAYERXY) {
+        
+        _player_X = PLAYERXY.first;
+        _player_Y = PLAYERXY.second;
+        _active_chunks;
+        _world_seed = esrovar::seed;
+        _initialize_world();
     }
 
     Tile* Chunk::getTileData(int x, int y) {
         return &tiles[x][y];
     }
 
-    bool TileMap::load(const std::string& tilesheet, sf::Vector2u tilesize, const Tile* tile, int width, int height) {
+    bool Chunk::generate(const std::string& tilesheet, sf::Vector2u tilesize) {
         
         // Loading input tilesheet
         if (!m_tileset.loadFromFile(tilesheet))
@@ -86,22 +143,25 @@ namespace esroops {
         
         // Set vertex properties
         m_grid.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
-        m_grid.resize(static_cast<size_t>(width) * height * 6);
+        m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
 
         // Instantiating vertex grid
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
+        for (int y = 0; y < esrovar::CHUNK_SIZE; ++y) {
+            for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
                 
                 // tileIndex identifies where the tile will sit in this grid
-                int tileIndex = (x + y * width) * 6;
+                int tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
+
+                float chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE * tilesize.x);
+                float chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE * tilesize.y);
 
                 // Tile sheet index
                 int tu = 0;
                 int tv = 0;
 
                 // XY of independent tile
-                auto tx = static_cast<float>(x * tilesize.x);
-                auto ty = static_cast<float>(y * tilesize.y);
+                auto tx = chunkOffsetX + static_cast<float>(x * tilesize.x);
+                auto ty = chunkOffsetY + static_cast<float>(y * tilesize.y);
 
                 // XY for independent tile texture
                 auto texX = static_cast<float>(tu * tilesize.x);
@@ -122,37 +182,21 @@ namespace esroops {
                 m_grid[ static_cast<size_t>(tileIndex) + 4].texCoords   = sf::Vector2f(texX + tilesize.x, texY + tilesize.y);
                 m_grid[ static_cast<size_t>(tileIndex) + 5].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
 
+                // Setting cell's type as a plain
+                tiles[x][y].type = BlockType::plains;
+
             }
         }
 
         return true;
     }
 
-    void TileMap::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+    void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
         states.transform *= getTransform();
         states.texture = &m_tileset;
         target.draw(m_grid, states);
-    }
-
-    Player::Player(){
-
-        // Initializing member variables
-        m_IsMoving = false;
-        m_State = esrovar::states[0];
-        m_direction = esrovar::FaceDirection[2];
-        m_playerXY = sf::Vector2f(static_cast<float>(esrovar::GameWindow.getPosition().x) * 0.5f, static_cast<float>(esrovar::GameWindow.getPosition().y) * 0.5f);
-        m_TotalFrames = 0;
-        m_CurrentFrame = 0;
-        m_AnimTimer = 0.0f;
-        m_AnimDuration = 0.0f;
-        m_health = 500u;
-
-        // Default sprite and position
-        m_playersprite.emplace(esrovar::TextureFace[m_State]);
-        m_playersprite->setTextureRect(esrovar::TextureRects[m_direction]);
-        m_playersprite->setPosition(m_playerXY);
-    }
+    }    
 
     void Player::update(float dt) {
 
@@ -173,9 +217,37 @@ namespace esroops {
     }
     
     void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-
         // Draws player object
         states.transform *= getTransform();
         target.draw(*m_playersprite, states);
+    }
+
+    void WorldManager::_initialize_world() {
+        // Initializing set to hold required chunk in that frame
+        std::set<std::pair<int, int>> RequiredChunks;
+
+        // Calculating visible chunk radius around player
+        for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
+            for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {    
+                int target_chunkX = _player_X + x;
+                int target_chunkY = _player_Y + y;
+                RequiredChunks.insert(std::make_pair(target_chunkX, target_chunkY));
+            }
+        }
+
+        // Generating initial chunk within player's radius
+        for (auto& [cx, cy] : RequiredChunks) {
+            if (!_active_chunks.contains({ cx, cy })) {
+                Chunk _chunk(cx, cy);
+                _chunk.generate(esrovar::TileImagePATH, sf::Vector2u({ esrovar::pixel_size, esrovar::pixel_size }));
+                _active_chunks.emplace(std::make_pair(cx, cy), std::move(_chunk));
+            }
+        }
+    }
+
+    void WorldManager::_drawChunks(sf::RenderWindow& window) {
+        for (auto& [coords, _chunk] : _active_chunks) {
+            window.draw(_chunk);
+        }
     }
 } // namespace esroops ends
