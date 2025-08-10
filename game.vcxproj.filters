@@ -27,8 +27,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="..\..\..\..\lib\FastNoise\lib\FastNoise.lib" />
-    <CopyFileToFolders Include="..\..\..\..\lib\FastNoise\lib\FastNoiseD.lib" />
-  </ItemGroup>
 </Project>

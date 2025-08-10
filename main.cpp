@@ -1,3 +1,4 @@
+// Including necessary libraries
 #include "config.hpp"
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -6,9 +7,19 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Window/WindowEnums.hpp>
+#include <SFML/Window/VideoMode.hpp>
 #include <SFML/Graphics/View.hpp>
+#include <chrono>
+#include <Windows.h>
+#include <SFML/Window/WindowHandle.hpp>
+#include <SFML/Graphics.hpp>
 
-// Helper funtions
+// Handles input
 void InputHandler(esroops::Player& player) {
     esrovar::movedirx = 0.f;
     esrovar::movediry = 0.f;
@@ -31,6 +42,8 @@ void InputHandler(esroops::Player& player) {
         player.m_direction = esrovar::FaceDirection[3];
     }
 }
+
+// Processes window events
 void ProcessWindowEvents() {
     // Process window events
     while (const std::optional event = esrovar::GameWindow.pollEvent()) {
@@ -42,9 +55,50 @@ void ProcessWindowEvents() {
     }
 }
 
-//  Game Main Function
-int main() {
+// Make SFML window transparent
+void makeWindowTransparent(sf::RenderWindow& window) {
+    HWND hwnd = static_cast<HWND>(window.getNativeHandle());
+    LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+    SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
+    SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
+}
 
+// Runs the splash screen
+void runSplash() {
+    sf::RenderWindow splash(sf::VideoMode({ 800, 600 }), "Splash", sf::Style::None);
+    makeWindowTransparent(splash);
+
+    sf::Texture logoTexture;
+    if (!logoTexture.loadFromFile("res/esro.png"))
+		LOG("Logo not found or path is incorrect");
+    sf::Sprite logoSprite(logoTexture);
+
+    auto bounds = logoSprite.getLocalBounds();
+    logoSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
+    logoSprite.setPosition(sf::Vector2f(splash.getSize().x / 2.f, splash.getSize().y / 2.f));
+
+    auto start = std::chrono::steady_clock::now();
+
+    while (splash.isOpen()) {
+        while (const std::optional event = esrovar::GameWindow.pollEvent()) {
+            if (event->is <sf::Event::Closed>())
+                splash.close();
+        }
+
+        // Check if 10 seconds passed
+        auto now = std::chrono::steady_clock::now();
+        if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 10) {
+            splash.close();
+        }
+
+        splash.clear(sf::Color::Black);
+        splash.draw(logoSprite);
+        splash.display();
+    }
+}
+
+// Starts the game
+void StartGame() {
     // Load Assets
     esrofn::LoadSpriteSheets();
 
@@ -57,7 +111,7 @@ int main() {
 
     //Init View
     sf::View view;
-    sf::Vector2f viewArea = {esrovar::SCRWDT, esrovar::SCRHGT};
+    sf::Vector2f viewArea = { esrovar::SCRWDT, esrovar::SCRHGT };
     view.setSize(viewArea);
 
     //Main game loop
@@ -67,18 +121,18 @@ int main() {
         esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
 
         //Close esrovar::GameWindow on close
-		ProcessWindowEvents();
+        ProcessWindowEvents();
 
-		// Spike for maintain system wide delta time management
+        // Spike for maintain system wide delta time management
         for (auto system : systemdelta) {
-			system->update(esrovar::dt);
-		}
+            system->update(esrovar::dt);
+        }
 
-		// Handle inputs
+        // Handle inputs
         InputHandler(player);
 
         // Get directions vector
-        sf::Vector2f direction({esrovar::movedirx, esrovar::movediry});
+        sf::Vector2f direction({ esrovar::movedirx, esrovar::movediry });
 
         // Check if directions are not 0
         if (direction.x != 0.f || direction.y != 0.f) {
@@ -99,12 +153,19 @@ int main() {
         view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
 
         // GameWindow initialization
-        esrovar::GameWindow.clear();        
+        esrovar::GameWindow.clear();
         esrovar::GameWindow.setView(view);
         world.f_drawChunks(esrovar::GameWindow);
         esrovar::GameWindow.draw(player);
         esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
         esrovar::GameWindow.display();
     }
+
+}
+
+//  Game Main Function
+int main() {
+    runSplash();
+    StartGame();
     return EXIT_SUCCESS;
 }

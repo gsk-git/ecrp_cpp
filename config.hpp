@@ -26,7 +26,11 @@
 #include <utility>
 
 // Debugging macro to log messages
+#ifdef _DEBUG
 #define LOG(x) { std::ostringstream oss; oss << x; OutputDebugStringA(oss.str().c_str()); }
+#else
+#define LOG(x) ((void)0)
+#endif
 
 // Global variables
 namespace esrovar {
