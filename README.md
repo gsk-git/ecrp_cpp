@@ -86,7 +86,7 @@ If you want to suggest a feature, open an issue or fork the project and create a
 
 ## 📜 License
 
-This project is licensed under the GPL 3.0 License.
+This project is licensed under the [GPL 3.0 License](https://github.com/gsk-git/ecrp_cpp#GPL-3.0-1-ov-file).
 
 ---
 
