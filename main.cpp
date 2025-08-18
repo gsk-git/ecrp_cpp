@@ -16,8 +16,13 @@
 #include <SFML/Graphics/View.hpp>
 #include <chrono>
 #include <Windows.h>
-#include <SFML/Window/WindowHandle.hpp>
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Transformable.hpp>
+#include <SFML/Window/Window.hpp>
+#include <SFML/Window/WindowBase.hpp>
+#include <optional>
+#include <string>
 
 // Handles input
 void InputHandler(esroops::Player& player) {
@@ -65,7 +70,7 @@ void makeWindowTransparent(sf::RenderWindow& window) {
 
 // Runs the splash screen
 void runSplash() {
-    sf::RenderWindow splash(sf::VideoMode({ 600, 600 }), "Splash", sf::Style::None);
+    sf::RenderWindow splash(sf::VideoMode({ 512, 512 }), "Splash", sf::Style::None);
     makeWindowTransparent(splash);
 
     sf::Texture logoTexture;
@@ -73,9 +78,10 @@ void runSplash() {
 		LOG("Logo not found or path is incorrect");
     sf::Sprite logoSprite(logoTexture);
 
+    logoSprite.setScale(sf::Vector2f(static_cast<float>(512.f) / logoTexture.getSize().x, static_cast<float>(512.f) / logoTexture.getSize().y));
     auto bounds = logoSprite.getLocalBounds();
-    logoSprite.setOrigin(sf::Vector2f(bounds.size.x / 2.f, bounds.size.y / 2.f));
-    logoSprite.setPosition(sf::Vector2f(splash.getSize().x / 2.f, splash.getSize().y / 2.f));
+    logoSprite.setOrigin(sf::Vector2f(bounds.size.x * 0.5f, bounds.size.y * 0.5f));
+    logoSprite.setPosition(sf::Vector2f(splash.getSize().x * 0.5f, splash.getSize().y * 0.5f));
 
     auto start = std::chrono::steady_clock::now();
 

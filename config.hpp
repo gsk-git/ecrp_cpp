@@ -1,11 +1,6 @@
 #pragma once
 
 // Including necessary libraries
-#include <sfml/Graphics.hpp>
-#include <sfml/Window.hpp>
-#include <FastNoise/FastNoise.h>
-#include <windows.h>
-#include <iostream>
 #include <map>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -16,13 +11,8 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <debugapi.h>
 #include <optional>
-#include <sstream>
 #include <string>
-#include <vector>
-#include <random>
-#include <set>
 #include <utility>
 
 // Debugging macro to log messages
