@@ -16,6 +16,7 @@
 *.cache
 *.ipch
 *.aps
+LICENSE.md
 
 ## IntelliSense and DB
 *.VC.db

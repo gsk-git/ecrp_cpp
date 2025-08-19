@@ -14,6 +14,8 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <windows.h>
+#include <sstream>
 
 // Debugging macro to log messages
 #ifdef _DEBUG
