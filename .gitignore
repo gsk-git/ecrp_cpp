@@ -51,3 +51,4 @@ Makefile
 # ========== Git ==========
 # Ignore local Git configuration
 .gitignore
+.md
