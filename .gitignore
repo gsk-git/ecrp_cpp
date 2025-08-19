@@ -17,6 +17,7 @@
 *.ipch
 *.aps
 LICENSE.md
+pdb_archive
 
 ## IntelliSense and DB
 *.VC.db
