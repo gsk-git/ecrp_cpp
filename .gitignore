@@ -18,7 +18,7 @@
 *.aps
 LICENSE.md
 pdb_archive
-
+*.json
 ## IntelliSense and DB
 *.VC.db
 *.VC.opendb

@@ -61,42 +61,46 @@ static void ProcessWindowEvents() {
 }
 
 // Make SFML window transparent
-static void makeWindowTransparent(sf::RenderWindow& window) {
+static void SplashWindow(sf::RenderWindow& window) {
     HWND hwnd = static_cast<HWND>(window.getNativeHandle());
     LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-    SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
-    SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
+    SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED | WS_EX_TRANSPARENT);
+    // Set alpha to 0 for full transparency and click-through
+    SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+    SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 }
 
 // Runs the splash screen
-static void runSplash() {
+static void RunSplash() {
+	// Create a transparent splash window
     sf::RenderWindow splash(sf::VideoMode({ 512, 512 }), "Splash", sf::Style::None);
-    makeWindowTransparent(splash);
-
+	// HWND handle for the splash window
+    SplashWindow(splash);
+	// Texture for the logo
     sf::Texture logoTexture;
     if (!logoTexture.loadFromFile("res/splash.png"))
 		LOG("Logo not found or path is incorrect");
+	// Creating sprite for the logo
     sf::Sprite logoSprite(logoTexture);
-
     logoSprite.setScale(sf::Vector2f(static_cast<float>(512.f) / logoTexture.getSize().x, static_cast<float>(512.f) / logoTexture.getSize().y));
+	// Set the origin to the center of the logo
     auto bounds = logoSprite.getLocalBounds();
     logoSprite.setOrigin(sf::Vector2f(bounds.size.x * 0.5f, bounds.size.y * 0.5f));
     logoSprite.setPosition(sf::Vector2f(splash.getSize().x * 0.5f, splash.getSize().y * 0.5f));
-
+	// Chrono library to manage time
     auto start = std::chrono::steady_clock::now();
+	// Set the splash window to be transparent
     while (splash.isOpen()) {
-        while (const std::optional event = esrovar::GameWindow.pollEvent()) {
+        while (const std::optional event = splash.pollEvent()) {
             if (event->is <sf::Event::Closed>())
                 splash.close();
         }
-
         // Check if 10 seconds passed
         auto now = std::chrono::steady_clock::now();
         if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 10) {
             splash.close();
         }
-
-        splash.clear(sf::Color::Black);
+        splash.clear(sf::Color(0,0,0,0));
         splash.draw(logoSprite);
         splash.display();
     }
@@ -159,7 +163,7 @@ static void StartGame() {
 //  Game Main Function
 int main() {
     // Displays Default Splash Image
-    runSplash();
+    RunSplash();
     //Starts Game
     StartGame();
     return EXIT_SUCCESS;

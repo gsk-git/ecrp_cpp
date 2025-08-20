@@ -27,7 +27,7 @@ namespace esrovar {
 	float player_size = 50.0f;
 	float timer = 0.0f;
 	float speed = 100.0f;
-	int chunkrea = CHUNK_SIZE * pixel_size;
+	int chunk_area = CHUNK_SIZE * pixel_size;
 	float movedirx = 0.0f;
 	float movediry = 0.0f;
 	float boost = 0.0f;
