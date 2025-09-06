@@ -156,10 +156,22 @@ sfml-system.lib;FastNoise.lib;%(AdditionalDependencies)</AdditionalDependencies
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="IState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="PauseState.cpp" />
+    <ClCompile Include="SplashState.cpp" />
+    <ClCompile Include="StateManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.hpp" />
+    <ClInclude Include="GameState.hpp" />
+    <ClInclude Include="IState.hpp" />
+    <ClInclude Include="MainMenuState.hpp" />
+    <ClInclude Include="PauseState.hpp" />
+    <ClInclude Include="SplashState.hpp" />
+    <ClInclude Include="StateManager.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="x64\Release\res\splash.png" />

@@ -54,7 +54,7 @@ static void ProcessWindowEvents() {
     while (const std::optional event = esrovar::GameWindow.pollEvent()) {
         if (event -> is <sf::Event::Closed>())
             esrovar::GameWindow.close();
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
             esrovar::GameWindow.close();
         }
     }
@@ -110,7 +110,7 @@ static void RunSplash() {
 static void StartGame() {
     // Load Assets
     esrofn::LoadSpriteSheets();
-    // Initializing esrovar::GameWindow and framerate
+    // Initializing GameWindow and framerate
     sf::Clock clock;
     esroops::WorldManager world(esrovar::PLAYER_POSITION);
     esroops::Player player;
@@ -125,7 +125,7 @@ static void StartGame() {
     while (esrovar::GameWindow.isOpen()) {
         esrovar::dt = clock.restart().asSeconds();
         esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
-        //Close esrovar::GameWindow on close
+        //CloseGameWindow on close
         ProcessWindowEvents();
         // Spike for maintain system wide delta time management
         for (auto system : systemdelta) {
@@ -154,7 +154,7 @@ static void StartGame() {
         esrovar::GameWindow.clear();
         esrovar::GameWindow.setView(view);
         world.f_drawChunks(esrovar::GameWindow);
-        esrovar::GameWindow.draw(player);
+        esrovar::GameWindow.draw(player);   
         esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
         esrovar::GameWindow.display();
     }
