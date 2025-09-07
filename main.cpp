@@ -159,6 +159,7 @@ static void StartGame() {
         esrovar::GameWindow.display();
     }
 }
+    
 
 //  Game Main Function
 int main() {

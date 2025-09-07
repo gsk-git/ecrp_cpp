@@ -207,11 +207,9 @@ namespace esroops {
 				RequiredChunks.insert(std::make_pair(targetX, targetY));
 			}
 		}
-
 		// Generating initial chunk within player's radius
 		for (auto& [cx, cy] : RequiredChunks) {
 			if (!m_active_chunks.contains({ cx, cy })) {
-				//std::cout << cx << ", " << cy << "\n";
 				Chunk _chunk(cx, cy);
 				_chunk.generate(esrovar::TileImagePATH, sf::Vector2i({esrovar::pixel_size, esrovar::pixel_size }));
 				m_active_chunks.insert({{cx, cy}, _chunk});
