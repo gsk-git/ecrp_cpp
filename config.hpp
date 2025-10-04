@@ -34,6 +34,26 @@ namespace esrovar {
     constexpr int CHUNK_SIZE = 16;
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
+	
+    // Declaring states and directional constants
+    enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, COUNT };
+    enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
+    inline constexpr std::size_t StateCount = static_cast<std::size_t>(State::COUNT);
+    inline constexpr std::size_t DirectionCount = static_cast<std::size_t>(Directions::COUNT);
+    constexpr std::size_t to_index(State s) noexcept { return static_cast<std::size_t>(s);}
+    constexpr std::size_t to_index(Directions d) noexcept { return static_cast<std::size_t>(d); }
+    constexpr std::array<int, StateCount> kFrameCount = { 2, 9, 6, 5, 3};
+    constexpr std::array<std::string_view, StateCount> kTexturePaths = {
+        "res/player_sprite/idle.png",
+        "res/player_sprite/walk.png",
+        "res/player_sprite/slash.png",
+        "res/player_sprite/jump.png",
+        "res/player_sprite/sit.png"};
+	extern std::array<sf::Texture, StateCount> kTextures;
+    static_assert(kFrameCount.size() == StateCount);
+    static_assert(kTexturePaths.size() == StateCount);
+	
+    // Declaring global variables
     extern int pixel_size;
     extern int frame_count;
     extern int scale;
@@ -60,7 +80,7 @@ namespace esrovar {
 // Global functions
 namespace esrofn {
 
-    void LoadSpriteSheets();
+    bool LoadSpriteSheetsnew();
     int GenerateWorldSeed();
 }
 
@@ -113,8 +133,8 @@ namespace esroops {
     public:
         // Member variables
         bool m_IsMoving;
-        std::string m_State;
-        std::string m_direction;
+		esrovar::State m_StateEnum;
+        esrovar::Directions m_DirectionEnum;
         sf::Vector2f m_playerXY;
         int m_TotalFrames;
         int m_CurrentFrame;
@@ -124,7 +144,7 @@ namespace esroops {
         Player();
         ~Player() = default;
         void update(float dt) override;
-        //void animatesprite(float dt);
+        void animatesprite(float dt);
     private:
         sf::Texture m_playerbody;
         std::optional<sf::Sprite> m_playersprite;

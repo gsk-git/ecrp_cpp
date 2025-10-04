@@ -1,4 +1,4 @@
-// Including necessary libraries
+﻿// Including necessary libraries
 #include "config.hpp"
 #include <iostream>
 #include <random>
@@ -35,43 +35,27 @@ namespace esrovar {
 	float totalspeed = 0.0f;
 	char format[5] = ".png";
 	std::string TileImagePATH = "res/tile.png";
-	std::string PlayerSpriteImagePATH = "res/player_sprite/";
-	std::string states[5] = { "idle","walk","slash","jump","sit" };
-	std::string FaceDirection[4] = { "up","left","down","right"};
 	sf::VideoMode desktop = desktop.getDesktopMode();
 	sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
-	std::map <std::string, sf::Texture> TextureFace;
-	std::map<std::string, std::string> TexturePath = {
-		{states[0], PlayerSpriteImagePATH + states[0] + format},
-		{states[1], PlayerSpriteImagePATH + states[1] + format},
-		{states[3], PlayerSpriteImagePATH + states[3] + format},
-		{states[4], PlayerSpriteImagePATH + states[4] + format},
-		{states[2], PlayerSpriteImagePATH + states[2] + format}};
-	std::map<std::string, sf::IntRect> TextureRects = {
-	{"up",    sf::IntRect({0 * PLAYER_SPRITE, 0 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
-	{"left",  sf::IntRect({0 * PLAYER_SPRITE, 1 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
-	{"down",  sf::IntRect({0 * PLAYER_SPRITE, 2 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})},
-	{"right", sf::IntRect({0 * PLAYER_SPRITE, 3 * PLAYER_SPRITE}, {PLAYER_SPRITE, PLAYER_SPRITE})}};
 	std::pair<int, int> PLAYER_POSITION = {0, 0};
+	std::array<sf::Texture, StateCount> kTextures;
 } // namespace esrovar ends
 
 // Global functions
 namespace esrofn {
 
-	void LoadSpriteSheets() {
-		try {
-			for (const auto& [name, path] : esrovar::TexturePath) {
-				sf::Texture img;
-				if (!img.loadFromFile(path))
-					LOG("Image Path or File not found");
-				esrovar::TextureFace.try_emplace(name, std::move(img));
+	bool LoadSpriteSheetsnew() {
+		for (std::size_t i = 0; i < esrovar::StateCount; ++i) {
+			// Convert string_view → std::string for SFML
+			std::string path{ esrovar::kTexturePaths[i] };
+			if (!esrovar::kTextures[i].loadFromFile(path)) {
+				LOG("Failed to load texture: " + path);
+				return false;
 			}
 		}
-		catch (const std::system_error& e) {
-			std::cerr << "Error: " << e.what() << "\n";
-		}        
+		return false;
 	}
-
+	
 	int GenerateWorldSeed() {
 		std::random_device randev;
 		std::mt19937 gen(randev());
@@ -96,17 +80,17 @@ namespace esroops {
 	Player::Player() {
 		// Initializing member variables
 		m_IsMoving = false;
-		m_State = esrovar::states[0];
-		m_direction = esrovar::FaceDirection[2];
+		m_StateEnum = esrovar::State::idle;
+		m_DirectionEnum = esrovar::Directions::down;
 		m_playerXY = sf::Vector2f(static_cast<float>(0.0f), static_cast<float>(0.0f));
 		m_TotalFrames = 0;
 		m_CurrentFrame = 0;
 		m_AnimTimer = 0.0f;
 		m_AnimDuration = 0.0f;
 		m_health = 500u;
-		// Default sprite and position
-		m_playersprite.emplace(esrovar::TextureFace[m_State]);
-		m_playersprite->setTextureRect(esrovar::TextureRects[m_direction]);
+		//m_playersprite.emplace(esrovar::TextureFace[m_State]);
+		m_playersprite.emplace(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
+		m_playersprite->setTextureRect(sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
 		m_playersprite->setPosition(m_playerXY);
 	}
 
@@ -176,17 +160,30 @@ namespace esroops {
 	}    
 
 	void Player::update(float dt) {
+		// Rendering and animating player sprite
+		animatesprite(dt);
+	}
+
+	void Player::animatesprite(float dt) {
+		
 		// Flag check for player movement
 		m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
-		if (m_IsMoving)
-			// Player is walking
-			m_State = esrovar::states[1];
-		else
-			// Player is idle
-			m_State = esrovar::states[0];
-		// Update sprite and position
-		m_playersprite->setTexture(esrovar::TextureFace[m_State]);
-		m_playersprite->setTextureRect(esrovar::TextureRects[m_direction]);
+		m_StateEnum = m_IsMoving ? esrovar::State::walk : esrovar::State::idle;
+		m_AnimDuration = m_IsMoving ? 0.2f : 0.3f;
+		
+		// Updating animation timing
+		m_AnimTimer += dt;
+		
+		while (m_AnimTimer >= m_AnimDuration) {
+			m_AnimTimer -= m_AnimDuration;
+			m_CurrentFrame++;
+			if (m_CurrentFrame >= esrovar::kFrameCount[esrovar::to_index(m_StateEnum)])
+				m_CurrentFrame = 0;
+		}
+		
+		// Updating texture rectangle
+		m_playersprite->setTexture(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);		
+		m_playersprite->setTextureRect(sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
 		m_playersprite->setPosition(m_playerXY);
 	}
 

@@ -1,6 +1,6 @@
 #include "StateManager.hpp"
 
-void StateManager::ChangeState(IState* newState) {
+void StateManager::ChangeState(std::unique_ptr<IState> _current) {
 	// Check if the new state is different from the current state	
 }
 

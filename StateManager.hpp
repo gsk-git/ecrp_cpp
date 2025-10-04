@@ -7,7 +7,7 @@ class StateManager {
 	public:
 		StateManager() = default;
 		~StateManager() = default;
-		void ChangeState(IState* newState);
+		void ChangeState(std::unique_ptr<IState> _current);
 		void UpdateState();
 		void RenderState(sf::RenderWindow& window);
 };
