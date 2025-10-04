@@ -55,7 +55,7 @@ namespace esrofn {
 		}
 		return false;
 	}
-	
+
 	int GenerateWorldSeed() {
 		std::random_device randev;
 		std::mt19937 gen(randev());
