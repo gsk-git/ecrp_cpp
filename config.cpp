@@ -169,7 +169,7 @@ namespace esroops {
 		// Flag check for player movement
 		m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
 		m_StateEnum = m_IsMoving ? esrovar::State::walk : esrovar::State::idle;
-		m_AnimDuration = m_IsMoving ? 0.2f : 0.3f;
+		m_AnimDuration = m_IsMoving ? 0.2f : 0.4f;
 		
 		// Updating animation timing
 		m_AnimTimer += dt;
