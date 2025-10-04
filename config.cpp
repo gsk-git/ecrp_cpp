@@ -176,6 +176,7 @@ namespace esroops {
 		if (m_StateEnum != m_PrevStateEnum) {
 			m_playersprite->setTexture(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
 			m_PrevStateEnum = m_StateEnum;
+			m_CurrentFrame = 0;
 			m_AnimTimer = 0.0f;
 		}
 		
