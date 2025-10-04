@@ -1,6 +1,6 @@
 #pragma once
 
-// Including necessary libraries
+// Including all necessary libraries
 #include <map>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -20,13 +20,13 @@
 // Debugging macro to log messages
 #ifdef _DEBUG
 #define LOG(x) { std::ostringstream oss; oss << x; OutputDebugStringA(oss.str().c_str()); }
+
 #else
 #define LOG(x) ((void)0)
 #endif
 
 // Global variables
 namespace esrovar {
-
     // Compile-time constants
     constexpr unsigned int SCRWDT = 1920u;
     constexpr unsigned int SCRHGT = 1080u;
@@ -63,18 +63,17 @@ namespace esrovar {
     extern float movedirx;
     extern float movediry;
     extern float boost;
-    extern float dt;
     extern float totalspeed;
     extern sf::RenderWindow GameWindow;
     extern std::pair<int, int> PLAYER_POSITION;
-}
+}// namespace esrovar ends
 
 // Global functions
 namespace esrofn {
 
     bool LoadSpriteSheetsnew();
     int GenerateWorldSeed();
-}
+}// namespace esrofn ends
 
 // Global objects and classes
 namespace esroops {
@@ -83,6 +82,7 @@ namespace esroops {
     public:
         virtual void update(float dt) = 0;
         virtual ~IUpdatable() = default;
+        IUpdatable() = default;
     };
 
     enum BlockType {
@@ -123,6 +123,11 @@ namespace esroops {
 
     class Player : public sf::Drawable, public sf::Transformable, public sf::Texture, public IUpdatable {
     public:
+		// Initializing player object
+        Player();
+        ~Player() = default;
+		
+        // Member variables
         bool m_IsMoving;
 		esrovar::State m_StateEnum;
 		esrovar::State m_PrevStateEnum;
@@ -133,13 +138,17 @@ namespace esroops {
         float m_AnimTimer;
         float m_AnimDuration;
         int m_health;
-        Player();
-        ~Player() = default;
+		
+        // Member functions
         void update(float dt) override;
         void animatesprite(float dt);
     private:
+		
+        // Member variables
         sf::Texture m_playerbody;
         std::optional<sf::Sprite> m_playersprite;
+		
+        // Member functions
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
 
@@ -153,8 +162,8 @@ namespace esroops {
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
             unsigned int m_world_seed;
             void f_drawChunks(sf::RenderWindow& window);
+            //void _update_world();
         private:
             void f_initialize_world();
-            //void _update_world();
     };
-}
+}// namespace esroops ends

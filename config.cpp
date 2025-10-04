@@ -33,8 +33,6 @@ namespace esrovar {
 	float boost = 0.0f;
 	float dt = 0.0f;
 	float totalspeed = 0.0f;
-	char format[5] = ".png";
-	std::string TileImagePATH = "res/tile.png";
 	sf::VideoMode desktop = desktop.getDesktopMode();
 	sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
 	std::pair<int, int> PLAYER_POSITION = {0, 0};
@@ -201,8 +199,16 @@ namespace esroops {
 	}
 
 	void WorldManager::f_initialize_world() {
+		// Logging world seed
+		LOG("Initializing world .....");
+		LOG("Initializing World Seed: " + std::to_string(m_world_seed));
+		LOG("Placing player on Chunk Coordinates: (" + std::to_string(m_playerchunk_X) + ", " + std::to_string(m_playerchunk_Y) + ")");
+		LOG("Generating chunks around player within radius: " + std::to_string(esrovar::CHUNK_RADIUS));
+		LOG("Each chunk is of size: " + std::to_string(esrovar::CHUNK_SIZE) + "x" + std::to_string(esrovar::CHUNK_SIZE) + " tiles");
+		
 		// Initializing set to hold required chunk in that frame
 		std::set<std::pair<int, int>> RequiredChunks;
+		
 		// Calculating visible chunk radius around player
 		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
 			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
@@ -211,14 +217,16 @@ namespace esroops {
 				RequiredChunks.insert(std::make_pair(targetX, targetY));
 			}
 		}
+		
 		// Generating initial chunk within player's radius
 		for (auto& [cx, cy] : RequiredChunks) {
 			if (!m_active_chunks.contains({ cx, cy })) {
 				Chunk _chunk(cx, cy);
-				_chunk.generate(esrovar::TileImagePATH, sf::Vector2i({esrovar::pixel_size, esrovar::pixel_size }));
+				_chunk.generate("res/tile.png", sf::Vector2i({esrovar::pixel_size, esrovar::pixel_size }));
 				m_active_chunks.insert({{cx, cy}, _chunk});
 			}
 		}
+		LOG("World initialization complete.");
 	}
 
 	void WorldManager::f_drawChunks(sf::RenderWindow& window) {

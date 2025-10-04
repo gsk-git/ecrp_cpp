@@ -1,4 +1,4 @@
-// Included necessary libraries
+// Including all necessary libraries
 #include "config.hpp"
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -24,7 +24,7 @@
 #include <optional>
 #include <string>
 
-// Handles input
+// Handling player input
 static void InputHandler(esroops::Player& player) {
 	esrovar::movedirx = 0.f;
 	esrovar::movediry = 0.f;
@@ -34,13 +34,13 @@ static void InputHandler(esroops::Player& player) {
 		esrovar::movediry = -esrovar::totalspeed;
 		player.m_DirectionEnum = esrovar::Directions::up;
 	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-		esrovar::movedirx = -esrovar::totalspeed;
-		player.m_DirectionEnum = esrovar::Directions::left;
-	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
 		esrovar::movediry = esrovar::totalspeed;
 		player.m_DirectionEnum = esrovar::Directions::down;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
+		esrovar::movedirx = -esrovar::totalspeed;
+		player.m_DirectionEnum = esrovar::Directions::left;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
 		esrovar::movedirx = esrovar::totalspeed;
@@ -48,7 +48,7 @@ static void InputHandler(esroops::Player& player) {
 	}
 }
 
-// Processes window events
+// Processing window events
 static void ProcessWindowEvents() {
 	// Process window events
 	while (const std::optional event = esrovar::GameWindow.pollEvent()) {
@@ -70,7 +70,7 @@ static void SplashWindow(sf::RenderWindow& window) {
 	SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 }
 
-// Runs the splash screen
+// Generates the splash screen
 static void RunSplash() {
 	// Create a transparent splash window
 	sf::RenderWindow splash(sf::VideoMode({ 512, 512 }), "Splash", sf::Style::None);
@@ -108,16 +108,16 @@ static void RunSplash() {
 
 // Starts the game
 static void StartGame() {
+	float dt = 0.0f;
 	
 	// Load Assets
-	//esrofn::LoadSpriteSheets();
 	esrofn::LoadSpriteSheetsnew();
 	
-	// Initializing GameWindow and framerate
+	// Initializing game objects
 	sf::Clock clock;
+	std::vector <esroops::IUpdatable*> systemdelta;
 	esroops::WorldManager world(esrovar::PLAYER_POSITION);
 	esroops::Player player;
-	std::vector <esroops::IUpdatable*> systemdelta;
 	systemdelta.push_back(&player);
 	
 	//Init View
@@ -129,58 +129,63 @@ static void StartGame() {
 	while (esrovar::GameWindow.isOpen()) {
 		
 		// Delta time management
-		esrovar::dt = clock.restart().asSeconds();
+		dt = clock.restart().asSeconds();
+		
+		// Capping framerate @60fps
 		esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
 		
-		//CloseGameWindow on close
-		ProcessWindowEvents();
-		
-		// Spike for maintain system wide delta time management
+		// Maintaining game wide delta time
 		for (auto system : systemdelta) {
-			system->update(esrovar::dt);
+			system->update(dt);
 		}
 		
-		// Handle inputs
+		//Handling windows events
+		ProcessWindowEvents();
+		
+		// Handling player inputs (keyboard)
 		InputHandler(player);
 		
-		// Get directions vector
+		// Ascertaining directions vector
 		sf::Vector2f direction({ esrovar::movedirx, esrovar::movediry });
 		
 		// Check if directions are not 0
 		if (direction.x != 0.f || direction.y != 0.f) {
 			// Getting hypotenuse length
 			float length = std::sqrt((direction.x * direction.x) + (direction.y * direction.y));
-			// Normalize
+			// Normalizing vector movement
 			direction /= length;
 		}
 		
-		// Move and update player
-		player.move(direction * esrovar::totalspeed * esrovar::dt);
-		player.update(esrovar::dt);
+		// Updating player movement
+		player.move(direction * esrovar::totalspeed * dt);
+		player.update(dt);
 		
-		// Smooth scroll view
+		// Smoothening scroll view
 		sf::Vector2f viewcenter = view.getCenter();
 		sf::Vector2f targetcenter = player.getPosition();
-		float lerpfactor = 5.0f * esrovar::dt;
+		// Linear interpolation factor
+		float lerpfactor = 5.0f * dt;
 		view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
 		
-		// GameWindow initialization
+		// Initializating and generating world chunks, player, view and UI elements.
 		esrovar::GameWindow.clear();
 		esrovar::GameWindow.setView(view);
 		world.f_drawChunks(esrovar::GameWindow);
-		esrovar::GameWindow.draw(player);   
+		esrovar::GameWindow.draw(player);
 		esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
 		esrovar::GameWindow.display();
 	}
 }	
 
-//  Game Main Function
+//  Game main function
 int main() {
 	
-	// Displays Default Splash Image
+	// Displays splash image
 	RunSplash();
 	
-	//Starts Game
+	//Starts game
 	StartGame();
+	
+	// Exits game
 	return EXIT_SUCCESS;
 }
