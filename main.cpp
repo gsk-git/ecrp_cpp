@@ -97,7 +97,7 @@ static void RunSplash() {
 		}
 		// Check if 10 seconds passed
 		auto now = std::chrono::steady_clock::now();
-		if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 10) {
+		if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 2) {
 			splash.close();
 		}
 		splash.clear(sf::Color(0,0,0,0));
@@ -178,7 +178,7 @@ static void StartGame() {
 int main() {
 	
 	// Displays Default Splash Image
-	// RunSplash();
+	RunSplash();
 	
 	//Starts Game
 	StartGame();

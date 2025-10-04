@@ -125,6 +125,7 @@ namespace esroops {
     public:
         bool m_IsMoving;
 		esrovar::State m_StateEnum;
+		esrovar::State m_PrevStateEnum;
         esrovar::Directions m_DirectionEnum;
         sf::Vector2f m_playerXY;
         int m_TotalFrames;

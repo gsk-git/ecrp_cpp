@@ -81,6 +81,7 @@ namespace esroops {
 		// Initializing member variables
 		m_IsMoving = false;
 		m_StateEnum = esrovar::State::idle;
+		m_PrevStateEnum = esrovar::State::idle;
 		m_DirectionEnum = esrovar::Directions::down;
 		m_playerXY = sf::Vector2f(static_cast<float>(0.0f), static_cast<float>(0.0f));
 		m_TotalFrames = 0;
@@ -171,9 +172,15 @@ namespace esroops {
 		m_StateEnum = m_IsMoving ? esrovar::State::walk : esrovar::State::idle;
 		m_AnimDuration = m_IsMoving ? 0.2f : 0.4f;
 		
+		// Resetting animation if state changed
+		if (m_StateEnum != m_PrevStateEnum) {
+			m_playersprite->setTexture(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
+			m_PrevStateEnum = m_StateEnum;
+			m_AnimTimer = 0.0f;
+		}
+		
 		// Updating animation timing
 		m_AnimTimer += dt;
-		
 		while (m_AnimTimer >= m_AnimDuration) {
 			m_AnimTimer -= m_AnimDuration;
 			m_CurrentFrame++;
@@ -182,7 +189,6 @@ namespace esroops {
 		}
 		
 		// Updating texture rectangle
-		m_playersprite->setTexture(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);		
 		m_playersprite->setTextureRect(sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
 		m_playersprite->setPosition(m_playerXY);
 	}
