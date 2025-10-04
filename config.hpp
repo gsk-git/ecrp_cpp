@@ -34,7 +34,6 @@ namespace esrovar {
     constexpr int CHUNK_SIZE = 16;
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
-	
     // Declaring states and directional constants
     enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, COUNT };
     enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
@@ -52,7 +51,6 @@ namespace esrovar {
 	extern std::array<sf::Texture, StateCount> kTextures;
     static_assert(kFrameCount.size() == StateCount);
     static_assert(kTexturePaths.size() == StateCount);
-	
     // Declaring global variables
     extern int pixel_size;
     extern int frame_count;
@@ -68,12 +66,6 @@ namespace esrovar {
     extern float dt;
     extern float totalspeed;
     extern sf::RenderWindow GameWindow;
-    extern std::map <std::string, std::string> TexturePath;
-    extern std::map <std::string, sf::Texture> TextureFace;
-	extern std::string TileImagePATH;
-	extern std::string PlayerSpriteImagePATH;
-    extern std::string states[5];
-    extern std::string FaceDirection[4];
     extern std::pair<int, int> PLAYER_POSITION;
 }
 
@@ -131,7 +123,6 @@ namespace esroops {
 
     class Player : public sf::Drawable, public sf::Transformable, public sf::Texture, public IUpdatable {
     public:
-        // Member variables
         bool m_IsMoving;
 		esrovar::State m_StateEnum;
         esrovar::Directions m_DirectionEnum;
