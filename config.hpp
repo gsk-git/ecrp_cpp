@@ -19,8 +19,12 @@
 
 // Debugging macro to log messages
 #ifdef _DEBUG
-#define LOG(x) { std::ostringstream oss; oss << x; OutputDebugStringA(oss.str().c_str()); }
-
+#define LOG(x) do { std::ostringstream _oss; \
+    _oss << x; \
+    std::string _s = _oss.str(); \
+    _s.push_back('\n'); \
+    OutputDebugStringA(_s.c_str()); \
+} while(0)
 #else
 #define LOG(x) ((void)0)
 #endif
@@ -35,19 +39,20 @@ namespace esrovar {
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
     // Declaring states and directional constants
-    enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, COUNT };
+    enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
     enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
     inline constexpr std::size_t StateCount = static_cast<std::size_t>(State::COUNT);
     inline constexpr std::size_t DirectionCount = static_cast<std::size_t>(Directions::COUNT);
     constexpr std::size_t to_index(State s) noexcept { return static_cast<std::size_t>(s);}
     constexpr std::size_t to_index(Directions d) noexcept { return static_cast<std::size_t>(d); }
-    constexpr std::array<int, StateCount> kFrameCount = { 2, 9, 6, 5, 3};
+    constexpr std::array<int, StateCount> kFrameCount = { 2, 9, 6, 5, 3, 8};
     constexpr std::array<std::string_view, StateCount> kTexturePaths = {
         "res/player_sprite/idle.png",
         "res/player_sprite/walk.png",
         "res/player_sprite/slash.png",
         "res/player_sprite/jump.png",
-        "res/player_sprite/sit.png"};
+        "res/player_sprite/sit.png",
+        "res/player_sprite/run.png" };
 	extern std::array<sf::Texture, StateCount> kTextures;
     static_assert(kFrameCount.size() == StateCount);
     static_assert(kTexturePaths.size() == StateCount);
@@ -83,6 +88,17 @@ namespace esroops {
         virtual void update(float dt) = 0;
         virtual ~IUpdatable() = default;
         IUpdatable() = default;
+    };
+
+    struct KeyPressEvent {
+		sf::Keyboard::Key key;
+        bool prev = false;
+        bool PressedKey() {
+			bool now = sf::Keyboard::isKeyPressed(key);
+            bool pressed = now && !prev;
+            prev = now;
+            return pressed;
+        }
     };
 
     enum BlockType {
@@ -129,6 +145,10 @@ namespace esroops {
 		
         // Member variables
         bool m_IsMoving;
+		bool m_IsSlashAttacking;
+		bool m_IsJumping;
+		bool m_IsSitting;
+		bool m_IsRunning;
 		esrovar::State m_StateEnum;
 		esrovar::State m_PrevStateEnum;
         esrovar::Directions m_DirectionEnum;

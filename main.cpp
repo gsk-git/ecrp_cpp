@@ -29,6 +29,8 @@ static void InputHandler(esroops::Player& player) {
 	esrovar::movedirx = 0.f;
 	esrovar::movediry = 0.f;
 	esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.0f;
+	player.m_IsRunning = esrovar::boost == 2.0f ? true : false;
+	player.m_IsJumping = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) ? true : false;
 	esrovar::totalspeed = esrovar::speed * esrovar::boost;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
 		esrovar::movediry = -esrovar::totalspeed;
@@ -49,13 +51,22 @@ static void InputHandler(esroops::Player& player) {
 }
 
 // Processing window events
-static void ProcessWindowEvents() {
+static void ProcessWindowEvents(esroops::Player& player) {
 	// Process window events
 	while (const std::optional event = esrovar::GameWindow.pollEvent()) {
 		if (event -> is <sf::Event::Closed>())
 			esrovar::GameWindow.close();
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
 			esrovar::GameWindow.close();
+		}
+		if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>()) {
+			if (keyReleased->scancode == sf::Keyboard::Scan::LControl) {
+				if(!player.m_IsSitting)
+					player.m_IsSitting = true;
+				else
+					player.m_IsSitting = false;
+			}
+
 		}
 	}
 }
@@ -140,7 +151,7 @@ static void StartGame() {
 		}
 		
 		//Handling windows events
-		ProcessWindowEvents();
+		ProcessWindowEvents(player);
 		
 		// Handling player inputs (keyboard)
 		InputHandler(player);

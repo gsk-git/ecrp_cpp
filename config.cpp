@@ -78,6 +78,10 @@ namespace esroops {
 	Player::Player() {
 		// Initializing member variables
 		m_IsMoving = false;
+		m_IsSlashAttacking = false;
+		m_IsJumping = false;
+		m_IsSitting = false;
+		m_IsRunning = false;
 		m_StateEnum = esrovar::State::idle;
 		m_PrevStateEnum = esrovar::State::idle;
 		m_DirectionEnum = esrovar::Directions::down;
@@ -167,7 +171,28 @@ namespace esroops {
 		
 		// Flag check for player movement
 		m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
-		m_StateEnum = m_IsMoving ? esrovar::State::walk : esrovar::State::idle;
+		// Setting player state and animation duration
+		if (m_IsMoving) {
+			m_StateEnum = esrovar::State::walk;
+			if(m_IsRunning) {
+				m_StateEnum = esrovar::State::run;
+			}
+			if(m_IsJumping) {
+				m_StateEnum = esrovar::State::jump;
+			}
+		}
+		else if (m_IsJumping) {
+			m_StateEnum = esrovar::State::jump;
+		}
+		else if (m_IsSitting) {
+			m_StateEnum = esrovar::State::sit;
+		}
+		else if (m_IsSlashAttacking) {
+			m_StateEnum = esrovar::State::slash;
+		}
+		else {
+			m_StateEnum = esrovar::State::idle;
+		}
 		m_AnimDuration = m_IsMoving ? 0.2f : 0.4f;
 		
 		// Resetting animation if state changed
@@ -226,6 +251,7 @@ namespace esroops {
 				m_active_chunks.insert({{cx, cy}, _chunk});
 			}
 		}
+		LOG("Active chunks " << m_active_chunks.size());
 		LOG("World initialization complete.");
 	}
 
