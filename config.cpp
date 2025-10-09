@@ -208,6 +208,7 @@ namespace esroops {
 			m_CurrentFrame = 0;
 			m_AnimTimer = 0.0f;
 		}		
+		
 		// Updating animation timing
 		m_AnimTimer += dt;
 		
