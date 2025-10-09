@@ -172,7 +172,7 @@ namespace esroops {
 		
 		// Flag check for player movement
 		m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
-		m_AnimDuration = 0.2f;
+		m_AnimDuration = (m_IsMoving || m_IsJumping) ? 0.2f : 0.4f;
 		
 		// Setting player state and animation duration
 		if (m_IsMoving) {
@@ -230,6 +230,8 @@ namespace esroops {
 			while (m_AnimTimer >= m_AnimDuration) {
 				m_AnimTimer -= m_AnimDuration;
 				m_CurrentFrame++;
+				if (m_CurrentFrame == 2)
+					esrovar::jumpboost = 150;
 				if (m_CurrentFrame >= esrovar::kFrameCount[esrovar::to_index(m_StateEnum)]) {
 					m_CurrentFrame = 0;
 					m_IsJumping = false;

@@ -67,7 +67,6 @@ static void ProcessWindowEvents(esroops::Player& player) {
 			}
 			if (keyReleased->scancode == sf::Keyboard::Scan::Space) {
 				player.m_IsJumping = true;
-				esrovar::jumpboost = 150;
 			}
 		}
 	}
