@@ -124,19 +124,33 @@ static void StartGame() {
 	
 	// Load Assets
 	esrofn::LoadSpriteSheetsnew();
-	
+	esrofn::LoadTileSheet();
+	esrofn::LoadFonts();
 	// Initializing game objects
 	sf::Clock clock;
 	std::vector <esroops::IUpdatable*> systemdelta;
 	esroops::WorldManager world(esrovar::PLAYER_POSITION);
 	esroops::Player player;
 	systemdelta.push_back(&player);
+
+	sf::Text text(esrovar::mainfont);
+	sf::RectangleShape box;
+	text.setCharacterSize(18);
+	text.setFillColor(sf::Color::Green);
+	text.setStyle(sf::Text::Bold);
+	text.setString("None");
+	auto lb = text.getLocalBounds();
+	box.setSize(sf::Vector2f({200.f, lb.size.y + 20.f}));
+	box.setFillColor(sf::Color(0, 0, 0, 200));
+	box.setPosition(sf::Vector2f({ 10.f, 10.f }));
+	box.setOutlineColor(sf::Color::Black);
+	text.setOrigin(text.getGlobalBounds().size / 2.f + text.getGlobalBounds().position);
+	text.setPosition(box.getPosition()+(box.getSize()/2.f));
 	
 	//Init View
 	sf::View view;
 	sf::Vector2f viewArea = { esrovar::SCRWDT, esrovar::SCRHGT };
 	view.setSize(viewArea);
-	
 	//Main game loop
 	while (esrovar::GameWindow.isOpen()) {
 		
@@ -171,6 +185,7 @@ static void StartGame() {
 		// Updating player movement
 		player.move(direction * esrovar::totalspeed * dt);
 		player.update(dt);
+		text.setString(std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
 		
 		// Smoothening scroll view
 		sf::Vector2f viewcenter = view.getCenter();
@@ -185,6 +200,8 @@ static void StartGame() {
 		world.f_drawChunks(esrovar::GameWindow);
 		esrovar::GameWindow.draw(player);
 		esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
+		esrovar::GameWindow.draw(box);
+		esrovar::GameWindow.draw(text);
 		esrovar::GameWindow.display();
 	}
 }	

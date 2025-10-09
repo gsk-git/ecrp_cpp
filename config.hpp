@@ -8,6 +8,9 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -46,6 +49,7 @@ namespace esrovar {
     constexpr std::size_t to_index(State s) noexcept { return static_cast<std::size_t>(s);}
     constexpr std::size_t to_index(Directions d) noexcept { return static_cast<std::size_t>(d); }
     constexpr std::array<int, StateCount> kFrameCount = { 2, 9, 6, 5, 3, 8};
+    constexpr std::array<std::string_view, StateCount> kStateNames = { "idle", "walk", "slash", "jump", "sit", "run"};
     constexpr std::array<std::string_view, StateCount> kTexturePaths = {
         "res/player_sprite/idle.png",
         "res/player_sprite/walk.png",
@@ -56,6 +60,8 @@ namespace esrovar {
 	extern std::array<sf::Texture, StateCount> kTextures;
     static_assert(kFrameCount.size() == StateCount);
     static_assert(kTexturePaths.size() == StateCount);
+	extern sf::Font mainfont;
+    extern sf::Texture tileset;
     // Declaring global variables
     extern int pixel_size;
     extern int frame_count;
@@ -78,6 +84,8 @@ namespace esrovar {
 namespace esrofn {
 
     bool LoadSpriteSheetsnew();
+    bool LoadTileSheet();
+    bool LoadFonts();
     int GenerateWorldSeed();
 }// namespace esrofn ends
 
@@ -89,17 +97,6 @@ namespace esroops {
         virtual void update(float dt) = 0;
         virtual ~IUpdatable() = default;
         IUpdatable() = default;
-    };
-
-    struct KeyPressEvent {
-		sf::Keyboard::Key key;
-        bool prev = false;
-        bool PressedKey() {
-			bool now = sf::Keyboard::isKeyPressed(key);
-            bool pressed = now && !prev;
-            prev = now;
-            return pressed;
-        }
     };
 
     enum BlockType {
@@ -129,7 +126,7 @@ namespace esroops {
 		bool m_isGenerated;
         Tile* getTileData(int x, int y);
         Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
-        void generate(const std::string& tilesheet, sf::Vector2i tilesize);
+        void generate(sf::Vector2i tilesize);
     private:
         // Member functions
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -187,4 +184,5 @@ namespace esroops {
         private:
             void f_initialize_world();
     };
+
 }// namespace esroops ends

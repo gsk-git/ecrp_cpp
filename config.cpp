@@ -8,6 +8,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowEnums.hpp>
@@ -38,12 +39,15 @@ namespace esrovar {
 	sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
 	std::pair<int, int> PLAYER_POSITION = {0, 0};
 	std::array<sf::Texture, StateCount> kTextures;
+	sf::Font mainfont;
+	sf::Texture tileset;
 } // namespace esrovar ends
 
 // Global functions
 namespace esrofn {
 
 	bool LoadSpriteSheetsnew() {
+		// Loading all player textures
 		for (std::size_t i = 0; i < esrovar::StateCount; ++i) {
 			// Convert string_view → std::string for SFML
 			std::string path{ esrovar::kTexturePaths[i] };
@@ -53,6 +57,23 @@ namespace esrofn {
 			}
 		}
 		return false;
+	}
+
+	bool LoadTileSheet() {
+		// Loading tile sheet
+		if (!esrovar::tileset.loadFromFile("res/tile.png")) {
+			LOG("Tilesheet not found or path is incorrect");
+			return false;
+		}
+		return true;
+	}
+
+	bool LoadFonts() {
+		if (!esrovar::mainfont.openFromFile("res/fonts/Roboto.ttf")) {
+			LOG("Font not found or path is incorrect");
+			return false;
+		}
+		return true;
 	}
 
 	int GenerateWorldSeed() {
@@ -73,6 +94,7 @@ namespace esroops {
 			}
 		m_chunkX = x;
 		m_chunkY = y;
+		m_tileset = esrovar::tileset;
 		m_isGenerated = false;
 	}
 
@@ -110,14 +132,17 @@ namespace esroops {
 		return &tiles[x][y];
 	}
 
-	void Chunk::generate(const std::string& tilesheet, sf::Vector2i tilesize) {
+	void Chunk::generate(sf::Vector2i tilesize) {
 	
-		// Loading input tilesheet
-		if (!m_tileset.loadFromFile(tilesheet))
-			LOG("Tilesheet not found or path is incorrect");
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
 		m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
+		
+		//Randomizing tile types for the chunk
+		std::random_device randev;
+		std::mt19937 gen(randev());
+		std::uniform_int_distribution<int> dist(0, 5);
+		
 		// Instantiating vertex grid
 		for (int y = 0; y < esrovar::CHUNK_SIZE; ++y) {
 			for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
@@ -127,8 +152,8 @@ namespace esroops {
 				float chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE * tilesize.x);
 				float chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE * tilesize.y);
 				// Tile sheet index for now default selection is plains
-				int tu = 0;
-				int tv = 0;
+				int tu = dist(gen); // Random tile selection
+				int tv = 0; // Never change this
 				// XY of independent tile
 				auto tx = chunkOffsetX + static_cast<float>(x * tilesize.x);
 				auto ty = chunkOffsetY + static_cast<float>(y * tilesize.y);
@@ -172,9 +197,10 @@ namespace esroops {
 		
 		// Flag check for player movement
 		m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
+		// Setting animation duration based on player state
 		m_AnimDuration = (m_IsMoving || m_IsJumping) ? 0.2f : 0.4f;
 		
-		// Setting player state and animation duration
+		// Setting player state, animation duration and handling other EDGE cases
 		if (m_IsMoving) {
 			m_StateEnum = esrovar::State::walk;
 			m_IsSitting = false;
@@ -201,7 +227,7 @@ namespace esroops {
 			m_IsSitting = false;
 		}
 		
-		// Resetting animation if state changed
+		// Resetting animation if there is change in player's state
 		if (m_StateEnum != m_PrevStateEnum) {
 			m_playersprite->setTexture(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
 			m_PrevStateEnum = m_StateEnum;
@@ -209,10 +235,10 @@ namespace esroops {
 			m_AnimTimer = 0.0f;
 		}		
 		
-		// Updating animation timing
+		// Updating animation timing @ every frames
 		m_AnimTimer += dt;
 		
-		// Checking whether player is in sitting state or jumping state
+		// Checking player state
 		if (m_StateEnum != esrovar::State::sit && m_StateEnum != esrovar::State::jump) {
 			while (m_AnimTimer >= m_AnimDuration) {
 				m_AnimTimer -= m_AnimDuration;
@@ -221,11 +247,11 @@ namespace esroops {
 					m_CurrentFrame = 0;
 			}
 		}
-		// Special case for sitting state
+		// Special animation for sitting state
 		else if (m_StateEnum == esrovar::State::sit) {
 				m_CurrentFrame = 0;
 		}
-		// Special case for jumping state
+		// Special animation for jumping state
 		else if (m_StateEnum == esrovar::State::jump) {
 			while (m_AnimTimer >= m_AnimDuration) {
 				m_AnimTimer -= m_AnimDuration;
@@ -275,7 +301,7 @@ namespace esroops {
 		for (auto& [cx, cy] : RequiredChunks) {
 			if (!m_active_chunks.contains({ cx, cy })) {
 				Chunk _chunk(cx, cy);
-				_chunk.generate("res/tile.png", sf::Vector2i({esrovar::pixel_size, esrovar::pixel_size }));
+				_chunk.generate(sf::Vector2i({esrovar::pixel_size, esrovar::pixel_size }));
 				m_active_chunks.insert({{cx, cy}, _chunk});
 			}
 		}
@@ -288,4 +314,5 @@ namespace esroops {
 			window.draw(_chunk);
 		}
 	}
+
 } // namespace esroops ends
