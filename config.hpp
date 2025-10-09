@@ -69,6 +69,7 @@ namespace esrovar {
     extern float movediry;
     extern float boost;
     extern float totalspeed;
+    extern int jumpboost;
     extern sf::RenderWindow GameWindow;
     extern std::pair<int, int> PLAYER_POSITION;
 }// namespace esrovar ends

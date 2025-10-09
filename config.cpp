@@ -33,6 +33,7 @@ namespace esrovar {
 	float boost = 0.0f;
 	float dt = 0.0f;
 	float totalspeed = 0.0f;
+	int jumpboost = 0;
 	sf::VideoMode desktop = desktop.getDesktopMode();
 	sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
 	std::pair<int, int> PLAYER_POSITION = {0, 0};
@@ -171,9 +172,12 @@ namespace esroops {
 		
 		// Flag check for player movement
 		m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
+		m_AnimDuration = 0.2f;
+		
 		// Setting player state and animation duration
 		if (m_IsMoving) {
 			m_StateEnum = esrovar::State::walk;
+			m_IsSitting = false;
 			if(m_IsRunning) {
 				m_StateEnum = esrovar::State::run;
 			}
@@ -183,17 +187,19 @@ namespace esroops {
 		}
 		else if (m_IsJumping) {
 			m_StateEnum = esrovar::State::jump;
+			m_IsSitting = false;
 		}
 		else if (m_IsSitting) {
 			m_StateEnum = esrovar::State::sit;
 		}
 		else if (m_IsSlashAttacking) {
 			m_StateEnum = esrovar::State::slash;
+			m_IsSitting = false;
 		}
 		else {
 			m_StateEnum = esrovar::State::idle;
+			m_IsSitting = false;
 		}
-		m_AnimDuration = m_IsMoving ? 0.2f : 0.4f;
 		
 		// Resetting animation if state changed
 		if (m_StateEnum != m_PrevStateEnum) {
@@ -201,15 +207,34 @@ namespace esroops {
 			m_PrevStateEnum = m_StateEnum;
 			m_CurrentFrame = 0;
 			m_AnimTimer = 0.0f;
-		}
-		
+		}		
 		// Updating animation timing
 		m_AnimTimer += dt;
-		while (m_AnimTimer >= m_AnimDuration) {
-			m_AnimTimer -= m_AnimDuration;
-			m_CurrentFrame++;
-			if (m_CurrentFrame >= esrovar::kFrameCount[esrovar::to_index(m_StateEnum)])
+		
+		// Checking whether player is in sitting state or jumping state
+		if (m_StateEnum != esrovar::State::sit && m_StateEnum != esrovar::State::jump) {
+			while (m_AnimTimer >= m_AnimDuration) {
+				m_AnimTimer -= m_AnimDuration;
+				m_CurrentFrame++;
+				if (m_CurrentFrame >= esrovar::kFrameCount[esrovar::to_index(m_StateEnum)])
+					m_CurrentFrame = 0;
+			}
+		}
+		// Special case for sitting state
+		else if (m_StateEnum == esrovar::State::sit) {
 				m_CurrentFrame = 0;
+		}
+		// Special case for jumping state
+		else if (m_StateEnum == esrovar::State::jump) {
+			while (m_AnimTimer >= m_AnimDuration) {
+				m_AnimTimer -= m_AnimDuration;
+				m_CurrentFrame++;
+				if (m_CurrentFrame >= esrovar::kFrameCount[esrovar::to_index(m_StateEnum)]) {
+					m_CurrentFrame = 0;
+					m_IsJumping = false;
+					esrovar::jumpboost = 0;
+				}
+			}
 		}
 		
 		// Updating texture rectangle

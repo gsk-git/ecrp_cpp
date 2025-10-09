@@ -28,10 +28,9 @@
 static void InputHandler(esroops::Player& player) {
 	esrovar::movedirx = 0.f;
 	esrovar::movediry = 0.f;
-	esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.0f;
+	esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 0.5f;
 	player.m_IsRunning = esrovar::boost == 2.0f ? true : false;
-	player.m_IsJumping = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) ? true : false;
-	esrovar::totalspeed = esrovar::speed * esrovar::boost;
+	esrovar::totalspeed = esrovar::speed * esrovar::boost + esrovar::jumpboost;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
 		esrovar::movediry = -esrovar::totalspeed;
 		player.m_DirectionEnum = esrovar::Directions::up;
@@ -66,7 +65,10 @@ static void ProcessWindowEvents(esroops::Player& player) {
 				else
 					player.m_IsSitting = false;
 			}
-
+			if (keyReleased->scancode == sf::Keyboard::Scan::Space) {
+				player.m_IsJumping = true;
+				esrovar::jumpboost = 150;
+			}
 		}
 	}
 }
