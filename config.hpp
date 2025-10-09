@@ -62,11 +62,12 @@ namespace esrovar {
     static_assert(kTexturePaths.size() == StateCount);
 	extern sf::Font mainfont;
     extern sf::Texture tileset;
+    extern bool ChunkBorder;
+    extern bool ChunkColor;
     // Declaring global variables
     extern int pixel_size;
     extern int frame_count;
     extern int scale;
-    extern int seed;
     extern float player_size;
     extern float timer;
     extern float speed;
@@ -76,6 +77,7 @@ namespace esrovar {
     extern float boost;
     extern float totalspeed;
     extern int jumpboost;
+    extern int worldseed;
     extern sf::RenderWindow GameWindow;
     extern std::pair<int, int> PLAYER_POSITION;
 }// namespace esrovar ends
@@ -126,7 +128,7 @@ namespace esroops {
 		bool m_isGenerated;
         Tile* getTileData(int x, int y);
         Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
-        void generate(sf::Vector2i tilesize);
+        void generate(sf::Vector2i tilesize, int ChunkColor);
     private:
         // Member functions
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -180,7 +182,8 @@ namespace esroops {
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
             unsigned int m_world_seed;
             void f_drawChunks(sf::RenderWindow& window);
-            //void _update_world();
+            void _update();
+			void ChunkBorders(sf::RenderWindow& window);
         private:
             void f_initialize_world();
     };

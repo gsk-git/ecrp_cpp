@@ -41,6 +41,9 @@ namespace esrovar {
 	std::array<sf::Texture, StateCount> kTextures;
 	sf::Font mainfont;
 	sf::Texture tileset;
+	int worldseed = 0;
+	bool ChunkBorder = false;
+	bool ChunkColor = false;
 } // namespace esrovar ends
 
 // Global functions
@@ -126,22 +129,18 @@ namespace esroops {
 		m_active_chunks;
 		m_world_seed = esrovar::seed;
 		f_initialize_world();
+
 	}
 
 	Tile* Chunk::getTileData(int x, int y) {        
 		return &tiles[x][y];
 	}
 
-	void Chunk::generate(sf::Vector2i tilesize) {
+	void Chunk::generate(sf::Vector2i tilesize, int Color) {
 	
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
 		m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
-		
-		//Randomizing tile types for the chunk
-		std::random_device randev;
-		std::mt19937 gen(randev());
-		std::uniform_int_distribution<int> dist(0, 5);
 		
 		// Instantiating vertex grid
 		for (int y = 0; y < esrovar::CHUNK_SIZE; ++y) {
@@ -152,7 +151,7 @@ namespace esroops {
 				float chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE * tilesize.x);
 				float chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE * tilesize.y);
 				// Tile sheet index for now default selection is plains
-				int tu = dist(gen); // Random tile selection
+				int tu = Color; // Random tile selection
 				int tv = 0; // Never change this
 				// XY of independent tile
 				auto tx = chunkOffsetX + static_cast<float>(x * tilesize.x);
@@ -178,7 +177,7 @@ namespace esroops {
 				tiles[x][y].type = BlockType::plains;
 			}
 		}
-		// Updating chunk generated status
+		// Updating chunk generated status		
 		m_isGenerated = true;
 	}
 
@@ -296,22 +295,72 @@ namespace esroops {
 				RequiredChunks.insert(std::make_pair(targetX, targetY));
 			}
 		}
-		
+		int color = 2;
 		// Generating initial chunk within player's radius
 		for (auto& [cx, cy] : RequiredChunks) {
 			if (!m_active_chunks.contains({ cx, cy })) {
 				Chunk _chunk(cx, cy);
-				_chunk.generate(sf::Vector2i({esrovar::pixel_size, esrovar::pixel_size }));
-				m_active_chunks.insert({{cx, cy}, _chunk});
+				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
+				m_active_chunks.insert({ {cx, cy}, _chunk });
 			}
 		}
 		LOG("Active chunks " << m_active_chunks.size());
 		LOG("World initialization complete.");
 	}
 
+	void WorldManager::_update() {
+
+		// Initializing set to hold required chunk in that frame
+		std::set<std::pair<int, int>> RequiredChunks;
+
+		// Calculating visible chunk radius around player
+		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
+			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
+				int targetX = m_playerchunk_X + x;
+				int targetY = m_playerchunk_Y + y;
+				RequiredChunks.insert(std::make_pair(targetX, targetY));
+			}
+		}
+		int color = 0;
+		// Generating initial chunk within player's radius
+		for (auto& [cx, cy] : RequiredChunks) {
+			if (!m_active_chunks.contains({ cx, cy })) {
+				Chunk _chunk(cx, cy);
+				if (esrovar::ChunkColor) {
+					color = (color < 6) ? color : 0;
+					_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
+					m_active_chunks.insert({ {cx, cy}, _chunk });
+					++color;
+				}
+				else {
+					_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
+					m_active_chunks.insert({ {cx, cy}, _chunk });
+				}
+			}
+		}
+		// Removing chunks which are out of player's radius
+	}
+
 	void WorldManager::f_drawChunks(sf::RenderWindow& window) {
 		for (auto& [coords, _chunk] : m_active_chunks) {
 			window.draw(_chunk);
+		}
+	}
+
+	void WorldManager::ChunkBorders(sf::RenderWindow& window) {
+		// Drawing chunk borders for debugging
+		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
+			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
+				int targetX = m_playerchunk_X + x;
+				int targetY = m_playerchunk_Y + y;
+				sf::RectangleShape rectangle;
+				rectangle.setSize(sf::Vector2f(static_cast<float>(esrovar::chunk_area), static_cast<float>(esrovar::chunk_area)));
+				rectangle.setFillColor(sf::Color::Transparent);
+				rectangle.setOutlineColor(sf::Color::Red);
+				rectangle.setOutlineThickness(1.0f);
+				rectangle.setPosition(sf::Vector2f(static_cast<float>(targetX * esrovar::chunk_area), static_cast<float>(targetY * esrovar::chunk_area)));
+				window.draw(rectangle);
+			}
 		}
 	}
 

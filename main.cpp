@@ -68,6 +68,18 @@ static void ProcessWindowEvents(esroops::Player& player) {
 			if (keyReleased->scancode == sf::Keyboard::Scan::Space) {
 				player.m_IsJumping = true;
 			}
+			if (keyReleased->scancode == sf::Keyboard::Scan::B) {
+				if (!esrovar::ChunkBorder)
+					esrovar::ChunkBorder = true;
+				else
+					esrovar::ChunkBorder = false;
+			}
+			if (keyReleased->scancode == sf::Keyboard::Scan::C) {
+				if (!esrovar::ChunkColor)
+					esrovar::ChunkColor = true;
+				else
+					esrovar::ChunkColor = false;
+			}
 		}
 	}
 }
@@ -126,6 +138,7 @@ static void StartGame() {
 	esrofn::LoadSpriteSheetsnew();
 	esrofn::LoadTileSheet();
 	esrofn::LoadFonts();
+	esrovar::worldseed = esrofn::GenerateWorldSeed();
 	// Initializing game objects
 	sf::Clock clock;
 	std::vector <esroops::IUpdatable*> systemdelta;
@@ -143,7 +156,8 @@ static void StartGame() {
 	box.setSize(sf::Vector2f({200.f, lb.size.y + 20.f}));
 	box.setFillColor(sf::Color(0, 0, 0, 200));
 	box.setPosition(sf::Vector2f({ 10.f, 10.f }));
-	box.setOutlineColor(sf::Color::Black);
+	box.setOutlineColor(sf::Color::White);
+	box.setOutlineThickness(2.f);
 	text.setOrigin(text.getGlobalBounds().size / 2.f + text.getGlobalBounds().position);
 	text.setPosition(box.getPosition()+(box.getSize()/2.f));
 	
@@ -185,6 +199,7 @@ static void StartGame() {
 		// Updating player movement
 		player.move(direction * esrovar::totalspeed * dt);
 		player.update(dt);
+		world._update();
 		text.setString(std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
 		
 		// Smoothening scroll view
@@ -198,6 +213,8 @@ static void StartGame() {
 		esrovar::GameWindow.clear();
 		esrovar::GameWindow.setView(view);
 		world.f_drawChunks(esrovar::GameWindow);
+		if (esrovar::ChunkBorder)
+			world.ChunkBorders(esrovar::GameWindow);
 		esrovar::GameWindow.draw(player);
 		esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
 		esrovar::GameWindow.draw(box);
