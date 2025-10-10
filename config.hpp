@@ -90,6 +90,7 @@ namespace esrofn {
     bool LoadFonts();
     int GenerateWorldSeed();
     std::tuple<int, int> getChunkXY(std::pair<float, float>);
+    std::tuple<int, int> getPlayerXY(std::pair<float, float>);
 }// namespace esrofn ends
 
 // Global objects and classes

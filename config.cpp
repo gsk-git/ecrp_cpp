@@ -92,6 +92,13 @@ namespace esrofn {
 		
 		return std::make_tuple(static_cast<int>(chunkX), static_cast<int>(chunkY));
 	}
+
+	std::tuple<int, int> getPlayerXY(std::pair<float, float> playerxy) {
+		float playerX = std::floorf(playerxy.first / esrovar::pixel_size);
+		float playerY = std::floorf(playerxy.second / esrovar::pixel_size);
+
+		return std::make_tuple(static_cast<int>(playerX), static_cast<int>(playerY));
+	}
 } // namespace esrofn ends
 
 // Global objects and classes
@@ -134,6 +141,7 @@ namespace esroops {
 		m_playerchunk_Y = PLAYERXY.second;
 		m_active_chunks;
 		m_world_seed = seed;
+		f_initialize_world();
 	}
 
 	Tile* Chunk::getTileData(int x, int y) {        
@@ -299,7 +307,7 @@ namespace esroops {
 				RequiredChunks.insert(std::make_pair(targetX, targetY));
 			}
 		}
-		int color = 2;
+		int color = 0;
 		// Generating initial chunk within player's radius
 		for (auto& [cx, cy] : RequiredChunks) {
 			if (!m_active_chunks.contains({ cx, cy })) {
