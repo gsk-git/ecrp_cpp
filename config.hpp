@@ -157,13 +157,11 @@ namespace esroops {
         int m_CurrentFrame;
         float m_AnimTimer;
         float m_AnimDuration;
-        int m_health;
-		
+        int m_health;		
         // Member functions
         void update(float dt) override;
         void animatesprite(float dt);
-    private:
-		
+    private:		
         // Member variables
         sf::Texture m_playerbody;
         std::optional<sf::Sprite> m_playersprite;
@@ -175,17 +173,16 @@ namespace esroops {
     class WorldManager {
         public:
 			WorldManager() = default;
-            WorldManager(std::pair<int, int>);
+            WorldManager(std::pair<int, int>, int seed);
             ~WorldManager() = default;
             int m_playerchunk_X;
             int m_playerchunk_Y;
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
             unsigned int m_world_seed;
             void f_drawChunks(sf::RenderWindow& window);
-            void _update();
+            void update(int seed);
 			void ChunkBorders(sf::RenderWindow& window);
         private:
             void f_initialize_world();
     };
-
 }// namespace esroops ends

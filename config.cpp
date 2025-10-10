@@ -117,19 +117,16 @@ namespace esroops {
 		m_AnimTimer = 0.0f;
 		m_AnimDuration = 0.0f;
 		m_health = 500u;
-		//m_playersprite.emplace(esrovar::TextureFace[m_State]);
 		m_playersprite.emplace(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
 		m_playersprite->setTextureRect(sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
 		m_playersprite->setPosition(m_playerXY);
 	}
 
-	WorldManager::WorldManager(std::pair<int, int> PLAYERXY) {    
+	WorldManager::WorldManager(std::pair<int, int> PLAYERXY, int seed) {    
 		m_playerchunk_X = PLAYERXY.first;
 		m_playerchunk_Y = PLAYERXY.second;
 		m_active_chunks;
-		m_world_seed = esrovar::seed;
-		f_initialize_world();
-
+		m_world_seed = seed;
 	}
 
 	Tile* Chunk::getTileData(int x, int y) {        
@@ -308,7 +305,7 @@ namespace esroops {
 		LOG("World initialization complete.");
 	}
 
-	void WorldManager::_update() {
+	void WorldManager::update(int seed) {
 
 		// Initializing set to hold required chunk in that frame
 		std::set<std::pair<int, int>> RequiredChunks;

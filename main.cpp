@@ -134,33 +134,33 @@ static void RunSplash() {
 static void StartGame() {
 	float dt = 0.0f;
 	
-	// Load Assets
+	// Loading Assets
 	esrofn::LoadSpriteSheetsnew();
 	esrofn::LoadTileSheet();
 	esrofn::LoadFonts();
-	esrovar::worldseed = esrofn::GenerateWorldSeed();
+	
 	// Initializing game objects
 	sf::Clock clock;
-	std::vector <esroops::IUpdatable*> systemdelta;
-	esroops::WorldManager world(esrovar::PLAYER_POSITION);
 	esroops::Player player;
+	esrovar::worldseed = esrofn::GenerateWorldSeed();
+	esroops::WorldManager world(esrovar::PLAYER_POSITION, esrovar::worldseed);
+	std::vector <esroops::IUpdatable*> systemdelta;
 	systemdelta.push_back(&player);
-
+	
+	// UI Elements
 	sf::Text text(esrovar::mainfont);
 	sf::RectangleShape box;
 	text.setCharacterSize(18);
 	text.setFillColor(sf::Color::Green);
 	text.setStyle(sf::Text::Bold);
-	text.setString("None");
+	text.setString("Player State: None ");
 	auto lb = text.getLocalBounds();
 	box.setSize(sf::Vector2f({200.f, lb.size.y + 20.f}));
 	box.setFillColor(sf::Color(0, 0, 0, 200));
 	box.setPosition(sf::Vector2f({ 10.f, 10.f }));
 	box.setOutlineColor(sf::Color::White);
 	box.setOutlineThickness(2.f);
-	text.setOrigin(text.getGlobalBounds().size / 2.f + text.getGlobalBounds().position);
-	text.setPosition(box.getPosition()+(box.getSize()/2.f));
-	
+	text.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + 10.f}));	
 	//Init View
 	sf::View view;
 	sf::Vector2f viewArea = { esrovar::SCRWDT, esrovar::SCRHGT };
@@ -199,8 +199,8 @@ static void StartGame() {
 		// Updating player movement
 		player.move(direction * esrovar::totalspeed * dt);
 		player.update(dt);
-		world._update();
-		text.setString(std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
+		world.update(esrovar::worldseed);
+		text.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
 		
 		// Smoothening scroll view
 		sf::Vector2f viewcenter = view.getCenter();
