@@ -63,7 +63,7 @@ namespace esrovar {
 	extern sf::Font mainfont;
     extern sf::Texture tileset;
     extern bool ChunkBorder;
-    extern bool ChunkColor;
+    extern bool DebugMode;
     // Declaring global variables
     extern int pixel_size;
     extern int frame_count;
@@ -89,7 +89,7 @@ namespace esrofn {
     bool LoadTileSheet();
     bool LoadFonts();
     int GenerateWorldSeed();
-    std::tuple<std::string, std::string> getChunkXY(std::pair<float, float>);
+    std::tuple<int, int> getChunkXY(std::pair<float, float>);
 }// namespace esrofn ends
 
 // Global objects and classes

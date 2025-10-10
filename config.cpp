@@ -43,7 +43,7 @@ namespace esrovar {
 	sf::Texture tileset;
 	int worldseed = 0;
 	bool ChunkBorder = false;
-	bool ChunkColor = false;
+	bool DebugMode = false;
 } // namespace esrovar ends
 
 // Global functions
@@ -86,11 +86,11 @@ namespace esrofn {
 		return dist(gen);
 	}
 
-	std::tuple<std::string, std::string> getChunkXY(std::pair<float, float> playerxy) {
+	std::tuple<int, int> getChunkXY(std::pair<float, float> playerxy) {
 		float chunkX = std::floorf(playerxy.first / (esrovar::CHUNK_SIZE * esrovar::pixel_size));
 		float chunkY = std::floorf(playerxy.second / (esrovar::CHUNK_SIZE * esrovar::pixel_size));
 		
-		return std::make_tuple(std::to_string(chunkX), std::to_string(chunkY));
+		return std::make_tuple(static_cast<int>(chunkX), static_cast<int>(chunkY));
 	}
 } // namespace esrofn ends
 
@@ -330,7 +330,7 @@ namespace esroops {
 		for (auto& [cx, cy] : RequiredChunks) {
 			if (!m_active_chunks.contains({ cx, cy })) {
 				Chunk _chunk(cx, cy);
-				if (esrovar::ChunkColor) {
+				if (esrovar::DebugMode) {
 					color = (color < 6) ? color : 0;
 					_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
 					m_active_chunks.insert({ {cx, cy}, _chunk });

@@ -78,11 +78,11 @@ static void ProcessWindowEvents(esroops::Player& player) {
 				else
 					esrovar::ChunkBorder = false;
 			}
-			if (keyReleased->scancode == sf::Keyboard::Scan::C) {
-				if (!esrovar::ChunkColor)
-					esrovar::ChunkColor = true;
+			if (keyReleased->scancode == sf::Keyboard::Scan::V) {
+				if (!esrovar::DebugMode)
+					esrovar::DebugMode = true;
 				else
-					esrovar::ChunkColor = false;
+					esrovar::DebugMode = false;
 			}
 		}
 	}
@@ -139,8 +139,11 @@ static void StartGame() {
 	float dt = 0.0f;
 	std::string playerX;
 	std::string playerY;
-	std::string cx;
-	std::string cy;
+	int cx = 0;
+	int cy = 0;
+	std::tuple<int, int> currentChunk = {0, 0};
+	std::tuple<int, int> previousChunk = {0, 0};
+	std::tuple<int, int> swapChunk = {0, 0};
 	
 	// Loading Assets
 	esrofn::LoadSpriteSheetsnew();
@@ -159,6 +162,8 @@ static void StartGame() {
 	sf::Text text(esrovar::mainfont);
 	sf::Text playerpos(esrovar::mainfont);
 	sf::Text chunkxy(esrovar::mainfont);
+	sf::Text cchunkxy(esrovar::mainfont);
+	sf::Text pchunkxy(esrovar::mainfont);
 	sf::RectangleShape box;
 	text.setCharacterSize(18);
 	text.setFillColor(sf::Color::Green);
@@ -172,17 +177,29 @@ static void StartGame() {
 	chunkxy.setFillColor(sf::Color::Green);
 	chunkxy.setStyle(sf::Text::Bold);
 	chunkxy.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]) + " Player XY : " + playerX + playerY);
+	cchunkxy.setCharacterSize(18);
+	cchunkxy.setFillColor(sf::Color::Green);
+	cchunkxy.setStyle(sf::Text::Bold);
+	cchunkxy.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]) + " Player XY : " + playerX + playerY);
+	pchunkxy.setCharacterSize(18);
+	pchunkxy.setFillColor(sf::Color::Green);
+	pchunkxy.setStyle(sf::Text::Bold);
+	pchunkxy.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]) + " Player XY : " + playerX + playerY);
 	auto lb = text.getLocalBounds();
 	auto poslb = playerpos.getLocalBounds();
-	auto chunklb = playerpos.getLocalBounds();
-	box.setSize(sf::Vector2f({ std::max({lb.size.x, poslb.size.x, chunklb.size.x}) + 200.0f, (lb.size.y + poslb.size.y + chunklb.size.y) + 45.0f }));
+	auto chunklb = chunkxy.getLocalBounds();
+	auto cchunklb = cchunkxy.getLocalBounds();
+	auto pchunklb = pchunkxy.getLocalBounds();
+	box.setSize(sf::Vector2f({ std::max({lb.size.x, poslb.size.x, chunklb.size.x}) + 200.0f, (lb.size.y + poslb.size.y + chunklb.size.y + cchunklb.size.y + pchunklb.size.y) + 45.0f }));
 	box.setFillColor(sf::Color(0, 0, 0, 200));
 	box.setPosition(sf::Vector2f({ 10.f, 10.f }));
 	box.setOutlineColor(sf::Color::White);
 	box.setOutlineThickness(2.f);
-	text.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + 10.f}));
-	playerpos.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + text.getPosition().y + 20.f}));
-	chunkxy.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + text.getPosition().y + playerpos.getPosition().y}));
+	text.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + 10.0f}));
+	playerpos.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, text.getPosition().y + 25.0f}));
+	chunkxy.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, playerpos.getPosition().y + 25.0f}));
+	cchunkxy.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, chunkxy.getPosition().y + 25.0f}));
+	pchunkxy.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, cchunkxy.getPosition().y + 25.0f }));
 	
 	//Init View
 	sf::View view;
@@ -225,12 +242,24 @@ static void StartGame() {
 		player.move(direction * esrovar::totalspeed * dt);
 		esrovar::PLAYER_POSITION.first += direction.x * esrovar::totalspeed * dt;
 		esrovar::PLAYER_POSITION.second += direction.y * esrovar::totalspeed * dt;
-		std::tie(cx,cy) = esrofn::getChunkXY(esrovar::PLAYER_POSITION);
+		
+		// Setting strings to HUD elements
+		swapChunk = esrofn::getChunkXY(esrovar::PLAYER_POSITION);
+		world.m_playerchunk_X = std::get<0>(swapChunk);
+		world.m_playerchunk_Y = std::get<1>(swapChunk);
+		// Updating current and previous chunk values
+		if (swapChunk != currentChunk) {
+			previousChunk = currentChunk;
+			currentChunk = swapChunk;
+			world.update(esrovar::worldseed);
+		}
+		// Updating player, world and HUD elements
 		player.update(dt);
-		world.update(esrovar::worldseed);
 		text.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
 		playerpos.setString("Player XY :" + playerX + "  " + playerY);
-		chunkxy.setString("Chunk (XY):" + cx + " " + cy);
+		chunkxy.setString("Chunk (XY):" + std::to_string(std::get<0>(swapChunk)) + ", " + std::to_string(std::get<1>(swapChunk)));
+		cchunkxy.setString("currentChunk (XY):" + std::to_string(std::get<0>(currentChunk)) + ", " + std::to_string(std::get<1>(currentChunk)));
+		pchunkxy.setString("previousChunk (XY):" + std::to_string(std::get<0>(previousChunk)) + ", " + std::to_string(std::get<1>(previousChunk)));
 		
 		// Smoothening scroll view
 		sf::Vector2f viewcenter = view.getCenter();
@@ -247,10 +276,14 @@ static void StartGame() {
 			world.ChunkBorders(esrovar::GameWindow);
 		esrovar::GameWindow.draw(player);
 		esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
-		esrovar::GameWindow.draw(box);
-		esrovar::GameWindow.draw(text);
-		esrovar::GameWindow.draw(playerpos);
-		esrovar::GameWindow.draw(chunkxy);
+		if (esrovar::DebugMode) {
+			esrovar::GameWindow.draw(box);
+			esrovar::GameWindow.draw(text);
+			esrovar::GameWindow.draw(playerpos);
+			esrovar::GameWindow.draw(chunkxy);
+			esrovar::GameWindow.draw(cchunkxy);
+			esrovar::GameWindow.draw(pchunkxy);
+		}
 		esrovar::GameWindow.display();
 	}
 }	
