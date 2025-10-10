@@ -1,7 +1,31 @@
 ﻿  The vcpkg manifest was disabled, but we found a manifest file in C:\Users\asus\Documents\esrocpp\. You may want to enable vcpkg manifests in your properties page or pass /p:VcpkgEnableManifest=true to the msbuild invocation.
-  config.cpp
   main.cpp
-  MainMenuState.cpp
-  StateManager.cpp
-  Generating Code...
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16): warning C4244: 'initializing': conversion from 'const _Ty1' to '_Ty1', possible loss of data
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16): warning C4244:         with
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16): warning C4244:         [
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16): warning C4244:             _Ty1=float
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16): warning C4244:         ]
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16): warning C4244:         and
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16): warning C4244:         [
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16): warning C4244:             _Ty1=int
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16): warning C4244:         ]
+  (compiling source file 'main.cpp')
+      D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,16):
+      the template instantiation context (the oldest one first) is
+          C:\Users\asus\Documents\esrocpp\main.cpp(154,39):
+          see reference to function template instantiation 'std::pair<int,int>::pair<float,float,0>(const std::pair<float,float> &) noexcept' being compiled
+              C:\Users\asus\Documents\esrocpp\main.cpp(154,29):
+              see the first reference to 'std::pair<int,int>::pair' in 'StartGame'
+  
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,38): warning C4244: 'initializing': conversion from 'const _Ty2' to '_Ty2', possible loss of data
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,38): warning C4244:         with
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,38): warning C4244:         [
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,38): warning C4244:             _Ty2=float
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,38): warning C4244:         ]
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,38): warning C4244:         and
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,38): warning C4244:         [
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,38): warning C4244:             _Ty2=int
+D:\vs\VC\Tools\MSVC\14.44.35207\include\utility(296,38): warning C4244:         ]
+  (compiling source file 'main.cpp')
+  
   game.vcxproj -> C:\Users\asus\Documents\esrocpp\x64\Debug\game.exe

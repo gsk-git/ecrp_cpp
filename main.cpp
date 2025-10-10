@@ -26,11 +26,15 @@
 
 // Handling player input
 static void InputHandler(esroops::Player& player) {
+	
+	// Resetting movement direction
 	esrovar::movedirx = 0.f;
 	esrovar::movediry = 0.f;
 	esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 0.5f;
+	// Setting running state
 	player.m_IsRunning = esrovar::boost == 2.0f ? true : false;
 	esrovar::totalspeed = esrovar::speed * esrovar::boost + esrovar::jumpboost;
+	
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
 		esrovar::movediry = -esrovar::totalspeed;
 		player.m_DirectionEnum = esrovar::Directions::up;
@@ -133,6 +137,10 @@ static void RunSplash() {
 // Starts the game
 static void StartGame() {
 	float dt = 0.0f;
+	std::string playerX;
+	std::string playerY;
+	std::string cx;
+	std::string cy;
 	
 	// Loading Assets
 	esrofn::LoadSpriteSheetsnew();
@@ -149,18 +157,33 @@ static void StartGame() {
 	
 	// UI Elements
 	sf::Text text(esrovar::mainfont);
+	sf::Text playerpos(esrovar::mainfont);
+	sf::Text chunkxy(esrovar::mainfont);
 	sf::RectangleShape box;
 	text.setCharacterSize(18);
 	text.setFillColor(sf::Color::Green);
 	text.setStyle(sf::Text::Bold);
-	text.setString("Player State: None ");
+	text.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]) + " Player XY : " + playerX + playerY);
+	playerpos.setCharacterSize(18);
+	playerpos.setFillColor(sf::Color::Green);
+	playerpos.setStyle(sf::Text::Bold);
+	playerpos.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]) + " Player XY : " + playerX + playerY);
+	chunkxy.setCharacterSize(18);
+	chunkxy.setFillColor(sf::Color::Green);
+	chunkxy.setStyle(sf::Text::Bold);
+	chunkxy.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]) + " Player XY : " + playerX + playerY);
 	auto lb = text.getLocalBounds();
-	box.setSize(sf::Vector2f({200.f, lb.size.y + 20.f}));
+	auto poslb = playerpos.getLocalBounds();
+	auto chunklb = playerpos.getLocalBounds();
+	box.setSize(sf::Vector2f({ std::max({lb.size.x, poslb.size.x, chunklb.size.x}) + 200.0f, (lb.size.y + poslb.size.y + chunklb.size.y) + 45.0f }));
 	box.setFillColor(sf::Color(0, 0, 0, 200));
 	box.setPosition(sf::Vector2f({ 10.f, 10.f }));
 	box.setOutlineColor(sf::Color::White);
 	box.setOutlineThickness(2.f);
-	text.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + 10.f}));	
+	text.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + 10.f}));
+	playerpos.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + text.getPosition().y + 20.f}));
+	chunkxy.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + text.getPosition().y + playerpos.getPosition().y}));
+	
 	//Init View
 	sf::View view;
 	sf::Vector2f viewArea = { esrovar::SCRWDT, esrovar::SCRHGT };
@@ -170,6 +193,8 @@ static void StartGame() {
 		
 		// Delta time management
 		dt = clock.restart().asSeconds();
+		playerX = std::to_string(esrovar::PLAYER_POSITION.first);
+		playerY = std::to_string(esrovar::PLAYER_POSITION.second);
 		
 		// Capping framerate @60fps
 		esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
@@ -198,9 +223,14 @@ static void StartGame() {
 		
 		// Updating player movement
 		player.move(direction * esrovar::totalspeed * dt);
+		esrovar::PLAYER_POSITION.first += direction.x * esrovar::totalspeed * dt;
+		esrovar::PLAYER_POSITION.second += direction.y * esrovar::totalspeed * dt;
+		std::tie(cx,cy) = esrofn::getChunkXY(esrovar::PLAYER_POSITION);
 		player.update(dt);
 		world.update(esrovar::worldseed);
 		text.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
+		playerpos.setString("Player XY :" + playerX + "  " + playerY);
+		chunkxy.setString("Chunk (XY):" + cx + " " + cy);
 		
 		// Smoothening scroll view
 		sf::Vector2f viewcenter = view.getCenter();
@@ -219,6 +249,8 @@ static void StartGame() {
 		esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
 		esrovar::GameWindow.draw(box);
 		esrovar::GameWindow.draw(text);
+		esrovar::GameWindow.draw(playerpos);
+		esrovar::GameWindow.draw(chunkxy);
 		esrovar::GameWindow.display();
 	}
 }	

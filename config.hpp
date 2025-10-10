@@ -79,7 +79,7 @@ namespace esrovar {
     extern int jumpboost;
     extern int worldseed;
     extern sf::RenderWindow GameWindow;
-    extern std::pair<int, int> PLAYER_POSITION;
+    extern std::pair<float, float> PLAYER_POSITION;
 }// namespace esrovar ends
 
 // Global functions
@@ -89,6 +89,7 @@ namespace esrofn {
     bool LoadTileSheet();
     bool LoadFonts();
     int GenerateWorldSeed();
+    std::tuple<std::string, std::string> getChunkXY(std::pair<float, float>);
 }// namespace esrofn ends
 
 // Global objects and classes

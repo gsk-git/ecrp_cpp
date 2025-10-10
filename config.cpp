@@ -37,7 +37,7 @@ namespace esrovar {
 	int jumpboost = 0;
 	sf::VideoMode desktop = desktop.getDesktopMode();
 	sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
-	std::pair<int, int> PLAYER_POSITION = {0, 0};
+	std::pair<float, float> PLAYER_POSITION = {0.0f, 0.0f};
 	std::array<sf::Texture, StateCount> kTextures;
 	sf::Font mainfont;
 	sf::Texture tileset;
@@ -84,6 +84,13 @@ namespace esrofn {
 		std::mt19937 gen(randev());
 		std::uniform_int_distribution<int> dist(0, 2100000000);
 		return dist(gen);
+	}
+
+	std::tuple<std::string, std::string> getChunkXY(std::pair<float, float> playerxy) {
+		float chunkX = std::floorf(playerxy.first / (esrovar::CHUNK_SIZE * esrovar::pixel_size));
+		float chunkY = std::floorf(playerxy.second / (esrovar::CHUNK_SIZE * esrovar::pixel_size));
+		
+		return std::make_tuple(std::to_string(chunkX), std::to_string(chunkY));
 	}
 } // namespace esrofn ends
 
