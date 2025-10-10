@@ -158,8 +158,9 @@ static void StartGame() {
 	esroops::WorldManager world(esrovar::PLAYER_POSITION, esrovar::worldseed);
 	std::vector <esroops::IUpdatable*> systemdelta;
 	systemdelta.push_back(&player);
+	player.setOrigintoBottomCenter();
 	
-	// UI Elements
+	// UI Elements -> Need to convert this into classes
 	sf::Text text(esrovar::mainfont);
 	sf::Text playerpos(esrovar::mainfont);
 	sf::Text playerxy(esrovar::mainfont);

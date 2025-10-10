@@ -159,7 +159,8 @@ namespace esroops {
         int m_CurrentFrame;
         float m_AnimTimer;
         float m_AnimDuration;
-        int m_health;		
+        int m_health;
+		void setOrigintoBottomCenter();
         // Member functions
         void update(float dt) override;
         void animatesprite(float dt);
