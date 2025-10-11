@@ -115,14 +115,6 @@ namespace esroops {
 		m_isGenerated = false;
 	}
 
-	void Player::setOrigintoBottomCenter() {
-		// Setting origin to bottom center of player sprite
-		if (m_playersprite) {
-			sf::FloatRect bounds = m_playersprite->getLocalBounds();
-			m_playersprite->setOrigin({ bounds.size.x / 2.0f, bounds.size.y - 1 });
-		}
-	}
-
 	Player::Player() {
 		// Initializing member variables
 		m_IsMoving = false;
@@ -206,6 +198,14 @@ namespace esroops {
 		states.texture = &m_tileset;
 		target.draw(m_grid, states);
 	}    
+
+	void Player::setOrigintoBottomCenter() {
+		// Setting origin to bottom center of player sprite
+		if (m_playersprite) {
+			sf::FloatRect bounds = m_playersprite->getLocalBounds();
+			m_playersprite->setOrigin({ bounds.size.x / 2.0f, bounds.size.y - 1 });
+		}
+	}
 
 	void Player::update(float dt) {
 		// Rendering and animating player sprite
