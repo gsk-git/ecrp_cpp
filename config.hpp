@@ -19,6 +19,7 @@
 #include <utility>
 #include <windows.h>
 #include <sstream>
+#include "FastNoise2/include/FastNoise/FastNoiseLite.h"
 
 // Debugging macro to log messages
 #ifdef _DEBUG
@@ -79,6 +80,7 @@ namespace esrovar {
     extern int jumpboost;
     extern int worldseed;
     extern sf::RenderWindow GameWindow;
+	extern FastNoiseLite noise;
     extern std::pair<float, float> PLAYER_POSITION;
 }// namespace esrovar ends
 

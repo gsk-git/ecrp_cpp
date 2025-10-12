@@ -37,6 +37,7 @@ namespace esrovar {
 	int jumpboost = 0;
 	sf::VideoMode desktop = desktop.getDesktopMode();
 	sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
+	FastNoiseLite noise;
 	std::pair<float, float> PLAYER_POSITION = {0.0f, 0.0f};
 	std::array<sf::Texture, StateCount> kTextures;
 	sf::Font mainfont;
@@ -149,7 +150,7 @@ namespace esroops {
 	}
 
 	void Chunk::generate(sf::Vector2i tilesize, int Color) {
-	
+		
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
 		m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
@@ -185,10 +186,12 @@ namespace esroops {
 				m_grid[ static_cast<size_t>(tileIndex) + 3].texCoords   = sf::Vector2f(texX + tilesize.x, texY);
 				m_grid[ static_cast<size_t>(tileIndex) + 4].texCoords   = sf::Vector2f(texX + tilesize.x, texY + tilesize.y);
 				m_grid[ static_cast<size_t>(tileIndex) + 5].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
+				
 				// Setting cell's type as a plain
 				tiles[x][y].type = BlockType::plains;
 			}
 		}
+		
 		// Updating chunk generated status		
 		m_isGenerated = true;
 	}

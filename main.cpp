@@ -25,6 +25,7 @@
 #include <SFML/Window/WindowBase.hpp>
 #include <optional>
 #include <string>
+#include <thread>
 
 // Handling player input
 static void InputHandler(esroops::Player& player) {
@@ -136,6 +137,23 @@ static void RunSplash() {
 	}
 }
 
+void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int& minutes, int& day) {
+	elapsed += gameclock.restart();
+
+	if (elapsed >= sf::seconds(1.0f)) {
+		elapsed -= sf::seconds(1.0f);
+		seconds++;
+	}
+	if (seconds >= 60) {
+		seconds = 0;
+		minutes++;
+	}
+	if (minutes >= 60) {
+		minutes = 0;
+		day++;
+	}
+}
+
 // Starts the game
 static void StartGame() {
 	float dt = 0.0f;
@@ -146,6 +164,9 @@ static void StartGame() {
 	std::string playerY;
 	int cx = 0;
 	int cy = 0;
+	int seconds = 00;
+	int minutes = 00;
+	int day = 0;
 	std::tuple<int, int> playerXY = { 0, 0 };
 	std::tuple<int, int> currentChunk = {0, 0};
 	std::tuple<int, int> previousChunk = {0, 0};
@@ -159,6 +180,8 @@ static void StartGame() {
 	// Initializing game objects
 	sf::Clock clock;
 	sf::Clock fpsclock;
+	sf::Clock gameclock;
+	sf::Time elapsed = sf::Time::Zero;
 	esroops::Player player;
 	esrovar::worldseed = esrofn::GenerateWorldSeed();
 	esroops::WorldManager world(esrovar::PLAYER_POSITION, esrovar::worldseed);
@@ -175,7 +198,9 @@ static void StartGame() {
 	sf::Text pchunkxy(esrovar::mainfont);
 	sf::Text activechunks(esrovar::mainfont);
 	sf::Text fpsrate(esrovar::mainfont);
+	sf::Text gametime(esrovar::mainfont);
 	sf::RectangleShape box;
+	// Setting up text properties
 	text.setCharacterSize(18);
 	text.setFillColor(sf::Color::Green);
 	text.setStyle(sf::Text::Bold);
@@ -208,6 +233,11 @@ static void StartGame() {
 	fpsrate.setFillColor(sf::Color::Green);
 	fpsrate.setStyle(sf::Text::Bold);
 	fpsrate.setString("activeChunk :" + std::to_string(world.m_active_chunks.size()));
+	gametime.setCharacterSize(18);
+	gametime.setFillColor(sf::Color::Green);
+	gametime.setStyle(sf::Text::Bold);
+	gametime.setString("activeChunk :" + std::to_string(world.m_active_chunks.size()));
+	// Setting up boundbox properties
 	auto lb = text.getLocalBounds();
 	auto poslb = playerpos.getLocalBounds();
 	auto posxylb = playerxy.getLocalBounds();
@@ -216,11 +246,14 @@ static void StartGame() {
 	auto pchunklb = pchunkxy.getLocalBounds();
 	auto achunklb = activechunks.getLocalBounds();
 	auto fpslb = fpsrate.getLocalBounds();
-	box.setSize(sf::Vector2f({ std::max({lb.size.x, poslb.size.x, posxylb.size.x, chunklb.size.x, cchunklb.size.x, pchunklb.size.x, achunklb.size.x + fpslb.size.x}) + 30.0f, (lb.size.y + poslb.size.y + posxylb.size.y + chunklb.size.y + cchunklb.size.y + pchunklb.size.y + achunklb.size.y + fpslb.size.y) + 55.0f }));
+	auto gtlb = gametime.getLocalBounds();
+	// Setting up box properties
+	box.setSize(sf::Vector2f({ std::max({lb.size.x, poslb.size.x, posxylb.size.x, chunklb.size.x, cchunklb.size.x, pchunklb.size.x, achunklb.size.x + fpslb.size.x + gtlb.size.x}) + 30.0f, (lb.size.y + poslb.size.y + posxylb.size.y + chunklb.size.y + cchunklb.size.y + pchunklb.size.y + achunklb.size.y + fpslb.size.y + gtlb.size.y) + 65.0f }));
 	box.setFillColor(sf::Color(0, 0, 0, 200));
 	box.setPosition(sf::Vector2f({ 10.f, 10.f }));
 	box.setOutlineColor(sf::Color::White);
 	box.setOutlineThickness(2.f);
+	// Setting up positions
 	text.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, box.getPosition().y + 10.0f}));
 	playerpos.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, text.getPosition().y + 25.0f}));
 	playerxy.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, playerpos.getPosition().y + 25.0f }));
@@ -229,16 +262,22 @@ static void StartGame() {
 	pchunkxy.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, cchunkxy.getPosition().y + 25.0f }));
 	activechunks.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, pchunkxy.getPosition().y + 25.0f }));
 	fpsrate.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, activechunks.getPosition().y + 25.0f }));
+	gametime.setPosition(sf::Vector2f({ box.getPosition().x + 10.f, fpsrate.getPosition().y + 25.0f }));
 	
 	//Init View
 	sf::View view;
 	sf::Vector2f viewArea = { esrovar::SCRWDT, esrovar::SCRHGT };
 	view.setSize(viewArea);
+	
+	// Capping framerate @60fps
+	esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
+	
 	//Main game loop
 	while (esrovar::GameWindow.isOpen()) {
 		
 		// Delta time management
 		dt = clock.restart().asSeconds();
+		GameClock(gameclock, elapsed, seconds, minutes, day);
 		playerX = std::to_string(esrovar::PLAYER_POSITION.first);
 		playerY = std::to_string(esrovar::PLAYER_POSITION.second);
 		
@@ -249,9 +288,6 @@ static void StartGame() {
 			frames = 0;
 			fpsclock.restart();		
 		}
-		
-		// Capping framerate @60fps
-		esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
 		
 		// Maintaining game wide delta time
 		for (auto system : systemdelta) {
@@ -264,7 +300,7 @@ static void StartGame() {
 		// Handling player inputs (keyboard)
 		InputHandler(player);
 		
-		// Ascertaining directions vector
+		// Creating directional vector
 		sf::Vector2f direction({ esrovar::movedirx, esrovar::movediry });
 		
 		// Check if directions are not 0
@@ -290,24 +326,16 @@ static void StartGame() {
 		if (swapChunk != currentChunk) {
 			previousChunk = currentChunk;
 			currentChunk = swapChunk;
+			// Updating world, when player has moved to a new chunk
 			world.update(esrovar::worldseed);
 		}
 		
 		// Updating player, world and HUD elements
 		player.update(dt);
-		text.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
-		playerpos.setString("Global XY :" + playerX + "  " + playerY);
-		playerxy.setString("Player XY :" + std::to_string(std::get<0>(playerXY)) + ", " + std::to_string(std::get<1>(playerXY)));
-		chunkxy.setString("Chunk (XY):" + std::to_string(std::get<0>(swapChunk)) + ", " + std::to_string(std::get<1>(swapChunk)));
-		cchunkxy.setString("currentChunk (XY):" + std::to_string(std::get<0>(currentChunk)) + ", " + std::to_string(std::get<1>(currentChunk)));
-		pchunkxy.setString("previousChunk (XY):" + std::to_string(std::get<0>(previousChunk)) + ", " + std::to_string(std::get<1>(previousChunk)));
-		activechunks.setString("activeChunk :" + std::to_string(world.m_active_chunks.size()));
-		fpsrate.setString("FPS :" + std::to_string(fps));
 		
 		// Smoothening scroll view
 		sf::Vector2f viewcenter = view.getCenter();
 		sf::Vector2f targetcenter = player.getPosition();
-		// Linear interpolation factor
 		float lerpfactor = 5.0f * dt;
 		view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
 		
@@ -315,11 +343,22 @@ static void StartGame() {
 		esrovar::GameWindow.clear();
 		esrovar::GameWindow.setView(view);
 		world.f_drawChunks(esrovar::GameWindow);
-		if (esrovar::ChunkBorder)
+		if (esrovar::ChunkBorder) {
 			world.ChunkBorders(esrovar::GameWindow);
+		}
 		esrovar::GameWindow.draw(player);
 		esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
 		if (esrovar::DebugMode) {
+			// Updating HUD elements
+			text.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
+			playerpos.setString("Global XY :" + playerX + "  " + playerY);
+			playerxy.setString("Player XY :" + std::to_string(std::get<0>(playerXY)) + ", " + std::to_string(std::get<1>(playerXY)));
+			chunkxy.setString("Chunk (XY):" + std::to_string(std::get<0>(swapChunk)) + ", " + std::to_string(std::get<1>(swapChunk)));
+			cchunkxy.setString("currentChunk (XY):" + std::to_string(std::get<0>(currentChunk)) + ", " + std::to_string(std::get<1>(currentChunk)));
+			pchunkxy.setString("previousChunk (XY):" + std::to_string(std::get<0>(previousChunk)) + ", " + std::to_string(std::get<1>(previousChunk)));
+			activechunks.setString("activeChunk :" + std::to_string(world.m_active_chunks.size()));
+			fpsrate.setString("FPS :" + std::to_string(fps));
+			gametime.setString("Time: " + std::to_string(minutes)+ ":" + std::to_string(seconds));
 			esrovar::GameWindow.draw(box);
 			esrovar::GameWindow.draw(text);
 			esrovar::GameWindow.draw(playerpos);
@@ -329,6 +368,7 @@ static void StartGame() {
 			esrovar::GameWindow.draw(pchunkxy);
 			esrovar::GameWindow.draw(activechunks);
 			esrovar::GameWindow.draw(fpsrate);
+			esrovar::GameWindow.draw(gametime);
 		}
 		esrovar::GameWindow.display();
 	}
@@ -338,8 +378,7 @@ static void StartGame() {
 int main() {
 	
 	// Displays splash image
-	RunSplash();
-	
+	// RunSplash();	
 	//Starts game
 	StartGame();
 	
