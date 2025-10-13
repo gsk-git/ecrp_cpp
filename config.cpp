@@ -42,7 +42,6 @@ namespace esrovar {
 	std::array<sf::Texture, StateCount> kTextures;
 	sf::Font mainfont;
 	sf::Texture tileset;
-	int worldseed = 0;
 	bool ChunkBorder = false;
 	bool DebugMode = false;
 } // namespace esrovar ends
@@ -78,13 +77,6 @@ namespace esrofn {
 			return false;
 		}
 		return true;
-	}
-
-	int GenerateWorldSeed() {
-		std::random_device randev;
-		std::mt19937 gen(randev());
-		std::uniform_int_distribution<int> dist(0, 2100000000);
-		return dist(gen);
 	}
 
 	std::tuple<int, int> getChunkXY(std::pair<float, float> playerxy) {
@@ -135,6 +127,7 @@ namespace esroops {
 		m_playersprite.emplace(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
 		m_playersprite->setTextureRect(sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
 		m_playersprite->setPosition(m_playerXY);
+		setOrigintoBottomCenter();
 	}
 
 	WorldManager::WorldManager(std::pair<int, int> PLAYERXY, int seed) {    
@@ -386,5 +379,4 @@ namespace esroops {
 			}
 		}
 	}
-
 } // namespace esroops ends

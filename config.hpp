@@ -78,7 +78,6 @@ namespace esrovar {
     extern float boost;
     extern float totalspeed;
     extern int jumpboost;
-    extern int worldseed;
     extern sf::RenderWindow GameWindow;
 	extern FastNoiseLite noise;
     extern std::pair<float, float> PLAYER_POSITION;
@@ -90,7 +89,7 @@ namespace esrofn {
     bool LoadSpriteSheetsnew();
     bool LoadTileSheet();
     bool LoadFonts();
-    int GenerateWorldSeed();
+    [[nodiscard]] inline uint32_t  GenerateWorldSeed() noexcept;
     std::tuple<int, int> getChunkXY(std::pair<float, float>);
     std::tuple<int, int> getPlayerXY(std::pair<float, float>);
 }// namespace esrofn ends
@@ -190,4 +189,34 @@ namespace esroops {
         private:
             void f_initialize_world();
     };
+
+    class HudBox : public sf::Drawable, public sf::Transformable {
+        public:
+            using sf::Transformable::setPosition;
+            HudBox(sf::Vector2f size, sf::Vector2f position, sf::Color color, sf::Color outcolor, float thickness) {
+				hudbox.setSize(size);
+				hudbox.setFillColor(color);
+				hudbox.setOutlineColor(outcolor);
+				hudbox.setOutlineThickness(thickness);
+                setPosition(position);
+            }
+			HudBox() = default;
+			~HudBox() override = default;
+            using sf::Transformable::getPosition;
+            void setSize(sf::Vector2f size)             { hudbox.setSize(size);}
+            void setFillColor(sf::Color& color)         { hudbox.setFillColor(color); }
+            void setOutlineColor(sf::Color& outcolor)   { hudbox.setOutlineColor(outcolor); }
+            void setOutlineThickness(float thickness)  { hudbox.setOutlineThickness(thickness); }
+        private:
+            sf::RectangleShape hudbox;
+            void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
+                states.transform *= getTransform();
+                target.draw(hudbox, states);
+            }
+    };
+
+    class HudText : public sf::Drawable, public sf::Transformable {
+
+    };
+
 }// namespace esroops ends
