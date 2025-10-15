@@ -118,8 +118,6 @@ namespace esrofn {
 		
 		return std::make_tuple(playerchunkX, playerchunkY);
 	}
-
-
 } // namespace esrofn ends
 
 // Global objects and classes
@@ -133,12 +131,6 @@ namespace esroops {
 		m_chunkX = x;
 		m_chunkY = y;
 		m_tileset = esrovar::tileset;
-		m_isGenerated = false;
-	}
-
-	Chunk::~Chunk() {
-		// Destructor
-		m_grid.clear();
 		m_isGenerated = false;
 	}
 
@@ -345,41 +337,28 @@ namespace esroops {
 	}
 
 	void WorldManager::f_initialize_world() {
-		// Logging world seed
-		LOG("Initializing world .....");
-		LOG("Initializing World Seed: " + std::to_string(m_world_seed));
-		LOG("Placing player on Chunk Coordinates: (" + std::to_string(m_playerchunk_X) + ", " + std::to_string(m_playerchunk_Y) + ")");
-		LOG("Generating chunks around player within radius: " + std::to_string(esrovar::CHUNK_RADIUS));
-		LOG("Each chunk is of size: " + std::to_string(esrovar::CHUNK_SIZE) + "x" + std::to_string(esrovar::CHUNK_SIZE) + " tiles");
 		
+		int color = 0;
 		// Initializing set to hold required chunk in that frame
-		std::set<std::pair<int, int>> RequiredChunks;
-		
-		// Calculating visible chunk radius around player
 		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
 			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
 				int targetX = m_playerchunk_X + x;
 				int targetY = m_playerchunk_Y + y;
-				RequiredChunks.insert(std::make_pair(targetX, targetY));
+				
+				if (!m_active_chunks.contains({ targetX, targetY })) {
+					Chunk _chunk(targetX, targetY);
+					color = esrovar::DebugMode ? m_world_seed : 0;
+					_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
+					m_active_chunks.insert({ { targetX, targetY }, _chunk });
+				}
 			}
 		}
-		int color = 0;
-		// Generating initial chunk within player's radius
-		for (auto& [cx, cy] : RequiredChunks) {
-			if (!m_active_chunks.contains({ cx, cy })) {
-				Chunk _chunk(cx, cy);
-				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
-				m_active_chunks.insert({ {cx, cy}, _chunk });
-			}
-		}
-		LOG("Active chunks " << m_active_chunks.size());
-		LOG("World initialization complete.");
 	}
 
-	void WorldManager::update(int seed) {
+	void WorldManager::update(int seed) {		
 		
 		// Updating chunk frame counter
-		if (m_chunkframecounter % 60 != 0) return;
+		if (m_chunkframecounter % 10 != 0) return;
 		else ++m_chunkframecounter;
 		
 		// Initializing required variables
@@ -393,7 +372,7 @@ namespace esroops {
 				
 				if (!m_active_chunks.contains({ targetX, targetY })) {
 					Chunk _chunk(targetX, targetY);
-					color = esrovar::DebugMode && color < 6 ? ++color : 0;
+					color = esrovar::DebugMode ? seed : 0;
 					_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
 					m_active_chunks.insert({ { targetX, targetY }, _chunk });
 				}
@@ -404,6 +383,7 @@ namespace esroops {
 		for (auto it = m_active_chunks.begin(); it != m_active_chunks.end(); ) {
 			auto [cx, cy] = it->first;
 			if (std::abs(cx - m_playerchunk_X) > esrovar::CHUNK_RADIUS || std::abs(cy - m_playerchunk_Y) > esrovar::CHUNK_RADIUS) {
+				m_active_chunks.at({ cx,cy }).m_isGenerated = false;
 				it = m_active_chunks.erase(it);
 			} else {
 				++it;

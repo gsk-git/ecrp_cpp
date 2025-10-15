@@ -201,9 +201,12 @@ static void StartGame() {
 	sf::Time elapsed = sf::Time::Zero;
 	esroops::Player player;
 	const uint32_t gameseed = GenerateWorldSeed();
+	int seedfortile = 0;
 	esroops::WorldManager world(esrovar::PLAYER_POSITION, static_cast<int>(gameseed));
 	std::vector <esroops::IUpdatable*> systemdelta;
 	systemdelta.push_back(&player);
+	std::mt19937 rng(gameseed);
+	std::uniform_int_distribution<int> dist(0, 5);
 	
 	// UI Elements -> Need to convert this into classes
 	sf::Text text(esrovar::mainfont);
@@ -299,6 +302,8 @@ static void StartGame() {
 		GameClock(gameclock, elapsed, seconds, minutes, day);
 		playerX = std::to_string(esrovar::PLAYER_POSITION.first);
 		playerY = std::to_string(esrovar::PLAYER_POSITION.second);
+		seedfortile = dist(rng);
+
 		
 		// FPS calculation
 		frames++;
@@ -348,7 +353,7 @@ static void StartGame() {
 			previousChunk = currentChunk;
 			currentChunk = swapChunk;
 			// Generating chunks, when player has moved to a new chunk
-			world.update(static_cast<int>(gameseed));
+			world.update(static_cast<int>(seedfortile));
 		}
 		
 		// Updating player, world and HUD elements
