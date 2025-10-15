@@ -78,6 +78,7 @@ namespace esrovar {
     extern float boost;
     extern float totalspeed;
     extern int jumpboost;
+    extern float globaldelta;
     extern sf::RenderWindow GameWindow;
 	extern FastNoiseLite noise;
     extern std::pair<float, float> PLAYER_POSITION;
@@ -89,9 +90,9 @@ namespace esrofn {
     bool LoadSpriteSheetsnew();
     bool LoadTileSheet();
     bool LoadFonts();
-    [[nodiscard]] inline uint32_t  GenerateWorldSeed() noexcept;
     std::tuple<int, int> getChunkXY(std::pair<float, float>);
     std::tuple<int, int> getPlayerXY(std::pair<float, float>);
+    std::tuple<float, float> getPlayerChunkXY(std::pair<float, float>);
 }// namespace esrofn ends
 
 // Global objects and classes
@@ -168,24 +169,30 @@ namespace esroops {
     private:		
         // Member variables
         sf::Texture m_playerbody;
-        std::optional<sf::Sprite> m_playersprite;
-		
+        std::optional<sf::Sprite> m_playersprite;		
         // Member functions
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
 
     class WorldManager {
         public:
+			// Member variables
 			WorldManager() = default;
             WorldManager(std::pair<int, int>, int seed);
             ~WorldManager() = default;
             int m_playerchunk_X;
             int m_playerchunk_Y;
-            std::map<std::pair<int, int>, Chunk> m_active_chunks;
             unsigned int m_world_seed;
-            void f_drawChunks(sf::RenderWindow& window);
+			int m_chunkframecounter;
+            std::map<std::pair<int, int>, Chunk> m_active_chunks;
+            std::array<std::string, 10> tilevariation = {
+                "plains", "beach", "ocean", "dirt", "forest", "jungle", "swamp", "mountain", "frozenplain", "snow"
+			};
+			// Member functions
             void update(int seed);
-			void ChunkBorders(sf::RenderWindow& window);
+            void f_drawChunks(sf::RenderWindow& window);
+            void ChunkBorders(sf::RenderWindow& window) const;
+			std::string getTileType(float x, float y);
         private:
             void f_initialize_world();
     };
@@ -218,5 +225,4 @@ namespace esroops {
     class HudText : public sf::Drawable, public sf::Transformable {
 
     };
-
 }// namespace esroops ends

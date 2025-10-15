@@ -1,6 +1,7 @@
 ﻿// Including necessary libraries
 #include "config.hpp"
 #include <iostream>
+#include <cmath>
 #include <random>
 #include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -44,6 +45,7 @@ namespace esrovar {
 	sf::Texture tileset;
 	bool ChunkBorder = false;
 	bool DebugMode = false;
+	float globaldelta = 0.0f;
 } // namespace esrovar ends
 
 // Global functions
@@ -92,6 +94,32 @@ namespace esrofn {
 
 		return std::make_tuple(static_cast<int>(playerX), static_cast<int>(playerY));
 	}
+
+	std::tuple<float, float> getPlayerChunkXY(std::pair<float, float> playerxy) {
+		
+		// Getting floored player coordinates
+		float x = std::floor(playerxy.first);
+		float y = std::floor(playerxy.second);
+		const int chunkSizeInPixels = esrovar::CHUNK_SIZE * esrovar::pixel_size;
+		
+		// Adjusting for negative coordinates
+		if (x < 0)
+			x += std::abs(x * chunkSizeInPixels);
+		if (y < 0)
+			y += std::abs(y * chunkSizeInPixels);
+		
+		// Getting local chunk coordinates
+		float chunkLocalX = std::fmod(x, static_cast<float>(chunkSizeInPixels));
+		float chunkLocalY = std::fmod(y, static_cast<float>(chunkSizeInPixels));
+		
+		// Converting to chunk local coordinates
+		float playerchunkX = std::floorf(chunkLocalX / esrovar::pixel_size);
+		float playerchunkY = std::floorf(chunkLocalY / esrovar::pixel_size);
+		
+		return std::make_tuple(playerchunkX, playerchunkY);
+	}
+
+
 } // namespace esrofn ends
 
 // Global objects and classes
@@ -105,6 +133,12 @@ namespace esroops {
 		m_chunkX = x;
 		m_chunkY = y;
 		m_tileset = esrovar::tileset;
+		m_isGenerated = false;
+	}
+
+	Chunk::~Chunk() {
+		// Destructor
+		m_grid.clear();
 		m_isGenerated = false;
 	}
 
@@ -125,7 +159,10 @@ namespace esroops {
 		m_AnimDuration = 0.0f;
 		m_health = 500u;
 		m_playersprite.emplace(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
-		m_playersprite->setTextureRect(sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
+		m_playersprite->setTextureRect(sf::IntRect({ 
+			m_CurrentFrame * esrovar::PLAYER_SPRITE, 
+			static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, 
+			{ esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
 		m_playersprite->setPosition(m_playerXY);
 		setOrigintoBottomCenter();
 	}
@@ -135,6 +172,7 @@ namespace esroops {
 		m_playerchunk_Y = PLAYERXY.second;
 		m_active_chunks;
 		m_world_seed = seed;
+		m_chunkframecounter = 0;
 		f_initialize_world();
 	}
 
@@ -158,7 +196,7 @@ namespace esroops {
 				float chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE * tilesize.y);
 				// Tile sheet index for now default selection is plains
 				int tu = Color; // Random tile selection
-				int tv = 0; // Never change this
+				int tv = 0;
 				// XY of independent tile
 				auto tx = chunkOffsetX + static_cast<float>(x * tilesize.x);
 				auto ty = chunkOffsetY + static_cast<float>(y * tilesize.y);
@@ -181,7 +219,18 @@ namespace esroops {
 				m_grid[ static_cast<size_t>(tileIndex) + 5].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
 				
 				// Setting cell's type as a plain
-				tiles[x][y].type = BlockType::plains;
+				if (Color == 0)
+					tiles[x][y].type = BlockType::plains;
+				else if (Color == 1)
+					tiles[x][y].type = BlockType::beach;
+				else if (Color == 2)
+					tiles[x][y].type = BlockType::dirt;
+				else if (Color == 3)
+					tiles[x][y].type = BlockType::ocean;
+				else if (Color == 4)
+					tiles[x][y].type = BlockType::forest;
+				else if (Color == 5)
+					tiles[x][y].type = BlockType::mountain;
 			}
 		}
 		
@@ -282,7 +331,10 @@ namespace esroops {
 		}
 		
 		// Updating texture rectangle
-		m_playersprite->setTextureRect(sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
+		m_playersprite->setTextureRect(
+			sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, 
+			static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, 
+			{ esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
 		m_playersprite->setPosition(m_playerXY);
 	}
 
@@ -325,36 +377,41 @@ namespace esroops {
 	}
 
 	void WorldManager::update(int seed) {
-
-		// Initializing set to hold required chunk in that frame
-		std::set<std::pair<int, int>> RequiredChunks;
-
+		
+		// Updating chunk frame counter
+		if (m_chunkframecounter % 60 != 0) return;
+		else ++m_chunkframecounter;
+		
+		// Initializing required variables
+		int color = 0;
+		
 		// Calculating visible chunk radius around player
 		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
 			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
 				int targetX = m_playerchunk_X + x;
 				int targetY = m_playerchunk_Y + y;
-				RequiredChunks.insert(std::make_pair(targetX, targetY));
-			}
-		}
-		int color = 0;
-		// Generating initial chunk within player's radius
-		for (auto& [cx, cy] : RequiredChunks) {
-			if (!m_active_chunks.contains({ cx, cy })) {
-				Chunk _chunk(cx, cy);
-				if (esrovar::DebugMode) {
-					color = (color < 6) ? color : 0;
+				
+				if (!m_active_chunks.contains({ targetX, targetY })) {
+					Chunk _chunk(targetX, targetY);
+					color = esrovar::DebugMode && color < 6 ? ++color : 0;
 					_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
-					m_active_chunks.insert({ {cx, cy}, _chunk });
-					++color;
-				}
-				else {
-					_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
-					m_active_chunks.insert({ {cx, cy}, _chunk });
+					m_active_chunks.insert({ { targetX, targetY }, _chunk });
 				}
 			}
 		}
-		// Removing chunks which are out of player's radius
+		
+		// Removing chunks which are out of player's radius and marking chunk m_generated to false
+		for (auto it = m_active_chunks.begin(); it != m_active_chunks.end(); ) {
+			auto [cx, cy] = it->first;
+			if (std::abs(cx - m_playerchunk_X) > esrovar::CHUNK_RADIUS || std::abs(cy - m_playerchunk_Y) > esrovar::CHUNK_RADIUS) {
+				it = m_active_chunks.erase(it);
+			} else {
+				++it;
+			}
+		}
+		
+		// Resetting chunk frame counter
+		m_chunkframecounter = 0;
 	}
 
 	void WorldManager::f_drawChunks(sf::RenderWindow& window) {
@@ -363,7 +420,7 @@ namespace esroops {
 		}
 	}
 
-	void WorldManager::ChunkBorders(sf::RenderWindow& window) {
+	void WorldManager::ChunkBorders(sf::RenderWindow& window) const {
 		// Drawing chunk borders for debugging
 		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
 			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
@@ -376,6 +433,27 @@ namespace esroops {
 				rectangle.setOutlineThickness(1.0f);
 				rectangle.setPosition(sf::Vector2f(static_cast<float>(targetX * esrovar::chunk_area), static_cast<float>(targetY * esrovar::chunk_area)));
 				window.draw(rectangle);
+			}
+		}
+	}
+
+	std::string WorldManager::getTileType(float x, float y) {
+		
+		// Getting chunk coordinates from player coordinates
+		auto [chunkX, chunkY] = esrofn::getChunkXY({ x,y });
+		
+		// Getting player local chunk coordinates
+		auto [playerchunkX, playerchunkY] = esrofn::getPlayerChunkXY({ x,y });
+		
+		// Fetching tile data from active chunks
+		if (m_active_chunks.contains({ chunkX, chunkY })) {
+			Chunk& currentChunk = m_active_chunks.at({ chunkX, chunkY });
+			Tile* tile = currentChunk.getTileData(static_cast<int>(playerchunkX), static_cast<int>(playerchunkY));
+			if (tile) {
+				return tilevariation[static_cast<int>(tile->type)];
+			}
+			else {
+				return std::format("Tile data not found at ({}, {}) in chunk ({}, {})", playerchunkX, playerchunkY, chunkX, chunkY);
 			}
 		}
 	}

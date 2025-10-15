@@ -138,7 +138,8 @@ static void RunSplash() {
 	}
 }
 
-void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int& minutes, int& day) {
+// Manages in-game clock
+static void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int& minutes, int& day) {
 	elapsed += gameclock.restart();
 
 	if (elapsed >= sf::seconds(1.0f)) {
@@ -155,13 +156,16 @@ void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int& minut
 	}
 }
 
-[[nodiscard]] inline uint32_t GenerateWorldSeed() noexcept {
+// Generates a random world seed
+static [[nodiscard]] inline uint32_t GenerateWorldSeed() noexcept {
 	std::random_device rd;
-	auto now = static_cast<uint32_t>(
+	auto t = static_cast<uint32_t>(
 		std::chrono::high_resolution_clock::now().time_since_epoch().count());
-	std::seed_seq seq{ rd(), rd(), rd(), rd(), now };
-	std::mt19937 gen(seq);
-	return gen();
+	// xorshift mix to spread bits
+	t ^= t >> 33; t *= 0xff51afd7ed558ccdULL;
+	t ^= t >> 33; t *= 0xc4ceb9fe1a85ec53ULL;
+	t ^= t >> 33;
+	return static_cast<uint32_t>(t);
 }
 
 // Starts the game
@@ -170,8 +174,9 @@ static void StartGame() {
 	int fps = 0;
 	int fpsvar = 0;
 	int frames = 0;
-	std::string playerX;
-	std::string playerY;
+	std::string playerX = "0000000.000000";
+	std::string playerY = "0000000.000000";
+	std::string tileType;
 	int cx = 0;
 	int cy = 0;
 	int seconds = 00;
@@ -179,6 +184,7 @@ static void StartGame() {
 	int day = 0;
 	float hudtimer = 0.0f;
 	std::tuple<int, int> playerXY = { 0, 0 };
+	std::tuple<float, float> playerChunkXY = { 0, 0 };
 	std::tuple<int, int> currentChunk = {0, 0};
 	std::tuple<int, int> previousChunk = {0, 0};
 	std::tuple<int, int> swapChunk = {0, 0};
@@ -208,39 +214,44 @@ static void StartGame() {
 	sf::Text activechunks(esrovar::mainfont);
 	sf::Text fpsrate(esrovar::mainfont);
 	sf::Text gametime(esrovar::mainfont);
+	sf::Text tiletype(esrovar::mainfont);
 	// Setting up text properties
 	text.setCharacterSize(18);
-	text.setFillColor(sf::Color::Green);
-	text.setStyle(sf::Text::Bold);
+	text.setFillColor(sf::Color::White);
+	text.setStyle(sf::Text::Regular);
 	text.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]) + " Player XY : " + playerX + playerY);
 	playerpos.setCharacterSize(18);
-	playerpos.setFillColor(sf::Color::Green);
-	playerpos.setStyle(sf::Text::Bold);
+	playerpos.setFillColor(sf::Color::White);
+	playerpos.setStyle(sf::Text::Regular);
 	playerpos.setString("Player XY :" + playerX + "0000000.000000" + ",  " + "0000000.000000" + playerY);
 	playerxy.setCharacterSize(18);
-	playerxy.setFillColor(sf::Color::Green);
-	playerxy.setStyle(sf::Text::Bold);
+	playerxy.setFillColor(sf::Color::White);
+	playerxy.setStyle(sf::Text::Regular);
 	playerxy.setString("Player XY :" + playerX + "0000000.000000" + ",  " + "0000000.000000" + playerY);
 	cchunkxy.setCharacterSize(18);
-	cchunkxy.setFillColor(sf::Color::Green);
-	cchunkxy.setStyle(sf::Text::Bold);
+	cchunkxy.setFillColor(sf::Color::White);
+	cchunkxy.setStyle(sf::Text::Regular);
 	cchunkxy.setString("currentChunk (XY):" + std::to_string(std::get<0>(currentChunk)) + ", " + std::to_string(std::get<1>(currentChunk)));
 	pchunkxy.setCharacterSize(18);
-	pchunkxy.setFillColor(sf::Color::Green);
-	pchunkxy.setStyle(sf::Text::Bold);
+	pchunkxy.setFillColor(sf::Color::White);
+	pchunkxy.setStyle(sf::Text::Regular);
 	pchunkxy.setString("previousChunk (XY):" + std::to_string(std::get<0>(previousChunk)) + ", " + std::to_string(std::get<1>(previousChunk)));
 	activechunks.setCharacterSize(18);
-	activechunks.setFillColor(sf::Color::Green);
-	activechunks.setStyle(sf::Text::Bold);
+	activechunks.setFillColor(sf::Color::White);
+	activechunks.setStyle(sf::Text::Regular);
 	activechunks.setString("activeChunk :" + std::to_string(world.m_active_chunks.size()));
 	fpsrate.setCharacterSize(18);
-	fpsrate.setFillColor(sf::Color::Green);
-	fpsrate.setStyle(sf::Text::Bold);
+	fpsrate.setFillColor(sf::Color::White);
+	fpsrate.setStyle(sf::Text::Regular);
 	fpsrate.setString("activeChunk :" + std::to_string(world.m_active_chunks.size()));
 	gametime.setCharacterSize(18);
-	gametime.setFillColor(sf::Color::Green);
-	gametime.setStyle(sf::Text::Bold);
+	gametime.setFillColor(sf::Color::White);
+	gametime.setStyle(sf::Text::Regular);
 	gametime.setString("activeChunk :" + std::to_string(world.m_active_chunks.size()));
+	tiletype.setCharacterSize(18);
+	tiletype.setFillColor(sf::Color::White);
+	tiletype.setStyle(sf::Text::Regular);
+	tiletype.setString("activeChunk :" + std::to_string(world.m_active_chunks.size()));
 	
 	// Setting up boundbox properties
 	auto lb = text.getLocalBounds();
@@ -251,10 +262,11 @@ static void StartGame() {
 	auto achunklb = activechunks.getLocalBounds();
 	auto fpslb = fpsrate.getLocalBounds();
 	auto gtlb = gametime.getLocalBounds();
+	auto tilelb = tiletype.getLocalBounds();
 	
 	// Creating hudbox with properties
-	esroops::HudBox hudbox({ std::max({lb.size.x, poslb.size.x, posxylb.size.x, cchunklb.size.x, pchunklb.size.x, achunklb.size.x + fpslb.size.x + gtlb.size.x}) + 30.0f, 
-									(lb.size.y + poslb.size.y + posxylb.size.y + cchunklb.size.y + pchunklb.size.y + achunklb.size.y + fpslb.size.y + gtlb.size.y) + 65.0f }, 
+	esroops::HudBox hudbox({ std::max({lb.size.x, poslb.size.x, posxylb.size.x, cchunklb.size.x, pchunklb.size.x, achunklb.size.x + fpslb.size.x + gtlb.size.x + tilelb.size.x}) + 30.0f,
+									(lb.size.y + poslb.size.y + posxylb.size.y + cchunklb.size.y + pchunklb.size.y + achunklb.size.y + fpslb.size.y + gtlb.size.y + tilelb.size.y) + 80.0f },
 									{ 10.f, 10.f }, 
 									sf::Color(0, 0, 0, 200), 
 									sf::Color::White, 2.f);
@@ -268,6 +280,7 @@ static void StartGame() {
 	activechunks.setPosition(sf::Vector2f({ hudbox.getPosition().x + 10.f, pchunkxy.getPosition().y + 25.0f }));
 	fpsrate.setPosition(sf::Vector2f({ hudbox.getPosition().x + 10.f, activechunks.getPosition().y + 25.0f }));
 	gametime.setPosition(sf::Vector2f({ hudbox.getPosition().x + 10.f, fpsrate.getPosition().y + 25.0f }));
+	tiletype.setPosition(sf::Vector2f({ hudbox.getPosition().x + 10.f, gametime.getPosition().y + 25.0f }));
 	
 	//Init View
 	sf::View view;
@@ -282,6 +295,7 @@ static void StartGame() {
 		
 		// Delta time management
 		dt = clock.restart().asSeconds();
+		esrovar::globaldelta = dt;
 		GameClock(gameclock, elapsed, seconds, minutes, day);
 		playerX = std::to_string(esrovar::PLAYER_POSITION.first);
 		playerY = std::to_string(esrovar::PLAYER_POSITION.second);
@@ -324,6 +338,8 @@ static void StartGame() {
 		// Setting strings to HUD elements
 		swapChunk = esrofn::getChunkXY(esrovar::PLAYER_POSITION);
 		playerXY = esrofn::getPlayerXY(esrovar::PLAYER_POSITION);
+		playerChunkXY = esrofn::getPlayerChunkXY(esrovar::PLAYER_POSITION);
+		tileType = world.getTileType(esrovar::PLAYER_POSITION.first, esrovar::PLAYER_POSITION.second);
 		world.m_playerchunk_X = std::get<0>(swapChunk);
 		world.m_playerchunk_Y = std::get<1>(swapChunk);
 		
@@ -331,7 +347,7 @@ static void StartGame() {
 		if (swapChunk != currentChunk) {
 			previousChunk = currentChunk;
 			currentChunk = swapChunk;
-			// Updating world, when player has moved to a new chunk
+			// Generating chunks, when player has moved to a new chunk
 			world.update(static_cast<int>(gameseed));
 		}
 		
@@ -360,6 +376,7 @@ static void StartGame() {
 			playerxy.setString(std::format("Player POS: X::{}, Y::{}", std::get<0>(playerXY), std::get<1>(playerXY)));
 			cchunkxy.setString(std::format("currentChunk: X::{}, Y::{}", (std::get<0>(currentChunk)), std::get<1>(currentChunk)));
 			pchunkxy.setString(std::format("previousChunk: X::{}, Y::{}", std::get<0>(previousChunk), std::get<1>(previousChunk)));
+			tiletype.setString(std::format("TileType: {}", tileType)); pchunkxy.setString(std::format("previousChunk: X::{}, Y::{}", std::get<0>(previousChunk), std::get<1>(previousChunk)));
 			activechunks.setString(std::format("activeChunk: {}", world.m_active_chunks.size()));
 			fpsrate.setString(std::format("FPS: {}", fps));
 			gametime.setString(std::format("Game Time : {:0>2}m:{:0>2}s", minutes, seconds));
@@ -369,6 +386,7 @@ static void StartGame() {
 			esrovar::GameWindow.draw(playerxy);
 			esrovar::GameWindow.draw(cchunkxy);
 			esrovar::GameWindow.draw(pchunkxy);
+			esrovar::GameWindow.draw(tiletype);
 			esrovar::GameWindow.draw(activechunks);
 			esrovar::GameWindow.draw(fpsrate);
 			esrovar::GameWindow.draw(gametime);
