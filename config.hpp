@@ -183,7 +183,7 @@ namespace esroops {
             int m_playerchunk_X;
             int m_playerchunk_Y;
             unsigned int m_world_seed;
-			int m_chunkframecounter;
+			float m_chunkframecounter;
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
             std::array<std::string, 10> tilevariation = {
                 "plains", "beach", "ocean", "dirt", "forest", "jungle", "swamp", "mountain", "frozenplain", "snow"
@@ -223,6 +223,32 @@ namespace esroops {
     };
 
     class HudText : public sf::Drawable, public sf::Transformable {
+    public:
+        HudText(const sf::Font& font,
+            sf::Vector2f position = { 0.f, 0.f },
+            sf::Color fillColor = sf::Color::White,
+            unsigned int style = sf::Text::Regular,
+            unsigned int size = 18)
+            : textbox(font, "", size) // Explicitly construct sf::Text with font, string, and size
+        {
+            textbox.setPosition(position);
+            textbox.setFillColor(fillColor);
+            textbox.setStyle(style);
+        }
+        void setCharacterSize(unsigned int size) { textbox.setCharacterSize(size); }
+        void setFillColor(const sf::Color& fillColor) { textbox.setFillColor(fillColor); }
+        void setStyle(unsigned int style) { textbox.setStyle(style);}
+        void setString(const std::string& text) { textbox.setString(text); }
+        void setPosition(const sf::Vector2f& position) { textbox.setPosition(position); }
+        void setFont(const sf::Font& font) { textbox.setFont(font); }
+        sf::FloatRect getLocalBounds() const { return localbounds; }
 
+    private:
+        sf::Text textbox;
+		sf::FloatRect localbounds;
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
+            states.transform *= getTransform();
+            target.draw(textbox, states);
+        }
     };
 }// namespace esroops ends

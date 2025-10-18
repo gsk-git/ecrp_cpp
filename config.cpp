@@ -164,7 +164,7 @@ namespace esroops {
 		m_playerchunk_Y = PLAYERXY.second;
 		m_active_chunks;
 		m_world_seed = seed;
-		m_chunkframecounter = 0;
+		m_chunkframecounter = 0.0f;
 		f_initialize_world();
 	}
 
@@ -357,10 +357,6 @@ namespace esroops {
 
 	void WorldManager::update(int seed) {		
 		
-		// Updating chunk frame counter
-		if (m_chunkframecounter % 10 != 0) return;
-		else ++m_chunkframecounter;
-		
 		// Initializing required variables
 		int color = 0;
 		
@@ -389,9 +385,6 @@ namespace esroops {
 				++it;
 			}
 		}
-		
-		// Resetting chunk frame counter
-		m_chunkframecounter = 0;
 	}
 
 	void WorldManager::f_drawChunks(sf::RenderWindow& window) {
