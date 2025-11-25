@@ -253,6 +253,7 @@ namespace esroops {
 		
 		// Flag check for player movement
 		m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
+		
 		// Setting animation duration based on player state
 		m_AnimDuration = (m_IsMoving || m_IsJumping) ? 0.2f : 0.4f;
 		
@@ -306,7 +307,7 @@ namespace esroops {
 		// Special animation for sitting state
 		else if (m_StateEnum == esrovar::State::sit) {
 				m_CurrentFrame = 0;
-		}
+		}		
 		// Special animation for jumping state
 		else if (m_StateEnum == esrovar::State::jump) {
 			while (m_AnimTimer >= m_AnimDuration) {
@@ -425,9 +426,8 @@ namespace esroops {
 			if (tile) {
 				return tilevariation[static_cast<int>(tile->type)];
 			}
-			else {
-				return std::format("Tile data not found at ({}, {}) in chunk ({}, {})", playerchunkX, playerchunkY, chunkX, chunkY);
-			}
 		}
+		// Tile data not found case
+		return std::format("Tile data not found at ({}, {}) in chunk ({}, {})", playerchunkX, playerchunkY, chunkX, chunkY);
 	}
 } // namespace esroops ends

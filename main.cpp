@@ -219,6 +219,7 @@ static void StartGame() {
 	esrofn::LoadFonts();
 	
 	// Initializing game objects
+	sf::View view;
 	sf::Clock clock;
 	sf::Clock fpsclock;
 	sf::Clock gameclock;
@@ -239,7 +240,6 @@ static void StartGame() {
 	systemdelta.push_back(&player);
 	
 	//Init View
-	sf::View view;
 	sf::Vector2f viewArea = { esrovar::SCRWDT, esrovar::SCRHGT };
 	view.setSize(viewArea);
 	
