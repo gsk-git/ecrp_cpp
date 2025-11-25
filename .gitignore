@@ -62,3 +62,78 @@ Makefile
 vcpkg_installed/
 packages/
 installed/
+
+# ================================
+# Build Artifacts / Binaries
+# ================================
+/game/x64/
+/Debug/
+/Release/
+/out/
+/bin/
+
+# Compiled object files, libraries, executables
+*.o
+*.obj
+*.exe
+*.dll
+*.lib
+*.so
+*.a
+
+# Precompiled headers
+*.gch
+*.pch
+
+# ================================
+# Visual Studio / IDE Files
+# ================================
+.vs/
+*.vcxproj.user
+*.suo
+*.user
+*.sdf
+
+# Visual Studio caches / generated files
+ipch/
+*.VC.db
+*.VC.opendb
+
+# ================================
+# vcpkg / Dependency Files
+# ================================
+/vcpkg/
+/packages/
+
+# If using vcpkg manifest, keep manifest but ignore installed ports
+!/vcpkg.json
+!vcpkg-configuration.json
+
+# ================================
+# Logs, Temporary Files, OS Files
+# ================================
+*.log
+*.tmp
+*.temp
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# ================================
+# Other Files to Consider Ignoring
+# ================================
+# If you have test output or coverage reports
+coverage/
+*.gcda
+*.gcno
+*.profdata
+
+# For CMake (if any)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+

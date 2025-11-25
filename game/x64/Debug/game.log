@@ -1,4 +1,0 @@
-﻿  The vcpkg manifest was disabled, but we found a manifest file in C:\Users\asus\Documents\esrocpp\. You may want to enable vcpkg manifests in your properties page or pass /p:VcpkgEnableManifest=true to the msbuild invocation.
-  config.cpp
-C:\Users\asus\Documents\esrocpp\config.cpp(453,1): warning C4715: 'esroops::WorldManager::getTileType': not all control paths return a value
-  game.vcxproj -> C:\Users\asus\Documents\esrocpp\x64\Debug\game.exe
