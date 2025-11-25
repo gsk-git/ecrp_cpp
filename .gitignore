@@ -28,6 +28,8 @@ pdb_archive
 .vs/
 
 # Build output folders (e.g., Debug/Release under x64)
+x64/
+game/x64/
 
 # Optional: ignore any local-only settings folders
 *.DS_Store
