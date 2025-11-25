@@ -85,13 +85,15 @@ Here is a sample step-by-step to build the project:
      git clone https://github.com/gsk-git/ecrp_cpp.git
      cd ecrp_cpp
 2. Example (assuming vcpkg is not yet bootstrapped)
-    git clone https://github.com/microsoft/vcpkg.git
-    ./vcpkg/bootstrap-vcpkg.sh
-    ./vcpkg/vcpkg integrate install
- 3.Install Depndencies
-   ./vcpkg/vcpkg install gtest
-   SFML from webite
-   Fastnoise2 from website
+     ```bash
+     git clone https://github.com/microsoft/vcpkg.git
+     ./vcpkg/bootstrap-vcpkg.sh
+     ./vcpkg/vcpkg integrate install
+
+3. Install Depndencies
+     ./vcpkg/vcpkg install gtest
+     SFML from webite
+     Fastnoise2 from website
 
 
 
