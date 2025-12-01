@@ -159,12 +159,17 @@ namespace esroops {
 		setOrigintoBottomCenter();
 	}
 
-	WorldManager::WorldManager(std::pair<int, int> PLAYERXY, int seed) {    
+	WorldManager::WorldManager(std::pair<int, int> PLAYERXY, int seed) {
+		// Initializing member variables
 		m_playerchunk_X = PLAYERXY.first;
 		m_playerchunk_Y = PLAYERXY.second;
+		m_chunkGenerationLimit = 0;
 		m_active_chunks;
+		m_required_chunks;
+		m_unrequired_chunks;
 		m_world_seed = seed;
 		m_chunkframecounter = 0.0f;
+		// Initializing member functions
 		f_initialize_world();
 	}
 
@@ -339,52 +344,56 @@ namespace esroops {
 
 	void WorldManager::f_initialize_world() {
 		
-		int color = 0;
+		getRequiredChunks();
 		// Initializing set to hold required chunk in that frame
+		if (!m_required_chunks.empty())
+			if (!m_active_chunks.contains({ m_required_chunks.front() })) {
+				Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
+				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), m_world_seed);
+				m_active_chunks.insert({ {m_required_chunks.front()}, _chunk });
+				m_required_chunks.pop_front();
+			}
+	}
+
+	void WorldManager::getRequiredChunks() {
+		
+		// Clearing previous frame's required and unrequired chunks
+		m_required_chunks.clear();
+		m_unrequired_chunks.clear();
+		
+		// Function to calculate required chunks around player
 		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
 			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
 				int targetX = m_playerchunk_X + x;
 				int targetY = m_playerchunk_Y + y;
-				
-				if (!m_active_chunks.contains({ targetX, targetY })) {
-					Chunk _chunk(targetX, targetY);
-					color = esrovar::DebugMode ? m_world_seed : 0;
-					_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
-					m_active_chunks.insert({ { targetX, targetY }, _chunk });
-				}
+				if(!m_active_chunks.contains({ targetX, targetY }))
+					m_required_chunks.push_back({ targetX, targetY });
+			}
+		}
+		// Function to calculate unrequired chunks outside player's radius
+		for (const auto& [coords, _chunk] : m_active_chunks) {
+			auto& [cx, cy] = coords;
+			if (std::abs(cx - m_playerchunk_X) > esrovar::CHUNK_RADIUS || std::abs(cy - m_playerchunk_Y) > esrovar::CHUNK_RADIUS) {
+				m_unrequired_chunks.push_back({ cx, cy });
 			}
 		}
 	}
 
-	void WorldManager::update(int seed) {		
+	void WorldManager::update() {		
 		
-		// Initializing required variables
-		int color = 0;
-		
-		// Calculating visible chunk radius around player
-		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
-			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
-				int targetX = m_playerchunk_X + x;
-				int targetY = m_playerchunk_Y + y;
-				
-				if (!m_active_chunks.contains({ targetX, targetY })) {
-					Chunk _chunk(targetX, targetY);
-					color = esrovar::DebugMode ? seed : 0;
-					_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), color);
-					m_active_chunks.insert({ { targetX, targetY }, _chunk });
-				}
-			}
-		}
-		
-		// Removing chunks which are out of player's radius and marking chunk m_generated to false
-		for (auto it = m_active_chunks.begin(); it != m_active_chunks.end(); ) {
-			auto [cx, cy] = it->first;
-			if (std::abs(cx - m_playerchunk_X) > esrovar::CHUNK_RADIUS || std::abs(cy - m_playerchunk_Y) > esrovar::CHUNK_RADIUS) {
-				m_active_chunks.at({ cx,cy }).m_isGenerated = false;
-				it = m_active_chunks.erase(it);
-			} else {
-				++it;
-			}
+		// Need to create logic to get one chunk out from requiredchunk array
+		if (!m_required_chunks.empty())
+			if (!m_active_chunks.contains({ m_required_chunks.front()})) {
+				Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
+				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), m_world_seed);
+				m_active_chunks.insert({ {m_required_chunks.front()}, _chunk });
+				m_required_chunks.pop_front();
+			}		
+		// Remove one chunk out from unrequiredchunk array
+		if (!m_unrequired_chunks.empty()) {
+			m_active_chunks.at(m_unrequired_chunks.front()).m_isGenerated = false;
+			m_active_chunks.erase(m_unrequired_chunks.front());
+			m_unrequired_chunks.pop_front();
 		}
 	}
 

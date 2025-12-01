@@ -20,6 +20,7 @@
 #include <windows.h>
 #include <sstream>
 #include "FastNoise2/include/FastNoise/FastNoiseLite.h"
+#include <deque>
 
 // Debugging macro to log messages
 #ifdef _DEBUG
@@ -182,14 +183,18 @@ namespace esroops {
             ~WorldManager() = default;
             int m_playerchunk_X;
             int m_playerchunk_Y;
+            int m_chunkGenerationLimit;
             unsigned int m_world_seed;
 			float m_chunkframecounter;
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
+            std::deque<std::pair<int, int>> m_required_chunks;
+            std::deque<std::pair<int, int>> m_unrequired_chunks;
             std::array<std::string, 10> tilevariation = {
                 "plains", "beach", "ocean", "dirt", "forest", "jungle", "swamp", "mountain", "frozenplain", "snow"
 			};
 			// Member functions
-            void update(int seed);
+            void update();
+			void getRequiredChunks();
             void f_drawChunks(sf::RenderWindow& window);
             void ChunkBorders(sf::RenderWindow& window) const;
 			std::string getTileType(float x, float y);

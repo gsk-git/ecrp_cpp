@@ -27,6 +27,7 @@
 #include <string>
 #include <thread>
 #include <random>
+#include <iostream>
 
 // Handling player input
 static void InputHandler(esroops::Player& player, float& dt) {
@@ -195,10 +196,11 @@ static void StartGame() {
 	int frames = 0;
 	int cx = 0;
 	int cy = 0;
-	int seconds = 00;
-	int minutes = 00;
+	int seconds = 0;
+	int minutes = 0;
 	int day = 0;
 	int seedfortile = 0;
+	int chunkGenerationFrameLimit = 10;
 	float dt = 0.0f;
 	float hudtimer = 0.0f;
 	const uint32_t gameseed = GenerateWorldSeed();
@@ -250,16 +252,17 @@ static void StartGame() {
 	while (esrovar::GameWindow.isOpen()) {
 		
 		// Delta time management
-		seedfortile = dist(rng);
+		world.m_world_seed = dist(rng);
 		dt = clock.restart().asSeconds();
 		world.m_chunkframecounter++;
-		esrovar::globaldelta = dt;
 		GameClock(gameclock, elapsed, seconds, minutes, day);
 		playerX = std::to_string(esrovar::PLAYER_POSITION.first); 
 		playerY = std::to_string(esrovar::PLAYER_POSITION.second);
 		
-		// FPS calculation
-		frames++;
+		// Increment Frames
+		frames++;		
+		
+		// Calculates frame rate
 		if(fpsclock.getElapsedTime().asSeconds() >= 1.0f) {
 			fps = frames / fpsclock.getElapsedTime().asSeconds();
 			frames = 0;
@@ -289,9 +292,13 @@ static void StartGame() {
 		if (swapChunk != currentChunk) {
 			previousChunk = currentChunk;
 			currentChunk = swapChunk;
-			// Generating chunks, when player has moved to a new chunk
-			world.update(static_cast<int>(seedfortile));
+			// Get new chunks to be generated when player has moved to a new chunk
+			world.getRequiredChunks();
 		}
+		
+		// New required chunks will be generated for every 5th frame
+		if (frames % chunkGenerationFrameLimit == 0)
+			world.update();
 		
 		// Updating player, world and HUD elements
 		player.update(dt);
