@@ -100,10 +100,15 @@ namespace esrovar {
 namespace esrofn {
 
     bool LoadSpriteSheetsnew();
+    
     bool LoadTileSheet();
+    
     bool LoadFonts();
+    
     std::tuple<int, int> getChunkXY(std::pair<float, float>);
+    
     std::tuple<int, int> getPlayerXY(std::pair<float, float>);
+    
     std::tuple<float, float> getPlayerChunkXY(std::pair<float, float>);
 }// namespace esrofn ends
 
@@ -117,7 +122,7 @@ namespace esroops {
         IUpdatable() = default;
     };
 
-    enum BlockType {
+    enum class BlockType {
         plains,
         beach,
         dirt,
@@ -139,22 +144,14 @@ namespace esroops {
         int m_chunkY;
 		bool m_isGenerated;
         Tile* getTileData(int x, int y);
-
-        // Replace C-style 2D array with a contiguous vector (row-major).
-        // Use tiles.size() == CHUNK_SIZE * CHUNK_SIZE
         std::vector<Tile> tiles;
-
-        // convenience accessors (defined in .cpp)
         Tile& tileAt(int x, int y);
         const Tile& tileAt(int x, int y) const;
-
-        void generate(sf::Vector2f tilesize);
-    private:
-        // Member functions
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-        // Member variables
         sf::VertexArray m_grid;
         sf::Texture m_tileset;
+        // Member functions
+        void generate(sf::Vector2f tilesize);
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
 
     class Player : public sf::Drawable, public sf::Transformable, public sf::Texture, public IUpdatable {
@@ -178,14 +175,11 @@ namespace esroops {
         float m_AnimDuration;
         int m_health;
 		void setOrigintoBottomCenter();
+        sf::Texture m_playerbody;
+        std::optional<sf::Sprite> m_playersprite;
         // Member functions
         void update(float dt) override;
         void animatesprite(float dt);
-    private:		
-        // Member variables
-        sf::Texture m_playerbody;
-        std::optional<sf::Sprite> m_playersprite;		
-        // Member functions
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
 
