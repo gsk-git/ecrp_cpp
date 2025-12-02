@@ -20,6 +20,7 @@
 #include "FastNoise2/include/FastNoise/FastNoiseLite.h"
 #include <deque>
 #include <SFML/Graphics/Rect.hpp>
+#include <vector>
 
 #ifndef CONFIG_HPP_LOG_MACRO
 #define CONFIG_HPP_LOG_MACRO
@@ -133,12 +134,20 @@ namespace esroops {
     public:
         Chunk() = default;
         Chunk(int x, int y);
-        ~Chunk() = default;
+        ~Chunk() final = default;
         int m_chunkX;
         int m_chunkY;
 		bool m_isGenerated;
         Tile* getTileData(int x, int y);
-        Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
+
+        // Replace C-style 2D array with a contiguous vector (row-major).
+        // Use tiles.size() == CHUNK_SIZE * CHUNK_SIZE
+        std::vector<Tile> tiles;
+
+        // convenience accessors (defined in .cpp)
+        Tile& tileAt(int x, int y);
+        const Tile& tileAt(int x, int y) const;
+
         void generate(sf::Vector2f tilesize);
     private:
         // Member functions

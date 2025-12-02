@@ -58,8 +58,10 @@ namespace esrofn {
 				LOG("Failed to load texture: " + path);
 				return false;
 			}
+            // set smoothing (or disable) on success if desired
+            esrovar::kTextures[i].setSmooth(false);
 		}
-		return false;
+		return true;
 	}
 
 	bool LoadTileSheet() {
@@ -121,10 +123,22 @@ namespace esrofn {
 // Global objects and classes
 namespace esroops {
 
+	// Helper accessors implementation for Chunk
+	inline esroops::Tile& Chunk::tileAt(int x, int y) {
+		const std::size_t idx = static_cast<std::size_t>(y) * static_cast<std::size_t>(esrovar::CHUNK_SIZE) + static_cast<std::size_t>(x);
+		return tiles[idx];
+	}
+	inline const esroops::Tile& Chunk::tileAt(int x, int y) const {
+		const std::size_t idx = static_cast<std::size_t>(y) * static_cast<std::size_t>(esrovar::CHUNK_SIZE) + static_cast<std::size_t>(x);
+		return tiles[idx];
+	}
+
 	Chunk::Chunk(int x, int y) {
-		for (int y = 0; y < esrovar::CHUNK_SIZE; ++y)
-			for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
-				tiles[x][y].type = BlockType::plains;
+        // allocate contiguous storage for CHUNK_SIZE * CHUNK_SIZE tiles
+        tiles.resize(static_cast<std::size_t>(esrovar::CHUNK_SIZE) * static_cast<std::size_t>(esrovar::CHUNK_SIZE));
+		for (int yy = 0; yy < esrovar::CHUNK_SIZE; ++yy)
+			for (int xx = 0; xx < esrovar::CHUNK_SIZE; ++xx) {
+				tileAt(xx, yy).type = BlockType::plains;
 			}
 		m_chunkX = x;
 		m_chunkY = y;
@@ -173,7 +187,7 @@ namespace esroops {
 	}
 
 	Tile* Chunk::getTileData(int x, int y) {        
-		return &tiles[x][y];
+		return &tileAt(x, y);
 	}
 
 	void Chunk::generate(sf::Vector2f tilesize) {
@@ -232,7 +246,7 @@ namespace esroops {
 				m_grid[ static_cast<size_t>(tileIndex) + 5].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
 				
 				// Setting cell's type
-				tiles[x][y].type = static_cast<BlockType>(ccolor);
+				tileAt(x, y).type = static_cast<BlockType>(ccolor);
 			}
 		}
 		
@@ -337,7 +351,7 @@ namespace esroops {
 		m_playersprite->setTextureRect(
 			sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, 
 			static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, 
-			{ esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
+			{ esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE } ));
 		m_playersprite->setPosition(m_playerXY);
 	}
 
