@@ -43,6 +43,7 @@ namespace esrovar {
     constexpr int CHUNK_SIZE = 16;
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
+    constexpr uint32_t gameseed = 13031966;
     // Declaring states and directional constants
     enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
     enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
@@ -109,14 +110,10 @@ namespace esroops {
     enum BlockType {
         plains,
         beach,
-        ocean,
         dirt,
+        ocean,
         forest,
-        jungle,
-        swamp,
-        mountain,
-        frozenplain,
-        snow
+        mountain
     };
 
     struct Tile {
@@ -185,12 +182,13 @@ namespace esroops {
             int m_playerchunk_Y;
             int m_chunkGenerationLimit;
             unsigned int m_world_seed;
+			unsigned int m_tileColor;
 			float m_chunkframecounter;
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
             std::deque<std::pair<int, int>> m_required_chunks;
             std::deque<std::pair<int, int>> m_unrequired_chunks;
             std::array<std::string, 10> tilevariation = {
-                "plains", "beach", "ocean", "dirt", "forest", "jungle", "swamp", "mountain", "frozenplain", "snow"
+                "plains", "beach", "dirt", "ocean", "forest", "mountain", "swamp", "jungle", "frozenplain", "snow"
 			};
 			// Member functions
             void update();

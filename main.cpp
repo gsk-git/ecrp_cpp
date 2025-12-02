@@ -176,7 +176,7 @@ static void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int
 }
 
 // Generates a random world seed
-static [[nodiscard]] inline uint32_t GenerateWorldSeed() noexcept {
+/* static [[nodiscard]] inline uint32_t GenerateWorldSeed() noexcept {
 	std::random_device rd;
 	auto t = static_cast<uint32_t>(
 		std::chrono::high_resolution_clock::now().time_since_epoch().count());
@@ -185,7 +185,7 @@ static [[nodiscard]] inline uint32_t GenerateWorldSeed() noexcept {
 	t ^= t >> 33; t *= 0xc4ceb9fe1a85ec53ULL;
 	t ^= t >> 33;
 	return static_cast<uint32_t>(t);
-}
+}*/
 
 // Starts the game
 static void StartGame() {
@@ -203,7 +203,7 @@ static void StartGame() {
 	int chunkGenerationFrameLimit = 10;
 	float dt = 0.0f;
 	float hudtimer = 0.0f;
-	const uint32_t gameseed = GenerateWorldSeed();
+	const uint32_t gameseed = 23091995;
 	std::string playerX;
 	std::string playerY;
 	std::string tileType;
@@ -228,6 +228,7 @@ static void StartGame() {
 	sf::Time elapsed = sf::Time::Zero;
 	esroops::Player player;
 	esroops::WorldManager world(esrovar::PLAYER_POSITION, static_cast<int>(gameseed));
+	world.m_world_seed = dist(rng);
 	std::vector <esroops::IUpdatable*> systemdelta;	
 	esroops::HudBox hudbox({350, 300}, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
 	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
@@ -252,7 +253,6 @@ static void StartGame() {
 	while (esrovar::GameWindow.isOpen()) {
 		
 		// Delta time management
-		world.m_world_seed = dist(rng);
 		dt = clock.restart().asSeconds();
 		world.m_chunkframecounter++;
 		GameClock(gameclock, elapsed, seconds, minutes, day);
@@ -290,14 +290,17 @@ static void StartGame() {
 		
 		// Updating current and previous chunk values
 		if (swapChunk != currentChunk) {
+			
+			// Updating previous and current chunk values
 			previousChunk = currentChunk;
 			currentChunk = swapChunk;
+			
 			// Get new chunks to be generated when player has moved to a new chunk
 			world.getRequiredChunks();
 		}
 		
 		// New required chunks will be generated for every 5th frame
-		if (frames % chunkGenerationFrameLimit == 0)
+		if (frames % chunkGenerationFrameLimit == 0) 
 			world.update();
 		
 		// Updating player, world and HUD elements

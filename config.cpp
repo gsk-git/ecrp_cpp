@@ -168,6 +168,7 @@ namespace esroops {
 		m_required_chunks;
 		m_unrequired_chunks;
 		m_world_seed = seed;
+		m_tileColor = 0u;
 		m_chunkframecounter = 0.0f;
 		// Initializing member functions
 		f_initialize_world();
@@ -179,6 +180,8 @@ namespace esroops {
 
 	void Chunk::generate(sf::Vector2i tilesize, int Color) {
 		
+		// Noise seed
+		esrovar::noise.SetSeed(esrovar::gameseed);
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
 		m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
@@ -189,10 +192,14 @@ namespace esroops {
 				
 				// tileIndex identifies where the tile will sit in this grid
 				int tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
-				float chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE * tilesize.x);
-				float chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE * tilesize.y);
+				int chunkOffsetX = (m_chunkX * esrovar::CHUNK_SIZE + x);
+				int chunkOffsetY = (m_chunkY * esrovar::CHUNK_SIZE + y);
+				// Getting noise value for current tile
+				float noiseValue = esrovar::noise.GetNoise(chunkOffsetX, chunkOffsetY);
+				int ccolor = static_cast<int>(std::round((noiseValue + 1.0f) / 2.0f * 5.0f));
+				ccolor = std::clamp(ccolor, 0, 5);				
 				// Tile sheet index for now default selection is plains
-				int tu = Color; // Random tile selection
+				int tu = ccolor; // Random tile selection
 				int tv = 0;
 				// XY of independent tile
 				auto tx = chunkOffsetX + static_cast<float>(x * tilesize.x);
@@ -215,19 +222,8 @@ namespace esroops {
 				m_grid[ static_cast<size_t>(tileIndex) + 4].texCoords   = sf::Vector2f(texX + tilesize.x, texY + tilesize.y);
 				m_grid[ static_cast<size_t>(tileIndex) + 5].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
 				
-				// Setting cell's type as a plain
-				if (Color == 0)
-					tiles[x][y].type = BlockType::plains;
-				else if (Color == 1)
-					tiles[x][y].type = BlockType::beach;
-				else if (Color == 2)
-					tiles[x][y].type = BlockType::dirt;
-				else if (Color == 3)
-					tiles[x][y].type = BlockType::ocean;
-				else if (Color == 4)
-					tiles[x][y].type = BlockType::forest;
-				else if (Color == 5)
-					tiles[x][y].type = BlockType::mountain;
+				// Setting cell's type
+				tiles[x][y].type = static_cast<BlockType>(ccolor);
 			}
 		}
 		
@@ -349,7 +345,7 @@ namespace esroops {
 		if (!m_required_chunks.empty())
 			if (!m_active_chunks.contains({ m_required_chunks.front() })) {
 				Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), m_world_seed);
+				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), m_tileColor);
 				m_active_chunks.insert({ {m_required_chunks.front()}, _chunk });
 				m_required_chunks.pop_front();
 			}
@@ -385,7 +381,7 @@ namespace esroops {
 		if (!m_required_chunks.empty())
 			if (!m_active_chunks.contains({ m_required_chunks.front()})) {
 				Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), m_world_seed);
+				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), m_tileColor);
 				m_active_chunks.insert({ {m_required_chunks.front()}, _chunk });
 				m_required_chunks.pop_front();
 			}		
