@@ -1,5 +1,3 @@
-// ESROOPS - A 2D RPG Game
-
 // Including all necessary libraries
 #include "config.hpp"
 #include <SFML/System/Clock.hpp>
@@ -113,7 +111,7 @@ static void ProcessWindowEvents(esroops::Player& player) {
 
 // Make SFML window transparent
 static void SplashWindow(sf::RenderWindow& window) {
-	HWND hwnd = static_cast<HWND>(window.getNativeHandle());
+	auto hwnd = window.getNativeHandle();
 	LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
 	SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED | WS_EX_TRANSPARENT);
 	// Set alpha to 0 for full transparency and click-through
@@ -133,11 +131,11 @@ static void RunSplash() {
 		LOG("Logo not found or path is incorrect");
 	// Creating sprite for the logo
 	sf::Sprite logoSprite(logoTexture);
-	logoSprite.setScale(sf::Vector2f(static_cast<float>(512.f) / logoTexture.getSize().x, static_cast<float>(512.f) / logoTexture.getSize().y));
+	logoSprite.setScale(sf::Vector2f(512.f / static_cast<float>(logoTexture.getSize().x), 512.f / static_cast<float>(logoTexture.getSize().y)));
 	// Set the origin to the center of the logo
 	auto bounds = logoSprite.getLocalBounds();
 	logoSprite.setOrigin(sf::Vector2f(bounds.size.x * 0.5f, bounds.size.y * 0.5f));
-	logoSprite.setPosition(sf::Vector2f(splash.getSize().x * 0.5f, splash.getSize().y * 0.5f));
+	logoSprite.setPosition(sf::Vector2f(static_cast<float>(splash.getSize().x) * 0.5f, static_cast<float>(splash.getSize().y) * 0.5f));
 	// Chrono library to manage time
 	auto start = std::chrono::steady_clock::now();
 	// Set the splash window to be transparent
@@ -176,7 +174,7 @@ static void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int
 }
 
 // Generates a random world seed
-/* static [[nodiscard]] inline uint32_t GenerateWorldSeed() noexcept {
+[[nodiscard]] static inline uint32_t GenerateWorldSeed() noexcept {
 	std::random_device rd;
 	auto t = static_cast<uint32_t>(
 		std::chrono::high_resolution_clock::now().time_since_epoch().count());
@@ -184,8 +182,8 @@ static void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int
 	t ^= t >> 33; t *= 0xff51afd7ed558ccdULL;
 	t ^= t >> 33; t *= 0xc4ceb9fe1a85ec53ULL;
 	t ^= t >> 33;
-	return static_cast<uint32_t>(t);
-}*/
+	return t;
+}
 
 // Starts the game
 static void StartGame() {
@@ -288,28 +286,26 @@ static void StartGame() {
 		world.m_playerchunk_Y = std::get<1>(swapChunk);
 		
 		// Updating current and previous chunk values
-		if (swapChunk != currentChunk) {
-			
+		if (swapChunk != currentChunk) {			
 			// Updating previous and current chunk values
 			previousChunk = currentChunk;
-			currentChunk = swapChunk;
-			
+			currentChunk = swapChunk;			
 			// Get new chunks to be generated when player has moved to a new chunk
 			world.getRequiredChunks();
 		}
 		
 		// New required chunks will be generated for every 5th frame
-		if (frames % chunkGenerationFrameLimit == 0) 
+		if (frames % chunkGenerationFrameLimit == 0) {
 			world.update();
+		}
 		
 		// Updating player, world and HUD elements
 		player.update(dt);
 		
-		// 1) smooth logical camera (NO rounding here)
+		// Smooth logical camera
 		sf::Vector2f targetCenter = player.getPosition();
 		float lerpFactor = 5.0f * dt;
 		cameraCenter += (targetCenter - cameraCenter) * lerpFactor;
-		// 2) make a copy for drawing and snap THAT to integer pixels
 		sf::Vector2f drawCenter = cameraCenter;
 		drawCenter.x = std::floor(drawCenter.x + 0.5f);
 		drawCenter.y = std::floor(drawCenter.y + 0.5f);
