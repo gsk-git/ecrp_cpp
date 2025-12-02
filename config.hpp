@@ -30,6 +30,7 @@
 
 #ifdef _WIN32
 #include <Windows.h>
+#include <tuple>
 #define LOG(x) do { \
     std::ostringstream _oss; _oss << (x); \
     std::string _s = _oss.str(); _s.push_back('\n'); \

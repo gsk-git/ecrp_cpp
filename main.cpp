@@ -327,7 +327,7 @@ static void StartGame() {
 			tiletype.setString(std::format("TileType: {}", tileType)); pchunkxy.setString(std::format("previousChunk: X::{}, Y::{}", std::get<0>(previousChunk), std::get<1>(previousChunk)));
 			activechunks.setString(std::format("activeChunk: {}", world.m_active_chunks.size()));
 			fpsrate.setString(std::format("FPS: {}", fps));
-			gametime.setString(std::format("Game Time : {:0<2}m:{:0<2}s", minutes, seconds));
+			gametime.setString(std::format("Game Time : {:0>2}:{:0>2}", minutes, seconds));
 			esrovar::GameWindow.draw(hudbox);
 			esrovar::GameWindow.draw(playertext);
 			esrovar::GameWindow.draw(playerpos);
