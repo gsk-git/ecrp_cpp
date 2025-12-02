@@ -183,7 +183,7 @@ namespace esroops {
 		// Noise seed
 		esrovar::noise.SetSeed(esrovar::gameseed);
 		// Set vertex properties
-		m_grid.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
+		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);
 		m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
 		
 		// Instantiating vertex grid
@@ -191,22 +191,31 @@ namespace esroops {
 			for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
 				
 				// tileIndex identifies where the tile will sit in this grid
-				int tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
-				int chunkOffsetX = (m_chunkX * esrovar::CHUNK_SIZE + x);
-				int chunkOffsetY = (m_chunkY * esrovar::CHUNK_SIZE + y);
+				auto tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
+				auto worldTileX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE + x);
+				auto worldtileY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE + y);
+				
 				// Getting noise value for current tile
-				float noiseValue = esrovar::noise.GetNoise(chunkOffsetX, chunkOffsetY);
-				int ccolor = static_cast<int>(std::round((noiseValue + 1.0f) / 2.0f * 5.0f));
+				auto noiseValue = esrovar::noise.GetNoise(worldTileX, worldtileY);
+				auto ccolor = static_cast<int>(std::round((noiseValue + 1.0f) / 2.0f * 5.0f));
 				ccolor = std::clamp(ccolor, 0, 5);				
+				
 				// Tile sheet index for now default selection is plains
 				int tu = ccolor; // Random tile selection
 				int tv = 0;
+				
+				// Chunk pixel offset
+				auto chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE * tilesize.x);
+				auto chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE * tilesize.y);
+				
 				// XY of independent tile
 				auto tx = chunkOffsetX + static_cast<float>(x * tilesize.x);
 				auto ty = chunkOffsetY + static_cast<float>(y * tilesize.y);
+				
 				// XY for independent tile texture
 				auto texX = static_cast<float>(tu * tilesize.x);
 				auto texY = static_cast<float>(tv * tilesize.y);
+				
 				// Triangle 1
 				m_grid[ static_cast<size_t>(tileIndex) + 0].position    = sf::Vector2f(tx, ty);
 				m_grid[ static_cast<size_t>(tileIndex) + 1].position    = sf::Vector2f(tx + tilesize.x, ty);
