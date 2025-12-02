@@ -1,8 +1,6 @@
 ﻿// Including necessary libraries
 #include "config.hpp"
-#include <iostream>
 #include <cmath>
-#include <random>
 #include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -14,9 +12,7 @@
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowEnums.hpp>
 #include <map>
-#include <set>
 #include <string>
-#include <system_error>
 #include <utility>
 
 // Global variables
@@ -57,6 +53,7 @@ namespace esrofn {
 			// Convert string_view → std::string for SFML
 			std::string path{ esrovar::kTexturePaths[i] };
 			if (!esrovar::kTextures[i].loadFromFile(path)) {
+				esrovar::kTextures[i].setSmooth(false);
 				LOG("Failed to load texture: " + path);
 				return false;
 			}
@@ -178,7 +175,7 @@ namespace esroops {
 		return &tiles[x][y];
 	}
 
-	void Chunk::generate(sf::Vector2i tilesize, int Color) {
+	void Chunk::generate(sf::Vector2f tilesize) {
 		
 		// Noise seed
 		esrovar::noise.SetSeed(esrovar::gameseed);
@@ -192,6 +189,8 @@ namespace esroops {
 				
 				// tileIndex identifies where the tile will sit in this grid
 				auto tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
+				
+				// World Tile XY for noise logic
 				auto worldTileX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE + x);
 				auto worldtileY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE + y);
 				
@@ -201,20 +200,20 @@ namespace esroops {
 				ccolor = std::clamp(ccolor, 0, 5);				
 				
 				// Tile sheet index for now default selection is plains
-				int tu = ccolor; // Random tile selection
-				int tv = 0;
+				auto tu = ccolor; // Random tile selection
+				auto tv = 0;
 				
 				// Chunk pixel offset
-				auto chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE * tilesize.x);
-				auto chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE * tilesize.y);
+				auto chunkOffsetX = m_chunkX * esrovar::CHUNK_SIZE * tilesize.x;
+				auto chunkOffsetY = m_chunkY * esrovar::CHUNK_SIZE * tilesize.y;
 				
 				// XY of independent tile
-				auto tx = chunkOffsetX + static_cast<float>(x * tilesize.x);
-				auto ty = chunkOffsetY + static_cast<float>(y * tilesize.y);
+				auto tx = chunkOffsetX + x * tilesize.x;
+				auto ty = chunkOffsetY + y * tilesize.y;
 				
 				// XY for independent tile texture
-				auto texX = static_cast<float>(tu * tilesize.x);
-				auto texY = static_cast<float>(tv * tilesize.y);
+				auto texX = tu * tilesize.x;
+				auto texY = tv * tilesize.y;
 				
 				// Triangle 1
 				m_grid[ static_cast<size_t>(tileIndex) + 0].position    = sf::Vector2f(tx, ty);
@@ -351,13 +350,14 @@ namespace esroops {
 		
 		getRequiredChunks();
 		// Initializing set to hold required chunk in that frame
-		if (!m_required_chunks.empty())
+		if (!m_required_chunks.empty()) {
 			if (!m_active_chunks.contains({ m_required_chunks.front() })) {
 				Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), m_tileColor);
-				m_active_chunks.insert({ {m_required_chunks.front()}, _chunk });
+				_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
+				m_active_chunks.try_emplace({ m_required_chunks.front() }, _chunk);
 				m_required_chunks.pop_front();
 			}
+		}
 	}
 
 	void WorldManager::getRequiredChunks() {
@@ -384,16 +384,17 @@ namespace esroops {
 		}
 	}
 
-	void WorldManager::update() {		
-		
+	void WorldManager::update() {
+
 		// Need to create logic to get one chunk out from requiredchunk array
-		if (!m_required_chunks.empty())
-			if (!m_active_chunks.contains({ m_required_chunks.front()})) {
+		if (!m_required_chunks.empty()) {
+			if (!m_active_chunks.contains({ m_required_chunks.front() })) {
 				Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-				_chunk.generate(sf::Vector2i({ esrovar::pixel_size, esrovar::pixel_size }), m_tileColor);
-				m_active_chunks.insert({ {m_required_chunks.front()}, _chunk });
+				_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
+				m_active_chunks.try_emplace({m_required_chunks.front()}, _chunk);
 				m_required_chunks.pop_front();
-			}		
+			}
+		}
 		// Remove one chunk out from unrequiredchunk array
 		if (!m_unrequired_chunks.empty()) {
 			m_active_chunks.at(m_unrequired_chunks.front()).m_isGenerated = false;
@@ -402,7 +403,7 @@ namespace esroops {
 		}
 	}
 
-	void WorldManager::f_drawChunks(sf::RenderWindow& window) {
+	void WorldManager::f_drawChunks(sf::RenderWindow& window) const {
 		for (auto& [coords, _chunk] : m_active_chunks) {
 			window.draw(_chunk);
 		}

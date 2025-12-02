@@ -192,23 +192,20 @@ static void StartGame() {
 	
 	// Initializing game variables
 	int fps = 0;
-	int fpsvar = 0;
 	int frames = 0;
 	int cx = 0;
 	int cy = 0;
 	int seconds = 0;
 	int minutes = 0;
 	int day = 0;
-	int seedfortile = 0;
-	int chunkGenerationFrameLimit = 10;
+	int chunkGenerationFrameLimit = 2;
 	float dt = 0.0f;
-	float hudtimer = 0.0f;
 	const uint32_t gameseed = 23091995;
 	std::string playerX;
 	std::string playerY;
 	std::string tileType;
 	std::mt19937 rng(gameseed);
-	std::uniform_int_distribution<int> dist(0, 5);
+	std::uniform_int_distribution dist(0, 5);
 	std::tuple<int, int> playerXY = { 0, 0 };
 	std::tuple<float, float> playerChunkXY = { 0, 0 };
 	std::tuple<int, int> currentChunk = {0, 0};
@@ -229,6 +226,7 @@ static void StartGame() {
 	esroops::Player player;
 	esroops::WorldManager world(esrovar::PLAYER_POSITION, static_cast<int>(gameseed));
 	world.m_world_seed = dist(rng);
+	sf::Vector2f cameraCenter = player.getPosition();
 	std::vector <esroops::IUpdatable*> systemdelta;	
 	esroops::HudBox hudbox({350, 300}, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
 	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
@@ -245,6 +243,7 @@ static void StartGame() {
 	//Init View
 	sf::Vector2f viewArea = { esrovar::SCRWDT, esrovar::SCRHGT };
 	view.setSize(viewArea);
+	view.setCenter(cameraCenter);
 	
 	// Capping framerate @60fps
 	esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
@@ -306,11 +305,15 @@ static void StartGame() {
 		// Updating player, world and HUD elements
 		player.update(dt);
 		
-		// Smoothening scroll view
-		sf::Vector2f viewcenter = view.getCenter();
-		sf::Vector2f targetcenter = player.getPosition();
-		float lerpfactor = 5.0f * dt;
-		view.setCenter(viewcenter + (targetcenter - viewcenter) * lerpfactor);
+		// 1) smooth logical camera (NO rounding here)
+		sf::Vector2f targetCenter = player.getPosition();
+		float lerpFactor = 5.0f * dt;
+		cameraCenter += (targetCenter - cameraCenter) * lerpFactor;
+		// 2) make a copy for drawing and snap THAT to integer pixels
+		sf::Vector2f drawCenter = cameraCenter;
+		drawCenter.x = std::floor(drawCenter.x + 0.5f);
+		drawCenter.y = std::floor(drawCenter.y + 0.5f);
+		view.setCenter(drawCenter);
 		
 		// Initializating and generating world chunks, player, view and UI elements.
 		esrovar::GameWindow.clear();

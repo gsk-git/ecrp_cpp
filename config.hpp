@@ -17,8 +17,6 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <windows.h>
-#include <sstream>
 #include "FastNoise2/include/FastNoise/FastNoiseLite.h"
 #include <deque>
 
@@ -130,7 +128,7 @@ namespace esroops {
 		bool m_isGenerated;
         Tile* getTileData(int x, int y);
         Tile tiles[esrovar::CHUNK_SIZE][esrovar::CHUNK_SIZE];
-        void generate(sf::Vector2i tilesize, int ChunkColor);
+        void generate(sf::Vector2f tilesize);
     private:
         // Member functions
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -193,7 +191,7 @@ namespace esroops {
 			// Member functions
             void update();
 			void getRequiredChunks();
-            void f_drawChunks(sf::RenderWindow& window);
+            void f_drawChunks (sf::RenderWindow& window) const;
             void ChunkBorders(sf::RenderWindow& window) const;
 			std::string getTileType(float x, float y);
         private:
