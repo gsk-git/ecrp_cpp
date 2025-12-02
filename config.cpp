@@ -202,6 +202,18 @@ namespace esroops {
 		
 		// Noise seed
 		esrovar::noise.SetSeed(esrovar::gameseed);
+		esrovar::noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Cellular);
+		esrovar::noise.SetFrequency(0.010f);
+		esrovar::noise.SetCellularDistanceFunction(FastNoiseLite::CellularDistanceFunction::CellularDistanceFunction_Hybrid);
+		esrovar::noise.SetCellularReturnType(FastNoiseLite::CellularReturnType::CellularReturnType_CellValue);
+		esrovar::noise.SetCellularJitter(1.0f);
+		esrovar::noise.SetDomainWarpType(FastNoiseLite::DomainWarpType::DomainWarpType_OpenSimplex2);
+		esrovar::noise.SetDomainWarpAmp(100.0f);
+		esrovar::noise.SetFractalType(FastNoiseLite::FractalType::FractalType_DomainWarpIndependent);
+		esrovar::noise.SetFractalOctaves(3);
+		esrovar::noise.SetFractalLacunarity(2.0f);
+		esrovar::noise.SetFractalGain(0.5f);
+		
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);
 		m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
@@ -219,16 +231,16 @@ namespace esroops {
 				
 				// Getting noise value for current tile
 				auto noiseValue = esrovar::noise.GetNoise(worldTileX, worldtileY);
-				auto ccolor = static_cast<int>(std::round((noiseValue + 1.0f) / 2.0f * 5.0f));
-				ccolor = std::clamp(ccolor, 0, 5);				
+				auto noiseIDX = static_cast<int>(std::round((noiseValue + 1.0f) / 2.0f * 5.0f));
+				noiseIDX = std::clamp(noiseIDX, 0, 5);
 				
 				// Tile sheet index for now default selection is plains
-				auto tu = ccolor; // Random tile selection
+				auto tu = noiseIDX;
 				auto tv = 0;
 				
 				// Chunk pixel offset
-				auto chunkOffsetX = m_chunkX * esrovar::CHUNK_SIZE * tilesize.x;
-				auto chunkOffsetY = m_chunkY * esrovar::CHUNK_SIZE * tilesize.y;
+				auto chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE) * tilesize.x;
+				auto chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE) * tilesize.y;
 				
 				// XY of independent tile
 				auto tx = chunkOffsetX + x * tilesize.x;
@@ -254,7 +266,7 @@ namespace esroops {
 				m_grid[ static_cast<size_t>(tileIndex) + 5].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
 				
 				// Setting cell's type
-				tileAt(x, y).type = static_cast<BlockType>(ccolor);
+				tileAt(x, y).type = static_cast<BlockType>(noiseIDX);
 			}
 		}
 		
