@@ -19,18 +19,29 @@
 #include <utility>
 #include "FastNoise2/include/FastNoise/FastNoiseLite.h"
 #include <deque>
+#include <SFML/Graphics/Rect.hpp>
 
-// Debugging macro to log messages
-#ifdef _DEBUG
-#define LOG(x) do { std::ostringstream _oss; \
-    _oss << x; \
-    std::string _s = _oss.str(); \
-    _s.push_back('\n'); \
+#ifndef CONFIG_HPP_LOG_MACRO
+#define CONFIG_HPP_LOG_MACRO
+
+#include <sstream>
+#include <iostream>
+
+#ifdef _WIN32
+#include <Windows.h>
+#define LOG(x) do { \
+    std::ostringstream _oss; _oss << (x); \
+    std::string _s = _oss.str(); _s.push_back('\n'); \
     OutputDebugStringA(_s.c_str()); \
-} while(0)
+} while (0)
 #else
-#define LOG(x) ((void)0)
+#define LOG(x) do { \
+    std::ostringstream _oss; _oss << (x); \
+    std::cerr << _oss.str() << '\n'; \
+} while (0)
 #endif
+
+#endif // CONFIG_HPP_LOG_MACRO
 
 // Global variables
 namespace esrovar {
@@ -141,8 +152,7 @@ namespace esroops {
     public:
 		// Initializing player object
         Player();
-        ~Player() = default;
-		
+        ~Player() final = default;		
         // Member variables
         bool m_IsMoving;
 		bool m_IsSlashAttacking;
@@ -212,8 +222,8 @@ namespace esroops {
 			~HudBox() override = default;
             using sf::Transformable::getPosition;
             void setSize(sf::Vector2f size)             { hudbox.setSize(size);}
-            void setFillColor(sf::Color& color)         { hudbox.setFillColor(color); }
-            void setOutlineColor(sf::Color& outcolor)   { hudbox.setOutlineColor(outcolor); }
+            void setFillColor(sf::Color color)         { hudbox.setFillColor(color); }
+            void setOutlineColor(sf::Color outcolor)   { hudbox.setOutlineColor(outcolor); }
             void setOutlineThickness(float thickness)  { hudbox.setOutlineThickness(thickness); }
         private:
             sf::RectangleShape hudbox;
@@ -225,7 +235,7 @@ namespace esroops {
 
     class HudText : public sf::Drawable, public sf::Transformable {
     public:
-        HudText(const sf::Font& font,
+        explicit HudText(const sf::Font& font,
             sf::Vector2f position = { 0.f, 0.f },
             sf::Color fillColor = sf::Color::White,
             unsigned int style = sf::Text::Regular,

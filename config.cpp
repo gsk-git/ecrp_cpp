@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <Windows.h>
 
 // Global variables
 namespace esrovar {
