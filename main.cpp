@@ -175,7 +175,6 @@ static void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int
 
 // Generates a random world seed
 [[nodiscard]] static inline uint32_t GenerateWorldSeed() noexcept {
-	std::random_device rd;
 	auto t = static_cast<uint32_t>(
 		std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	// xorshift mix to spread bits
@@ -191,8 +190,6 @@ static void StartGame() {
 	// Initializing game variables
 	int fps = 0;
 	int frames = 0;
-	int cx = 0;
-	int cy = 0;
 	int seconds = 0;
 	int minutes = 0;
 	int day = 0;
@@ -261,7 +258,7 @@ static void StartGame() {
 		
 		// Calculates frame rate
 		if(fpsclock.getElapsedTime().asSeconds() >= 1.0f) {
-			fps = frames / fpsclock.getElapsedTime().asSeconds();
+			fps = frames / static_cast<int>(fpsclock.getElapsedTime().asSeconds());
 			frames = 0;
 			fpsclock.restart();		
 		}
@@ -330,7 +327,7 @@ static void StartGame() {
 			tiletype.setString(std::format("TileType: {}", tileType)); pchunkxy.setString(std::format("previousChunk: X::{}, Y::{}", std::get<0>(previousChunk), std::get<1>(previousChunk)));
 			activechunks.setString(std::format("activeChunk: {}", world.m_active_chunks.size()));
 			fpsrate.setString(std::format("FPS: {}", fps));
-			gametime.setString(std::format("Game Time : {:0>2}m:{:0>2}s", minutes, seconds));
+			gametime.setString(std::format("Game Time : {:0<2}m:{:0<2}s", minutes, seconds));
 			esrovar::GameWindow.draw(hudbox);
 			esrovar::GameWindow.draw(playertext);
 			esrovar::GameWindow.draw(playerpos);

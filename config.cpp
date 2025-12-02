@@ -90,15 +90,15 @@ namespace esrofn {
 	}
 
 	std::tuple<int, int> getChunkXY(std::pair<float, float> playerxy) {
-		float chunkX = std::floorf(playerxy.first / (esrovar::CHUNK_SIZE * esrovar::pixel_size));
-		float chunkY = std::floorf(playerxy.second / (esrovar::CHUNK_SIZE * esrovar::pixel_size));
+		float chunkX = std::floorf(playerxy.first / static_cast<float>(esrovar::CHUNK_SIZE * esrovar::pixel_size));
+		float chunkY = std::floorf(playerxy.second / static_cast<float>(esrovar::CHUNK_SIZE * esrovar::pixel_size));
 		
 		return std::make_tuple(static_cast<int>(chunkX), static_cast<int>(chunkY));
 	}
 
 	std::tuple<int, int> getPlayerXY(std::pair<float, float> playerxy) {
-		float playerX = std::floorf(playerxy.first / esrovar::pixel_size);
-		float playerY = std::floorf(playerxy.second / esrovar::pixel_size);
+		float playerX = std::floorf(playerxy.first / static_cast<float>(esrovar::pixel_size));
+		float playerY = std::floorf(playerxy.second / static_cast<float>(esrovar::pixel_size));
 
 		return std::make_tuple(static_cast<int>(playerX), static_cast<int>(playerY));
 	}
@@ -112,17 +112,17 @@ namespace esrofn {
 		
 		// Adjusting for negative coordinates
 		if (x < 0)
-			x += std::abs(x * chunkSizeInPixels);
+			x += std::abs(x * static_cast<float>(chunkSizeInPixels));
 		if (y < 0)
-			y += std::abs(y * chunkSizeInPixels);
+			y += std::abs(y * static_cast<float>(chunkSizeInPixels));
 		
 		// Getting local chunk coordinates
 		float chunkLocalX = std::fmod(x, static_cast<float>(chunkSizeInPixels));
 		float chunkLocalY = std::fmod(y, static_cast<float>(chunkSizeInPixels));
 		
 		// Converting to chunk local coordinates
-		float playerchunkX = std::floorf(chunkLocalX / esrovar::pixel_size);
-		float playerchunkY = std::floorf(chunkLocalY / esrovar::pixel_size);
+		float playerchunkX = std::floorf(chunkLocalX / static_cast<float>(esrovar::pixel_size));
+		float playerchunkY = std::floorf(chunkLocalY / static_cast<float>(esrovar::pixel_size));
 		
 		return std::make_tuple(playerchunkX, playerchunkY);
 	}
@@ -164,7 +164,7 @@ namespace esroops {
 		m_StateEnum = esrovar::State::idle;
 		m_PrevStateEnum = esrovar::State::idle;
 		m_DirectionEnum = esrovar::Directions::down;
-		m_playerXY = sf::Vector2f(static_cast<float>(0.0f), static_cast<float>(0.0f));
+		m_playerXY = sf::Vector2f(0.0f, 0.0f);
 		m_TotalFrames = 0;
 		m_CurrentFrame = 0;
 		m_AnimTimer = 0.0f;
@@ -243,12 +243,12 @@ namespace esroops {
 				auto chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE) * tilesize.y;
 				
 				// XY of independent tile
-				auto tx = chunkOffsetX + x * tilesize.x;
-				auto ty = chunkOffsetY + y * tilesize.y;
+				auto tx = chunkOffsetX + static_cast<float>(x) * tilesize.x;
+				auto ty = chunkOffsetY + static_cast<float>(y) * tilesize.y;
 				
 				// XY for independent tile texture
-				auto texX = tu * tilesize.x;
-				auto texY = tv * tilesize.y;
+				auto texX = static_cast<float>(tu) * tilesize.x;
+				auto texY = static_cast<float>(tv) * tilesize.y;
 				
 				// Triangle 1
 				m_grid[ static_cast<size_t>(tileIndex) + 0].position    = sf::Vector2f(tx, ty);
@@ -265,7 +265,7 @@ namespace esroops {
 				m_grid[ static_cast<size_t>(tileIndex) + 4].texCoords   = sf::Vector2f(texX + tilesize.x, texY + tilesize.y);
 				m_grid[ static_cast<size_t>(tileIndex) + 5].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
 				
-				// Setting cell's type
+				// Setting tile's type at XY
 				tileAt(x, y).type = static_cast<BlockType>(noiseIDX);
 			}
 		}
@@ -380,13 +380,11 @@ namespace esroops {
 		
 		getRequiredChunks();
 		// Initializing set to hold required chunk in that frame
-		if (!m_required_chunks.empty()) {
-			if (!m_active_chunks.contains({ m_required_chunks.front() })) {
-				Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-				_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
-				m_active_chunks.try_emplace({ m_required_chunks.front() }, _chunk);
-				m_required_chunks.pop_front();
-			}
+		if (!m_required_chunks.empty() && !m_active_chunks.contains({m_required_chunks.front()})) {
+			Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
+			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
+			m_active_chunks.try_emplace({ m_required_chunks.front() }, _chunk);
+			m_required_chunks.pop_front();
 		}
 	}
 
@@ -417,13 +415,11 @@ namespace esroops {
 	void WorldManager::update() {
 
 		// Need to create logic to get one chunk out from requiredchunk array
-		if (!m_required_chunks.empty()) {
-			if (!m_active_chunks.contains({ m_required_chunks.front() })) {
-				Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-				_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
-				m_active_chunks.try_emplace({m_required_chunks.front()}, _chunk);
-				m_required_chunks.pop_front();
-			}
+		if (!m_required_chunks.empty() && !m_active_chunks.contains({ m_required_chunks.front() })) {
+			Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
+			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
+			m_active_chunks.try_emplace({m_required_chunks.front()}, _chunk);
+			m_required_chunks.pop_front();
 		}
 		// Remove one chunk out from unrequiredchunk array
 		if (!m_unrequired_chunks.empty()) {
