@@ -15,6 +15,14 @@
 #include <string>
 #include <utility>
 #include <Windows.h>
+#include <FastNoise/FastNoiseLite.h>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <algorithm>
+#include <array>
+#include <cstdlib>
+#include <format>
+#include <tuple>
 
 // Global variables
 namespace esrovar {
@@ -452,7 +460,7 @@ namespace esroops {
 		// Fetching tile data from active chunks
 		if (m_active_chunks.contains({ chunkX, chunkY })) {
 			Chunk& currentChunk = m_active_chunks.at({ chunkX, chunkY });
-			Tile* tile = currentChunk.getTileData(static_cast<int>(playerchunkX), static_cast<int>(playerchunkY));
+			const Tile* tile = currentChunk.getTileData(static_cast<int>(playerchunkX), static_cast<int>(playerchunkY));
 			if (tile) {
 				return tilevariation[static_cast<int>(tile->type)];
 			}
