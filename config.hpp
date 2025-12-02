@@ -53,7 +53,7 @@ namespace esrovar {
     constexpr int CHUNK_SIZE = 16;
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
-    constexpr uint32_t gameseed = 13031966;
+    constexpr uint32_t gameseed = 23091995;
     // Declaring states and directional constants
     enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
     enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };

@@ -203,7 +203,7 @@ namespace esroops {
 		// Noise seed
 		esrovar::noise.SetSeed(esrovar::gameseed);
 		esrovar::noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_Cellular);
-		esrovar::noise.SetFrequency(0.010f);
+		esrovar::noise.SetFrequency(0.1f);
 		esrovar::noise.SetCellularDistanceFunction(FastNoiseLite::CellularDistanceFunction::CellularDistanceFunction_Hybrid);
 		esrovar::noise.SetCellularReturnType(FastNoiseLite::CellularReturnType::CellularReturnType_CellValue);
 		esrovar::noise.SetCellularJitter(1.0f);
