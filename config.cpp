@@ -131,11 +131,11 @@ namespace esrofn {
 // Global objects and classes
 namespace esroops {
 
-	// Helper accessors implementation for Chunk
 	inline esroops::Tile& Chunk::tileAt(int x, int y) {
 		const std::size_t idx = static_cast<std::size_t>(y) * static_cast<std::size_t>(esrovar::CHUNK_SIZE) + static_cast<std::size_t>(x);
 		return tiles[idx];
 	}
+
 	inline const esroops::Tile& Chunk::tileAt(int x, int y) const {
 		const std::size_t idx = static_cast<std::size_t>(y) * static_cast<std::size_t>(esrovar::CHUNK_SIZE) + static_cast<std::size_t>(x);
 		return tiles[idx];
