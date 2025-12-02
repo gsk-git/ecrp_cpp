@@ -336,11 +336,9 @@ namespace esroops {
 					m_CurrentFrame = 0;
 			}
 		}
-		// Special animation for sitting state
 		else if (m_StateEnum == esrovar::State::sit) {
 				m_CurrentFrame = 0;
 		}		
-		// Special animation for jumping state
 		else if (m_StateEnum == esrovar::State::jump) {
 			while (m_AnimTimer >= m_AnimDuration) {
 				m_AnimTimer -= m_AnimDuration;
@@ -356,10 +354,7 @@ namespace esroops {
 		}
 		
 		// Updating texture rectangle
-		m_playersprite->setTextureRect(
-			sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, 
-			static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, 
-			{ esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE } ));
+		m_playersprite->setTextureRect( sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE } ));
 		m_playersprite->setPosition(m_playerXY);
 	}
 
