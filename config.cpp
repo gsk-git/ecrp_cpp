@@ -204,9 +204,6 @@ namespace esroops {
 		esrovar::noise.SetSeed(esrovar::gameseed);
 		esrovar::noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2S);
 		esrovar::noise.SetFrequency(0.015f);
-		//esrovar::noise.SetCellularDistanceFunction(FastNoiseLite::CellularDistanceFunction::CellularDistanceFunction_Hybrid);
-		//esrovar::noise.SetCellularReturnType(FastNoiseLite::CellularReturnType::CellularReturnType_CellValue);
-		//esrovar::noise.SetCellularJitter(1.0f);
 		esrovar::noise.SetDomainWarpType(FastNoiseLite::DomainWarpType::DomainWarpType_OpenSimplex2);
 		esrovar::noise.SetDomainWarpAmp(10.0f);
 		esrovar::noise.SetFractalType(FastNoiseLite::FractalType::FractalType_None);
@@ -231,7 +228,7 @@ namespace esroops {
 				
 				// Getting noise value for current tile
 				auto noiseValue = esrovar::noise.GetNoise(worldTileX, worldtileY);
-				noiseValue += 0.5 * esrovar::noise.GetNoise(worldTileX, worldtileY);
+				noiseValue += 0.5f * esrovar::noise.GetNoise(worldTileX, worldtileY);
 				auto noiseIDX = static_cast<int>(std::round((noiseValue + 1.0f) / 2.0f * 5.0f));
 				noiseIDX = std::clamp(noiseIDX, 0, 5);
 				

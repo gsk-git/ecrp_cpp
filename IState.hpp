@@ -2,12 +2,17 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
+enum class StateSignal {
+	NONE = 0,
+	CHANGE_TO_GAMESTATE,
+	CHANGE_TO_PAUSESTATE,
+	EXIT_APPLICATION
+};
+
 class IState {
 	public:
 		// Default constructor and destructor
 		virtual ~IState() = default;
-		// State member variables
-		// State member functions
 		virtual int OnEnter();
 		virtual int OnExit();
 		virtual int Update();

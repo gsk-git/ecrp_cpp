@@ -1,7 +1,20 @@
 #include "StateManager.hpp"
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <memory>
+#include "IState.hpp"
+#include <utility>
 
-void StateManager::ChangeState(std::unique_ptr<IState> _current) {
-	// Check if the new state is different from the current state	
+StateManager::~StateManager() {
+}
+
+void StateManager::ChangeState(std::unique_ptr<IState> nextState) {
+}
+
+void StateManager::PushState(std::unique_ptr<IState> nextState) {
+
+}
+
+void  StateManager::PopState() {
 }
 
 void StateManager::UpdateState() {
