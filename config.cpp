@@ -200,6 +200,19 @@ namespace esroops {
 
 	void Chunk::generate(sf::Vector2f tilesize) {
 		
+		// Scaled zoom to 4096x	= 0.000244140625
+		// Scaled zoom to 2048x	= 0.000488281250
+		// Scaled zoom to 1024x	= 0.000976562500
+		// Scaled zoom to 512x	= 0.001953125000
+		// Scaled zoom to 256x	= 0.003906250000
+		// Scaled zoom to 128x	= 0.007812500000
+		// Scaled zoom to 64x	= 0.015625000000
+		// Scaled zoom to 32x	= 0.031250000000
+		// Scaled zoom to 16x	= 0.062500000000
+		// Scaled zoom to 8x	= 0.125000000000
+		// Scaled zoom to 4x	= 0.250000000000
+		// Scaled zoom to 2x	= 0.500000000000
+		// Scaled zoom to 1x	= 1.000000000000
 		// Noise seed
 		esrovar::noise.SetSeed(esrovar::gameseed);
 		esrovar::noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2S);
