@@ -67,7 +67,7 @@ installed/
 # ================================
 # Build Artifacts / Binaries
 # ================================
-/game/x64/
+*/game
 /Debug/
 /Release/
 /out/
