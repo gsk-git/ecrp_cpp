@@ -18,6 +18,7 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -25,13 +26,16 @@
     <RootNamespace>game</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -39,12 +43,14 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -52,48 +58,60 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-  </ImportGroup>
-  <ImportGroup Label="Shared">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
   </ImportGroup>
+
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
   </ImportGroup>
+
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
   </ImportGroup>
+
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
+            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
+            Label="LocalAppDataPlatform" />
   </ImportGroup>
+
   <PropertyGroup Label="UserMacros" />
+
+  <!-- Consolidated include/library paths for x64 configurations -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-<<<<<<< HEAD
-    <IncludePath>C:\lib;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <!-- include both SFML and FastNoise and preserve system tokens -->
+    <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib;$(VC_IncludePath);$(WindowsSDK_IncludePath);%(IncludePath)</IncludePath>
+    <LibraryPath>C:\lib\SFML\lib;C:\lib\FastNoise\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);%(LibraryPath)</LibraryPath>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\lib;C:\lib\SFML\include</IncludePath>
-    <LibraryPath>C:\lib\SFML\lib</LibraryPath>
+    <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib;$(VC_IncludePath);$(WindowsSDK_IncludePath);%(IncludePath)</IncludePath>
+    <LibraryPath>C:\lib\SFML\lib;C:\lib\FastNoise\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);%(LibraryPath)</LibraryPath>
   </PropertyGroup>
+
+  <!-- Win32 configurations: keep SFML entries and system tokens -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\lib\SFML\include</IncludePath>
-    <LibraryPath>C:\lib\SFML\lib</LibraryPath>
+    <IncludePath>C:\lib\SFML\include;C:\lib;$(VC_IncludePath);$(WindowsSDK_IncludePath);%(IncludePath)</IncludePath>
+    <LibraryPath>C:\lib\SFML\lib;C:\lib;$(VC_LibraryPath);$(WindowsSDK_LibraryPath);%(LibraryPath)</LibraryPath>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\lib\SFML\include</IncludePath>
-    <LibraryPath>C:\lib\SFML\lib</LibraryPath>
-=======
-    <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\lib</IncludePath>
-    <LibraryPath>C:\lib\SFML\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);C:\lib\FastNoise\lib</LibraryPath>
+    <IncludePath>C:\lib\SFML\include;C:\lib;$(VC_IncludePath);$(WindowsSDK_IncludePath);%(IncludePath)</IncludePath>
+    <LibraryPath>C:\lib\SFML\lib;C:\lib;$(VC_LibraryPath);$(WindowsSDK_LibraryPath);%(LibraryPath)</LibraryPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\lib\SFML\lib;C:\lib\SFML3\lib\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);C:\lib\FastNoise\lib</LibraryPath>
->>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
-  </PropertyGroup>
+
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -102,15 +120,16 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\lib\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\lib\SFML\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d-3;sfml-system-d-3;sfml-window-d-3</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\lib\SFML\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d-3;sfml-system-d-3;sfml-window-d-3;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -121,45 +140,35 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\lib\SFML\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-<<<<<<< HEAD
-      <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
-=======
-      <AdditionalIncludeDirectories>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib\SFML3\include;C:\lib\FastNoise2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
->>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
+      <AdditionalIncludeDirectories>C:\lib\SFML\include;C:\lib\FastNoise\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-<<<<<<< HEAD
-      <AdditionalLibraryDirectories>C:\lib\SFML\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d-3;sfml-system-d-3;sfml-window-d-3;%(AdditionalDependencies)</AdditionalDependencies>
-=======
-      <AdditionalLibraryDirectories>C:\lib\SFML3\lib;C:\lib\FastNoise2\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d.lib;
-sfml-window-d.lib;
-sfml-system-d.lib;FastNoiseD.lib;%(AdditionalDependencies)</AdditionalDependencies>
->>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
+      <AdditionalLibraryDirectories>C:\lib\SFML\lib;C:\lib\FastNoise\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;FastNoiseD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Message>
-      </Message>
+      <Message />
     </PostBuildEvent>
   </ItemDefinitionGroup>
+
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -168,30 +177,23 @@ sfml-system-d.lib;FastNoiseD.lib;%(AdditionalDependencies)</AdditionalDependenc
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-<<<<<<< HEAD
-      <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-=======
-      <AdditionalIncludeDirectories>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib\FastNoise2\include;C:\lib\SFML3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\lib\SFML\include;C:\lib\FastNoise\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
->>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\lib\SFML\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics.lib;
-sfml-window.lib;
-sfml-system.lib;FastNoise.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\lib\SFML\lib;C:\lib\FastNoise\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;FastNoise.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
     <PostBuildEvent>
-      <Message>
-      </Message>
+      <Message />
     </PostBuildEvent>
   </ItemDefinitionGroup>
+
   <ItemGroup>
     <ClCompile Include="config.cpp" />
     <ClCompile Include="GameState.cpp" />
@@ -201,6 +203,7 @@ sfml-system.lib;FastNoise.lib;%(AdditionalDependencies)</AdditionalDependencies
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateManager.cpp" />
   </ItemGroup>
+
   <ItemGroup>
     <ClInclude Include="config.hpp" />
     <ClInclude Include="GameState.hpp" />
@@ -209,10 +212,11 @@ sfml-system.lib;FastNoise.lib;%(AdditionalDependencies)</AdditionalDependencies
     <ClInclude Include="SplashState.hpp" />
     <ClInclude Include="StateManager.hpp" />
   </ItemGroup>
+
   <ItemGroup>
     <Image Include="x64\Release\res\splash.png" />
   </ItemGroup>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

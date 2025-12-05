@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-//#include <FastNoise/FastNoise.h>
-#include <SFML/Graphics.hpp>
-#include <windows.h>
-#include <iostream>
-=======
 // Including all necessary libraries
->>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
 #include "config.hpp"
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
