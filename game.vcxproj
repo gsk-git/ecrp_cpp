@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -71,6 +71,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+<<<<<<< HEAD
     <IncludePath>C:\lib;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -84,6 +85,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>C:\lib\SFML\include</IncludePath>
     <LibraryPath>C:\lib\SFML\lib</LibraryPath>
+=======
+    <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\lib</IncludePath>
+    <LibraryPath>C:\lib\SFML\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);C:\lib\FastNoise\lib</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\lib\SFML\lib;C:\lib\SFML3\lib\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);C:\lib\FastNoise\lib</LibraryPath>
+>>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,16 +134,31 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+<<<<<<< HEAD
       <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
+=======
+      <AdditionalIncludeDirectories>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib\SFML3\include;C:\lib\FastNoise2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+>>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+<<<<<<< HEAD
       <AdditionalLibraryDirectories>C:\lib\SFML\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d-3;sfml-system-d-3;sfml-window-d-3;%(AdditionalDependencies)</AdditionalDependencies>
+=======
+      <AdditionalLibraryDirectories>C:\lib\SFML3\lib;C:\lib\FastNoise2\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d.lib;
+sfml-window-d.lib;
+sfml-system-d.lib;FastNoiseD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
     </Link>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -144,37 +168,51 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+<<<<<<< HEAD
       <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+=======
+      <AdditionalIncludeDirectories>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib\FastNoise2\include;C:\lib\SFML3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+>>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\lib\SFML\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics.lib;
 sfml-window.lib;
 sfml-system.lib;FastNoise.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
+    <PostBuildEvent>
+      <Message>
+      </Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="IState.cpp" />
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <CopyFileToFolders Include="..\..\..\..\..\lib\FastNoise2\bin\FastNoise.dll">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </CopyFileToFolders>
-    <CopyFileToFolders Include="..\..\..\..\..\lib\FastNoise2\bin\FastNoiseD.dll">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </CopyFileToFolders>
+    <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="PauseState.cpp" />
+    <ClCompile Include="SplashState.cpp" />
+    <ClCompile Include="StateManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.hpp" />
+    <ClInclude Include="GameState.hpp" />
+    <ClInclude Include="IState.hpp" />
+    <ClInclude Include="MainMenuState.hpp" />
+    <ClInclude Include="PauseState.hpp" />
+    <ClInclude Include="SplashState.hpp" />
+    <ClInclude Include="StateManager.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="x64\Release\res\splash.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

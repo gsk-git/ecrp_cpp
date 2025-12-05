@@ -1,41 +1,139 @@
-# Prerequisites
-*.d
+# ===== Visual Studio =====
+## User-specific files
+*.user
+*.suo
+
+## Build artifacts and cache
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.idb
+*.log
+*.tlog
+*.lastbuildstate
+*.tmp
+*.cache
+*.ipch
+*.aps
+LICENSE.md
+pdb_archive
+*.json
+## IntelliSense and DB
+*.VC.db
+*.VC.opendb
+.vscode/
 .vs/
-# Compiled Object files
-*.slo
-*.lo
+*.sln
+*.vcxproj*
+*.user
+
+# ========== Project Folders ==========
+# Visual Studio temporary folder
+.vs/
+
+# Build output folders (e.g., Debug/Release under x64)
+x64/
+game/x64/
+res/text
+
+# Optional: ignore any local-only settings folders
+*.DS_Store
+Thumbs.db
+
+# ========== Backup Files ==========
+*~
+*.swp
+
+# ========== CMake (optional) ==========
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# ========== Logs and Crash Dumps ==========
+*.stackdump
+*.dmp
+
+# ========== Git ==========
+# Ignore local Git configuration
+.gitignore
+.md
+vcpkg_installed/
+packages/
+installed/
+
+# ================================
+# Build Artifacts / Binaries
+# ================================
+/game/x64/
+/Debug/
+/Release/
+/out/
+/bin/
+
+# Compiled object files, libraries, executables
 *.o
 *.obj
+*.exe
+*.dll
+*.lib
+*.so
+*.a
 
-# Precompiled Headers
+# Precompiled headers
 *.gch
 *.pch
 
-# Linker files
-*.ilk
+# ================================
+# Visual Studio / IDE Files
+# ================================
+.vs/
+*.vcxproj.user
+*.suo
+*.user
+*.sdf
 
-# Debugger Files
-*.pdb
+# Visual Studio caches / generated files
+ipch/
+*.VC.db
+*.VC.opendb
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# ================================
+# vcpkg / Dependency Files
+# ================================
+/vcpkg/
+/packages/
 
-# Fortran module files
-*.mod
-*.smod
+# If using vcpkg manifest, keep manifest but ignore installed ports
+!/vcpkg.json
+!vcpkg-configuration.json
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+# ================================
+# Logs, Temporary Files, OS Files
+# ================================
+*.log
+*.tmp
+*.temp
 
-# Executables
-*.exe
-*.out
-*.app
+# macOS
+.DS_Store
 
-# debug information files
-*.dwo
+# Windows
+Thumbs.db
+
+# ================================
+# Other Files to Consider Ignoring
+# ================================
+# If you have test output or coverage reports
+coverage/
+*.gcda
+*.gcno
+*.profdata
+
+# For CMake (if any)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
