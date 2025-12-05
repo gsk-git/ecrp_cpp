@@ -36,6 +36,7 @@ pdb_archive
 x64/
 game/x64/
 res/text
+*game
 
 # Optional: ignore any local-only settings folders
 *.DS_Store
