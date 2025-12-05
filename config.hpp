@@ -196,6 +196,7 @@ namespace esroops {
             unsigned int m_world_seed;
 			unsigned int m_tileColor;
 			float m_chunkframecounter;
+            std::string getTileType(float x, float y);
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
             std::deque<std::pair<int, int>> m_required_chunks;
             std::deque<std::pair<int, int>> m_unrequired_chunks;
@@ -207,8 +208,6 @@ namespace esroops {
 			void getRequiredChunks();
             void f_drawChunks (sf::RenderWindow& window) const;
             void ChunkBorders(sf::RenderWindow& window) const;
-			std::string getTileType(float x, float y);
-        private:
             void f_initialize_world();
     };
 
