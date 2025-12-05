@@ -107,8 +107,8 @@ ipch/
 /packages/
 
 # If using vcpkg manifest, keep manifest but ignore installed ports
-!/vcpkg.json
-!vcpkg-configuration.json
+vcpkg.json
+vcpkg-configuration.json
 
 # ================================
 # Logs, Temporary Files, OS Files
