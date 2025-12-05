@@ -1,4 +1,5 @@
 #include "IState.hpp"
+#include <SFML/Graphics/RenderWindow.hpp>
 
 int IState::OnEnter() {
 	// Logic for entering the state
@@ -10,11 +11,10 @@ int IState::OnExit() {
 }
 int IState::Update() {
 	// Logic for updating the state
-	return 0; // Return an appropriate status code
+	return static_cast<int>(StateSignal::NONE);
 }
 int IState::Render(sf::RenderWindow& window) {
 	// Logic for rendering the state
-	window.clear();
-	window.display();
+	(void)window;
 	return 0;
 }
