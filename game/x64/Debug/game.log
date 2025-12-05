@@ -1,9 +1,7 @@
-﻿  main.cpp
-C:\lib\SFML3\include\SFML\System\Exception.hpp(41,47): warning C4275: non dll-interface class 'std::runtime_error' used as base for dll-interface class 'sf::Exception'
-  (compiling source file 'main.cpp')
-      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207\include\stdexcept(100,30):
-      see declaration of 'std::runtime_error'
-      C:\lib\SFML3\include\SFML\System\Exception.hpp(41,23):
-      see declaration of 'sf::Exception'
+﻿  config.cpp
+  main.cpp
+C:\Users\asus\source\repos\ecrp_cpp\config.hpp(2,10): error C1083: Cannot open include file: 'sfml/Graphics.hpp': No such file or directory
+  (compiling source file 'config.cpp')
   
-  game.vcxproj -> C:\Users\Sevarkodiyon\OneDrive\Documents\game\x64\Debug\game.exe
+C:\Users\asus\source\repos\ecrp_cpp\main.cpp(2,10): error C1083: Cannot open include file: 'SFML/Graphics.hpp': No such file or directory
+  Generating Code...

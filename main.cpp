@@ -1,4 +1,4 @@
-#include <FastNoise/FastNoise.h>
+//#include <FastNoise/FastNoise.h>
 #include <SFML/Graphics.hpp>
 #include <windows.h>
 #include <iostream>
