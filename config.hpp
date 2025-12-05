@@ -43,7 +43,7 @@
 } while (0)
 #endif
 
-#endif // CONFIG_HPP_LOG_MACRO
+#endif
 
 // Global variables
 namespace esrovar {
@@ -111,7 +111,7 @@ namespace esrofn {
     std::tuple<int, int> getPlayerXY(std::pair<float, float>);
     
     std::tuple<float, float> getPlayerChunkXY(std::pair<float, float>);
-}// namespace esrofn ends
+}
 
 // Global objects and classes
 namespace esroops {
@@ -265,4 +265,4 @@ namespace esroops {
             target.draw(textbox, states);
         }
     };
-}// namespace esroops ends
+}

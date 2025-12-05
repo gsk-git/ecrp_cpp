@@ -23,9 +23,7 @@
 #include <SFML/Window/WindowBase.hpp>
 #include <optional>
 #include <string>
-#include <thread>
 #include <random>
-#include <iostream>
 #include <tuple>
 
 // Handling player input
@@ -112,9 +110,11 @@ static void ProcessWindowEvents(esroops::Player& player) {
 
 // Make SFML window transparent
 static void SplashWindow(sf::RenderWindow& window) {
-	auto hwnd = window.getNativeHandle();
+	
+	HWND hwnd = static_cast<HWND>(window.getNativeHandle());
 	LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
 	SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED | WS_EX_TRANSPARENT);
+	
 	// Set alpha to 0 for full transparency and click-through
 	SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
 	SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
@@ -129,7 +129,7 @@ static void RunSplash() {
 	// Texture for the logo
 	sf::Texture logoTexture;
 	if (!logoTexture.loadFromFile("res/splash.png"))
-		LOG("Logo not found or path is incorrect");
+		LOG("Splash Logo not found or path is incorrect");
 	// Creating sprite for the logo
 	sf::Sprite logoSprite(logoTexture);
 	logoSprite.setScale(sf::Vector2f(512.f / static_cast<float>(logoTexture.getSize().x), 512.f / static_cast<float>(logoTexture.getSize().y)));
@@ -141,10 +141,6 @@ static void RunSplash() {
 	auto start = std::chrono::steady_clock::now();
 	// Set the splash window to be transparent
 	while (splash.isOpen()) {
-		while (const std::optional event = splash.pollEvent()) {
-			if (event->is <sf::Event::Closed>())
-				splash.close();
-		}
 		// Check if 10 seconds passed
 		auto now = std::chrono::steady_clock::now();
 		if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 2) {
