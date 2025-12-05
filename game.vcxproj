@@ -71,12 +71,28 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+<<<<<<< HEAD
+    <IncludePath>C:\lib;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\lib;C:\lib\SFML\include</IncludePath>
+    <LibraryPath>C:\lib\SFML\lib</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\lib\SFML\include</IncludePath>
+    <LibraryPath>C:\lib\SFML\lib</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\lib\SFML\include</IncludePath>
+    <LibraryPath>C:\lib\SFML\lib</LibraryPath>
+=======
     <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\lib</IncludePath>
     <LibraryPath>C:\lib\SFML\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);C:\lib\FastNoise\lib</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib;$(IncludePath)</IncludePath>
     <LibraryPath>C:\lib\SFML\lib;C:\lib\SFML3\lib\;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);C:\lib\FastNoise\lib</LibraryPath>
+>>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -84,10 +100,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\lib\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d-3;sfml-system-d-3;sfml-window-d-3</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -98,6 +119,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -110,17 +134,26 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+<<<<<<< HEAD
+      <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
+=======
       <AdditionalIncludeDirectories>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib\SFML3\include;C:\lib\FastNoise2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+>>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+<<<<<<< HEAD
+      <AdditionalLibraryDirectories>C:\lib\SFML\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d-3;sfml-system-d-3;sfml-window-d-3;%(AdditionalDependencies)</AdditionalDependencies>
+=======
       <AdditionalLibraryDirectories>C:\lib\SFML3\lib;C:\lib\FastNoise2\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;
 sfml-window-d.lib;
 sfml-system-d.lib;FastNoiseD.lib;%(AdditionalDependencies)</AdditionalDependencies>
+>>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
     </Link>
     <PostBuildEvent>
       <Message>
@@ -135,15 +168,20 @@ sfml-system-d.lib;FastNoiseD.lib;%(AdditionalDependencies)</AdditionalDependenc
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+<<<<<<< HEAD
+      <AdditionalIncludeDirectories>C:\lib\SFML\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+=======
       <AdditionalIncludeDirectories>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib\FastNoise2\include;C:\lib\SFML3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
+>>>>>>> 392cce5192bfeee4772520db04c3be0935e8529c
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\lib\SFML3\lib;C:\lib\FastNoise2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\lib\SFML\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics.lib;
 sfml-window.lib;
 sfml-system.lib;FastNoise.lib;%(AdditionalDependencies)</AdditionalDependencies>
