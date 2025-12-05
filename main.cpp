@@ -26,6 +26,7 @@
 #include <thread>
 #include <random>
 #include <iostream>
+#include <tuple>
 
 // Handling player input
 static void InputHandler(esroops::Player& player, float& dt) {
@@ -33,7 +34,7 @@ static void InputHandler(esroops::Player& player, float& dt) {
 	// Resetting movement direction and boost
 	esrovar::movedirx = 0.f;
 	esrovar::movediry = 0.f;
-	esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 0.5f;
+	esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.f;
 	
 	// Setting running state
 	player.m_IsRunning = esrovar::boost == 2.0f ? true : false;
@@ -56,10 +57,10 @@ static void InputHandler(esroops::Player& player, float& dt) {
 		esrovar::movedirx = esrovar::totalspeed;
 		player.m_DirectionEnum = esrovar::Directions::right;
 	}
-
+	
 	// Creating directional vector
 	sf::Vector2f direction({ esrovar::movedirx, esrovar::movediry });
-
+	
 	// Check if directions are not 0
 	if (direction.x != 0.f || direction.y != 0.f) {
 		// Getting hypotenuse length
@@ -67,7 +68,7 @@ static void InputHandler(esroops::Player& player, float& dt) {
 		// Normalizing vector movement
 		direction /= length;
 	}
-
+	
 	// Updating player movement
 	player.move(direction * esrovar::totalspeed * dt);
 	esrovar::PLAYER_POSITION.first += direction.x * esrovar::totalspeed * dt;
@@ -193,8 +194,8 @@ static void StartGame() {
 	int seconds = 0;
 	int minutes = 0;
 	int day = 0;
-	int chunkGenerationFrameLimit = 2;
 	float dt = 0.0f;
+	int chunkGenerationFrameLimit = 2;
 	const uint32_t gameseed = 23091995;
 	std::string playerX;
 	std::string playerY;
@@ -220,9 +221,6 @@ static void StartGame() {
 	sf::Time elapsed = sf::Time::Zero;
 	esroops::Player player;
 	esroops::WorldManager world(esrovar::PLAYER_POSITION, static_cast<int>(gameseed));
-	world.m_world_seed = dist(rng);
-	sf::Vector2f cameraCenter = player.getPosition();
-	std::vector <esroops::IUpdatable*> systemdelta;	
 	esroops::HudBox hudbox({350, 300}, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
 	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText playerpos(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 2 }, sf::Color::White, sf::Text::Regular, 18);
@@ -233,15 +231,16 @@ static void StartGame() {
 	esroops::HudText fpsrate(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 7 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText gametime(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 8 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText tiletype(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 9 }, sf::Color::White, sf::Text::Regular, 18);
+	esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
+	world.m_world_seed = dist(rng);
+	sf::Vector2f cameraCenter = player.getPosition();
+	std::vector <esroops::IUpdatable*> systemdelta;
 	systemdelta.push_back(&player);
 	
 	//Init View
 	sf::Vector2f viewArea = { esrovar::SCRWDT, esrovar::SCRHGT };
 	view.setSize(viewArea);
-	view.setCenter(cameraCenter);
-	
-	// Capping framerate @60fps
-	esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
+	view.setCenter(cameraCenter);	
 	
 	//Main game loop
 	while (esrovar::GameWindow.isOpen()) {
@@ -286,22 +285,21 @@ static void StartGame() {
 		if (swapChunk != currentChunk) {			
 			// Updating previous and current chunk values
 			previousChunk = currentChunk;
+			// Updating current chunk value
 			currentChunk = swapChunk;			
 			// Get new chunks to be generated when player has moved to a new chunk
 			world.getRequiredChunks();
 		}
 		
 		// New required chunks will be generated for every 5th frame
-		if (frames % chunkGenerationFrameLimit == 0) {
-			world.update();
-		}
+		if (frames % chunkGenerationFrameLimit == 0) world.update();
 		
 		// Updating player, world and HUD elements
 		player.update(dt);
 		
 		// Smooth logical camera
 		sf::Vector2f targetCenter = player.getPosition();
-		float lerpFactor = 5.0f * dt;
+		float lerpFactor = 3.0f * dt;
 		cameraCenter += (targetCenter - cameraCenter) * lerpFactor;
 		sf::Vector2f drawCenter = cameraCenter;
 		drawCenter.x = std::floor(drawCenter.x + 0.5f);

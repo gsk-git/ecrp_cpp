@@ -1,1 +1,74 @@
-﻿  game.vcxproj -> C:\Users\asus\Documents\game\ecrp_cpp\x64\Debug\game.exe
+﻿  config.cpp
+  main.cpp
+C:\Users\asus\Documents\esrocpp\main.cpp(181,9): warning C4293: '>>': shift count negative or too big, undefined behavior
+C:\Users\asus\Documents\esrocpp\main.cpp(181,21): warning C4305: '*=': truncation from 'unsigned __int64' to 'uint32_t'
+C:\Users\asus\Documents\esrocpp\main.cpp(182,9): warning C4293: '>>': shift count negative or too big, undefined behavior
+C:\Users\asus\Documents\esrocpp\main.cpp(182,21): warning C4305: '*=': truncation from 'unsigned __int64' to 'uint32_t'
+C:\Users\asus\Documents\esrocpp\main.cpp(183,9): warning C4293: '>>': shift count negative or too big, undefined behavior
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244: 'initializing': conversion from 'const _Ty1' to '_Ty1', possible loss of data
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:         with
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:             _Ty1=float
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:         ]
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:         and
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:             _Ty1=int
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:         ]
+  (compiling source file 'main.cpp')
+      C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16):
+      the template instantiation context (the oldest one first) is
+          C:\Users\asus\Documents\esrocpp\main.cpp(222,39):
+          see reference to function template instantiation 'std::pair<int,int>::pair<float,float,0>(const std::pair<float,float> &) noexcept' being compiled
+              C:\Users\asus\Documents\esrocpp\main.cpp(222,29):
+              see the first reference to 'std::pair<int,int>::pair' in 'StartGame'
+  
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244: 'initializing': conversion from 'const _Ty2' to '_Ty2', possible loss of data
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244:         with
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244:             _Ty2=float
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244:         ]
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244:         and
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244:             _Ty2=int
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244:         ]
+  (compiling source file 'main.cpp')
+  
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244: 'initializing': conversion from '_Ty' to '_Ty', possible loss of data
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244:         with
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244:             _Ty=int
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244:         ]
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244:         and
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244:         [
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244:             _Ty=float
+C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244:         ]
+  (compiling source file 'main.cpp')
+      C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47):
+      the template instantiation context (the oldest one first) is
+          C:\Users\asus\Documents\esrocpp\main.cpp(205,43):
+          see reference to function template instantiation 'std::tuple<float,float>::tuple<int,int,0>(_This2 &&,int &&) noexcept' being compiled
+          with
+          [
+              _This2=int
+          ]
+              C:\Users\asus\Documents\esrocpp\main.cpp(205,43):
+              see the first reference to 'std::tuple<float,float>::tuple' in 'StartGame'
+          C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(349,16):
+          see reference to function template instantiation 'std::tuple<float,float>::tuple<std::_Exact_args_t,_Ty,_Ty,0>(_Tag,_This2 &&,_Ty &&)' being compiled
+          with
+          [
+              _Ty=int,
+              _Tag=std::_Exact_args_t,
+              _This2=int
+          ]
+          C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(301,102):
+          see reference to function template instantiation 'std::_Tuple_val<_This>::_Tuple_val<_Ty>(_Other &&)' being compiled
+          with
+          [
+              _This=float,
+              _Ty=int,
+              _Other=int
+          ]
+  
+  Generating Code...
+  game.vcxproj -> C:\Users\asus\Documents\esrocpp\x64\Debug\game.exe
