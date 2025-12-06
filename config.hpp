@@ -78,6 +78,7 @@ namespace esrovar {
     extern sf::Texture tileset;
     extern bool ChunkBorder;
     extern bool DebugMode;
+    extern bool Save;
     // Declaring global variables
     extern int pixel_size;
     extern int frame_count;
@@ -110,7 +111,7 @@ namespace esrofn {
     
     std::tuple<int, int> getPlayerXY(std::pair<float, float>);
     
-    std::tuple<float, float> getPlayerChunkXY(std::pair<float, float>);
+    std::tuple<int, int> getPlayerChunkXY(std::pair<float, float>);
 }
 
 // Global objects and classes
@@ -157,34 +158,43 @@ namespace esroops {
 
     class Player : public sf::Drawable, public sf::Transformable, public sf::Texture, public IUpdatable {
     public:
-		// Initializing player object
+		
+        // Initializing player object
         Player();
         ~Player() final = default;		
+            
         // Member variables
         bool m_IsMoving;
 		bool m_IsSlashAttacking;
 		bool m_IsJumping;
 		bool m_IsSitting;
 		bool m_IsRunning;
-		esrovar::State m_StateEnum;
-		esrovar::State m_PrevStateEnum;
-        esrovar::Directions m_DirectionEnum;
-        sf::Vector2f m_playerXY;
+        bool m_IsTileOcean;		
+        int m_health;
         int m_TotalFrames;
         int m_CurrentFrame;
         float m_AnimTimer;
         float m_AnimDuration;
-        int m_health;
-		void setOrigintoBottomCenter();
+        sf::Vector2f m_playerXY;
         sf::Texture m_playerbody;
+        esrovar::State m_StateEnum;
+        esrovar::State m_PrevStateEnum;
+        esrovar::Directions m_DirectionEnum;
         std::optional<sf::Sprite> m_playersprite;
+            
         // Member functions
         void update(float dt) override;
         void animatesprite(float dt);
+        void setOrigintoBottomCenter();
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
 
-    class WorldManager {
+    struct PlayerData {
+        float m_playerposX;
+        float m_playerposY;
+    };
+
+    class WorldManager : public IUpdatable{
         public:
 			// Member variables
 			WorldManager() = default;
@@ -196,7 +206,7 @@ namespace esroops {
             unsigned int m_world_seed;
 			unsigned int m_tileColor;
 			float m_chunkframecounter;
-            std::string getTileType(float x, float y);
+            std::string getTileType(std::pair<float, float>);
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
             std::deque<std::pair<int, int>> m_required_chunks;
             std::deque<std::pair<int, int>> m_unrequired_chunks;
@@ -204,7 +214,7 @@ namespace esroops {
                 "plains", "beach", "dirt", "ocean", "forest", "mountain", "swamp", "jungle", "frozenplain", "snow"
 			};
 			// Member functions
-            void update();
+            void update(float dt);
 			void getRequiredChunks();
             void f_drawChunks (sf::RenderWindow& window) const;
             void ChunkBorders(sf::RenderWindow& window) const;

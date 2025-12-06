@@ -50,6 +50,7 @@ namespace esrovar {
 	sf::Texture tileset;
 	bool ChunkBorder = false;
 	bool DebugMode = false;
+	bool Save = false;
 	float globaldelta = 0.0f;
 } // namespace esrovar ends
 
@@ -97,13 +98,13 @@ namespace esrofn {
 	}
 
 	std::tuple<int, int> getPlayerXY(std::pair<float, float> playerxy) {
-		float playerX = std::floorf(playerxy.first / static_cast<float>(esrovar::pixel_size));
-		float playerY = std::floorf(playerxy.second / static_cast<float>(esrovar::pixel_size));
+		int playerX = static_cast<int>(std::floorf(playerxy.first / static_cast<float>(esrovar::pixel_size)));
+		int playerY = static_cast<int>(std::floorf(playerxy.second / static_cast<float>(esrovar::pixel_size)));
 
-		return std::make_tuple(static_cast<int>(playerX), static_cast<int>(playerY));
+		return std::make_tuple(playerX, playerY);
 	}
 
-	std::tuple<float, float> getPlayerChunkXY(std::pair<float, float> playerxy) {
+	std::tuple<int, int> getPlayerChunkXY(std::pair<float, float> playerxy) {
 		
 		// Getting floored player coordinates
 		float x = std::floor(playerxy.first);
@@ -121,8 +122,8 @@ namespace esrofn {
 		float chunkLocalY = std::fmod(y, static_cast<float>(chunkSizeInPixels));
 		
 		// Converting to chunk local coordinates
-		float playerchunkX = std::floorf(chunkLocalX / static_cast<float>(esrovar::pixel_size));
-		float playerchunkY = std::floorf(chunkLocalY / static_cast<float>(esrovar::pixel_size));
+		int playerchunkX = static_cast<int>(std::floorf(chunkLocalX / static_cast<float>(esrovar::pixel_size)));
+		int playerchunkY = static_cast<int>(std::floorf(chunkLocalY / static_cast<float>(esrovar::pixel_size)));
 		
 		return std::make_tuple(playerchunkX, playerchunkY);
 	}
@@ -161,6 +162,7 @@ namespace esroops {
 		m_IsJumping = false;
 		m_IsSitting = false;
 		m_IsRunning = false;
+		m_IsTileOcean = false;
 		m_StateEnum = esrovar::State::idle;
 		m_PrevStateEnum = esrovar::State::idle;
 		m_DirectionEnum = esrovar::Directions::down;
@@ -171,11 +173,9 @@ namespace esroops {
 		m_AnimDuration = 0.0f;
 		m_health = 500u;
 		m_playersprite.emplace(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
-		m_playersprite->setTextureRect(sf::IntRect({ 
-			m_CurrentFrame * esrovar::PLAYER_SPRITE, 
-			static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, 
-			{ esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
-		m_playersprite->setPosition(m_playerXY);
+		m_playersprite->setTextureRect(sf::IntRect({m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
+		m_playersprite->setPosition({0, 0});
+		m_playersprite->setScale({ 1.f, 1.f });
 		setOrigintoBottomCenter();
 	}
 
@@ -378,7 +378,7 @@ namespace esroops {
 		
 		// Updating texture rectangle
 		m_playersprite->setTextureRect( sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE } ));
-		m_playersprite->setPosition(m_playerXY);
+		//m_playersprite->setPosition(m_playerXY);
 	}
 
 	void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
@@ -423,7 +423,7 @@ namespace esroops {
 		}
 	}
 
-	void WorldManager::update() {
+	void WorldManager::update(float dt) {
 
 		// Need to create logic to get one chunk out from requiredchunk array
 		if (!m_required_chunks.empty() && !m_active_chunks.contains({ m_required_chunks.front() })) {
@@ -463,13 +463,13 @@ namespace esroops {
 		}
 	}
 
-	std::string WorldManager::getTileType(float x, float y) {
+	std::string WorldManager::getTileType(std::pair<float, float> playerXY) {
 		
 		// Getting chunk coordinates from player coordinates
-		auto [chunkX, chunkY] = esrofn::getChunkXY({ x,y });
+		auto [chunkX, chunkY] = esrofn::getChunkXY(playerXY);
 		
 		// Getting player local chunk coordinates
-		auto [playerchunkX, playerchunkY] = esrofn::getPlayerChunkXY({ x,y });
+		auto [playerchunkX, playerchunkY] = esrofn::getPlayerChunkXY(playerXY);
 		
 		// Fetching tile data from active chunks
 		if (m_active_chunks.contains({ chunkX, chunkY })) {
