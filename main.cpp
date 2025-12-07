@@ -238,7 +238,7 @@ static void StartGame() {
 	
 	// Loading Assets
 	esrofn::LoadSpriteSheetsnew();
-	esrofn::LoadTileSheet();
+	//esrofn::LoadTileSheet();
 	esrofn::LoadFonts();
 	loadgame(gameJSON);
 	
@@ -261,11 +261,18 @@ static void StartGame() {
 	esroops::HudText fpsrate(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 7 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText gametime(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 8 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText tiletype(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 9 }, sf::Color::White, sf::Text::Regular, 18);
+	
+	// Setting framerate limit
 	esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
 	
+	// Setting world seed and player position
 	world.m_world_seed = dist(rng);
 	player.setPosition({esrovar::PLAYER_POSITION.first, esrovar::PLAYER_POSITION.second});
+	
+	// Setting camera center 
 	sf::Vector2f cameraCenter = player.getPosition();
+	
+	// Adding updatable systems
 	std::vector <esroops::IUpdatable*> systemdelta;
 	systemdelta.push_back(&player);
 	
@@ -332,6 +339,7 @@ static void StartGame() {
 		drawCenter.y = std::floor(drawCenter.y + 0.5f);
 		view.setCenter(drawCenter);
 		
+		// Saving game data
 		if (esrovar::Save) {
 			savegame(gameJSON);
 			esrovar::Save = false;

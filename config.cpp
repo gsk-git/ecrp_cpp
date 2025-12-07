@@ -1,6 +1,7 @@
 ﻿// Including necessary libraries
 #include "config.hpp"
 #include <cmath>
+#include <cstdint>
 #include <SFML/Graphics/PrimitiveType.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -23,6 +24,7 @@
 #include <cstdlib>
 #include <format>
 #include <tuple>
+#include <vector>
 
 // Global variables
 namespace esrovar {
@@ -48,6 +50,54 @@ namespace esrovar {
 	std::array<sf::Texture, StateCount> kTextures;
 	sf::Font mainfont;
 	sf::Texture tileset;
+	std::vector<sf::Color> biome_colors = {
+		sf::Color(170, 200, 120),   // 0 - Plains
+		sf::Color(240, 224, 170),   // 1 - dirt
+		sf::Color(216, 184, 100),   // 2 - Beach
+		sf::Color(33, 87, 141),     // 3 - Ocean
+		sf::Color(26, 123, 59),     // 4 - Jungle
+		sf::Color(110, 118, 130),   // 5 - Mountains
+	};
+	std::vector<sf::Color> biome_variants = {
+		// --- OCEAN & WATER ---
+		sf::Color(23, 66, 145),     // 0 - Deep Ocean
+		sf::Color(28, 107, 160),    // 1 - Ocean
+		sf::Color(46, 139, 187),    // 2 - Shallow Ocean
+		sf::Color(70, 160, 200),    // 3 - Lagoon / Coral Sea
+		sf::Color(90, 190, 220),    // 4 - River / Freshwater
+			
+		// --- COAST ---
+		sf::Color(240, 224, 170),   // 5 - Beach (warm sand)
+		sf::Color(228, 193, 119),   // 6 - Desert Coast (dry sand)
+		sf::Color(210, 190, 140),   // 7 - Rocky Shore
+			
+		// --- TEMPERATE ---
+		sf::Color(170, 200, 120),   // 8 - Plains
+		sf::Color(150, 185, 100),   // 9 - Meadow
+		sf::Color(115, 150, 75),    // 10 - Forest
+		sf::Color(34, 139, 69),     // 11 - Jungle
+		sf::Color(98, 140, 88),     // 12 - Swamp / Marsh
+			
+		// --- ARID ---
+		sf::Color(216, 184, 100),   // 13 - Desert
+		sf::Color(190, 170, 90),    // 14 - Savannah
+		sf::Color(150, 120, 65),    // 15 - Badlands
+		sf::Color(180, 130, 70),    // 16 - Mesa / Clay Canyon
+			
+		// --- COLD ---
+		sf::Color(110, 130, 150),   // 17 - Tundra
+		sf::Color(90, 110, 140),    // 18 - Taiga (cold conifer forest)
+			
+		// --- SNOW & ICE ---
+		sf::Color(230, 240, 255),   // 19 - Snow Field
+		sf::Color(200, 220, 240),   // 20 - Ice Sheet
+		sf::Color(180, 200, 225),   // 21 - Frozen Ocean
+			
+		// --- MOUNTAINS ---
+		sf::Color(120, 130, 140),   // 22 - Mountain Base (rock)
+		sf::Color(150, 160, 170),   // 23 - High Mountains (light rock)
+		sf::Color(200, 210, 220),   // 24 - Snowy Peaks
+	};
 	bool ChunkBorder = false;
 	bool DebugMode = false;
 	bool Save = false;
@@ -200,19 +250,6 @@ namespace esroops {
 
 	void Chunk::generate(sf::Vector2f tilesize) {
 		
-		// Scaled zoom to 4096x	= 0.000244140625
-		// Scaled zoom to 2048x	= 0.000488281250
-		// Scaled zoom to 1024x	= 0.000976562500
-		// Scaled zoom to 512x	= 0.001953125000
-		// Scaled zoom to 256x	= 0.003906250000
-		// Scaled zoom to 128x	= 0.007812500000
-		// Scaled zoom to 64x	= 0.015625000000
-		// Scaled zoom to 32x	= 0.031250000000
-		// Scaled zoom to 16x	= 0.062500000000
-		// Scaled zoom to 8x	= 0.125000000000
-		// Scaled zoom to 4x	= 0.250000000000
-		// Scaled zoom to 2x	= 0.500000000000
-		// Scaled zoom to 1x	= 1.000000000000
 		// Noise seed
 		esrovar::noise.SetSeed(esrovar::gameseed);
 		esrovar::noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2S);
@@ -240,14 +277,22 @@ namespace esroops {
 				auto worldtileY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE + y);
 				
 				// Getting noise value for current tile
-				auto noiseValue = esrovar::noise.GetNoise(worldTileX, worldtileY);
-				noiseValue += 0.5f * esrovar::noise.GetNoise(worldTileX, worldtileY);
-				auto noiseIDX = static_cast<int>(std::round((noiseValue + 1.0f) / 2.0f * 5.0f));
-				noiseIDX = std::clamp(noiseIDX, 0, 5);
+				int noiseIDX = 0;				
+				float lerp1 = esrovar::noise.GetNoise(worldTileX, worldtileY);
+				float lerp2 = esrovar::noise.GetNoise(worldTileX + 0.7f, worldtileY + 0.3f);
+				float noiseValue = lerp1 + 0.2f * (lerp2 - lerp1);
+				noiseValue = (noiseValue + 1.0f) * 0.5f;
 				
-				// Tile sheet index for now default selection is plains
-				auto tu = noiseIDX;
-				auto tv = 0;
+				if (noiseValue < 0.22) noiseIDX = 3; // Ocean
+				else if (noiseValue < 0.28) noiseIDX = 1; // Beach
+				else if (noiseValue < 0.45) noiseIDX = 4; // Plains
+				else if (noiseValue < 0.65) noiseIDX = 0; // Forest
+				else if (noiseValue < 0.85) noiseIDX = 2; // Dirt
+				else noiseIDX = 5; // Mountain
+				
+				// Tile sheet index for now default selection is plains - Required in future implementations
+				//auto tu = noiseIDX;
+				//auto tv = 0;
 				
 				// Chunk pixel offset
 				auto chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE) * tilesize.x;
@@ -257,24 +302,24 @@ namespace esroops {
 				auto tx = chunkOffsetX + static_cast<float>(x) * tilesize.x;
 				auto ty = chunkOffsetY + static_cast<float>(y) * tilesize.y;
 				
-				// XY for independent tile texture
-				auto texX = static_cast<float>(tu) * tilesize.x;
-				auto texY = static_cast<float>(tv) * tilesize.y;
+				// XY for independent tile texture - Required in future implementations
+				//auto texX = static_cast<float>(tu) * tilesize.x;
+				//auto texY = static_cast<float>(tv) * tilesize.y;
 				
 				// Triangle 1
-				m_grid[ static_cast<size_t>(tileIndex) + 0].position    = sf::Vector2f(tx, ty);
-				m_grid[ static_cast<size_t>(tileIndex) + 1].position    = sf::Vector2f(tx + tilesize.x, ty);
-				m_grid[ static_cast<size_t>(tileIndex) + 2].position    = sf::Vector2f(tx, ty + tilesize.y);
-				m_grid[ static_cast<size_t>(tileIndex) + 0].texCoords   = sf::Vector2f(texX, texY);
-				m_grid[ static_cast<size_t>(tileIndex) + 1].texCoords   = sf::Vector2f(texX + tilesize.x, texY);
-				m_grid[ static_cast<size_t>(tileIndex) + 2].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
+				m_grid[static_cast<size_t>(tileIndex) + 0].position = sf::Vector2f(tx, ty);
+				m_grid[static_cast<size_t>(tileIndex) + 1].position = sf::Vector2f(tx + tilesize.x, ty);
+				m_grid[static_cast<size_t>(tileIndex) + 2].position = sf::Vector2f(tx, ty + tilesize.y);
+				m_grid[static_cast<size_t>(tileIndex) + 0].color = esrovar::biome_colors[noiseIDX];
+				m_grid[static_cast<size_t>(tileIndex) + 1].color = esrovar::biome_colors[noiseIDX];
+				m_grid[static_cast<size_t>(tileIndex) + 2].color = esrovar::biome_colors[noiseIDX];	
 				// Triangle 2
-				m_grid[ static_cast<size_t>(tileIndex) + 3].position    = sf::Vector2f(tx + tilesize.x, ty);
-				m_grid[ static_cast<size_t>(tileIndex) + 4].position    = sf::Vector2f(tx + tilesize.x, ty + tilesize.y);
-				m_grid[ static_cast<size_t>(tileIndex) + 5].position    = sf::Vector2f(tx, ty + tilesize.y);
-				m_grid[ static_cast<size_t>(tileIndex) + 3].texCoords   = sf::Vector2f(texX + tilesize.x, texY);
-				m_grid[ static_cast<size_t>(tileIndex) + 4].texCoords   = sf::Vector2f(texX + tilesize.x, texY + tilesize.y);
-				m_grid[ static_cast<size_t>(tileIndex) + 5].texCoords   = sf::Vector2f(texX, texY + tilesize.y);
+				m_grid[static_cast<size_t>(tileIndex) + 3].position = sf::Vector2f(tx + tilesize.x, ty);
+				m_grid[static_cast<size_t>(tileIndex) + 4].position = sf::Vector2f(tx + tilesize.x, ty + tilesize.y);
+				m_grid[static_cast<size_t>(tileIndex) + 5].position = sf::Vector2f(tx, ty + tilesize.y);
+				m_grid[static_cast<size_t>(tileIndex) + 3].color = esrovar::biome_colors[noiseIDX];
+				m_grid[static_cast<size_t>(tileIndex) + 4].color = esrovar::biome_colors[noiseIDX];
+				m_grid[static_cast<size_t>(tileIndex) + 5].color = esrovar::biome_colors[noiseIDX];
 				
 				// Setting tile's type at XY
 				tileAt(x, y).type = static_cast<BlockType>(noiseIDX);
@@ -287,7 +332,6 @@ namespace esroops {
 
 	void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 		states.transform *= getTransform();
-		states.texture = &m_tileset;
 		target.draw(m_grid, states);
 	}    
 

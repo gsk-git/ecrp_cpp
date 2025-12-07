@@ -1,10 +1,11 @@
-﻿  main.cpp
+﻿  config.cpp
+  main.cpp
 C:\Users\asus\Documents\esrocpp\main.cpp(207,9): warning C4293: '>>': shift count negative or too big, undefined behavior
-C:\Users\asus\Documents\esrocpp\main.cpp(207,21): warning C4305: '*=': truncation from 'unsigned __int64' to 'uint32_t'
-C:\Users\asus\Documents\esrocpp\main.cpp(208,9): warning C4293: '>>': shift count negative or too big, undefined behavior
-C:\Users\asus\Documents\esrocpp\main.cpp(208,21): warning C4305: '*=': truncation from 'unsigned __int64' to 'uint32_t'
+C:\Users\asus\Documents\esrocpp\main.cpp(208,7): warning C4305: '*=': truncation from 'unsigned __int64' to 'uint32_t'
 C:\Users\asus\Documents\esrocpp\main.cpp(209,9): warning C4293: '>>': shift count negative or too big, undefined behavior
-C:\Users\asus\Documents\esrocpp\main.cpp(250,22): warning C4101: 'data': unreferenced local variable
+C:\Users\asus\Documents\esrocpp\main.cpp(210,7): warning C4305: '*=': truncation from 'unsigned __int64' to 'uint32_t'
+C:\Users\asus\Documents\esrocpp\main.cpp(211,9): warning C4293: '>>': shift count negative or too big, undefined behavior
+C:\Users\asus\Documents\esrocpp\main.cpp(252,22): warning C4101: 'data': unreferenced local variable
 C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244: 'initializing': conversion from 'const _Ty1' to '_Ty1', possible loss of data
 C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:         with
 C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16): warning C4244:         [
@@ -17,9 +18,9 @@ C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\
   (compiling source file 'main.cpp')
       C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,16):
       the template instantiation context (the oldest one first) is
-          C:\Users\asus\Documents\esrocpp\main.cpp(251,39):
+          C:\Users\asus\Documents\esrocpp\main.cpp(253,39):
           see reference to function template instantiation 'std::pair<int,int>::pair<float,float,0>(const std::pair<float,float> &) noexcept' being compiled
-              C:\Users\asus\Documents\esrocpp\main.cpp(251,29):
+              C:\Users\asus\Documents\esrocpp\main.cpp(253,29):
               see the first reference to 'std::pair<int,int>::pair' in 'StartGame'
   
 C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\utility(296,38): warning C4244: 'initializing': conversion from 'const _Ty2' to '_Ty2', possible loss of data
@@ -45,9 +46,9 @@ C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\
   (compiling source file 'main.cpp')
       C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(614,76):
       the template instantiation context (the oldest one first) is
-          C:\Users\asus\Documents\esrocpp\main.cpp(305,12):
+          C:\Users\asus\Documents\esrocpp\main.cpp(314,12):
           see reference to function template instantiation 'std::tuple<float,float> &std::tuple<float,float>::operator =<int,int,0>(std::tuple<int,int> &&) noexcept' being compiled
-              C:\Users\asus\Documents\esrocpp\main.cpp(305,12):
+              C:\Users\asus\Documents\esrocpp\main.cpp(314,12):
               see the first reference to 'std::tuple<float,float>::operator =' in 'StartGame'
   
 C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47): warning C4244: 'initializing': conversion from '_Ty' to '_Ty', possible loss of data
@@ -62,13 +63,13 @@ C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\
   (compiling source file 'main.cpp')
       C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(132,47):
       the template instantiation context (the oldest one first) is
-          C:\Users\asus\Documents\esrocpp\main.cpp(231,38):
+          C:\Users\asus\Documents\esrocpp\main.cpp(233,38):
           see reference to function template instantiation 'std::tuple<float,float>::tuple<int,int,0>(_This2 &&,int &&) noexcept' being compiled
           with
           [
               _This2=int
           ]
-              C:\Users\asus\Documents\esrocpp\main.cpp(231,38):
+              C:\Users\asus\Documents\esrocpp\main.cpp(233,38):
               see the first reference to 'std::tuple<float,float>::tuple' in 'StartGame'
           C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include\tuple(349,16):
           see reference to function template instantiation 'std::tuple<float,float>::tuple<std::_Exact_args_t,_Ty,_Ty,0>(_Tag,_This2 &&,_Ty &&)' being compiled
@@ -87,4 +88,5 @@ C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\
               _Other=int
           ]
   
+  Generating Code...
   game.vcxproj -> C:\Users\asus\Documents\esrocpp\x64\Debug\game.exe
