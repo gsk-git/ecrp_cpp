@@ -204,8 +204,10 @@ static void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int
 	auto t = static_cast<uint32_t>(
 		std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	// xorshift mix to spread bits
-	t ^= t >> 33; t *= 0xff51afd7ed558ccdULL;
-	t ^= t >> 33; t *= 0xc4ceb9fe1a85ec53ULL;
+	t ^= t >> 33; 
+	t *= 0xff51afd7ed558ccdULL;
+	t ^= t >> 33; 
+	t *= 0xc4ceb9fe1a85ec53ULL;
 	t ^= t >> 33;
 	return t;
 }
