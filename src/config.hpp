@@ -46,7 +46,8 @@
 #endif
 
 // Global variables
-namespace esrovar {
+namespace esrovar {    
+        
     // Compile-time constants
     constexpr unsigned int SCRWDT = 1920u;
     constexpr unsigned int SCRHGT = 1080u;
@@ -55,9 +56,9 @@ namespace esrovar {
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
     constexpr uint32_t gameseed = 23091995;
-    // Declaring states and directional constants
-    enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
-    enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
+    constexpr unsigned int pixel_size = 50u; 
+    constexpr enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
+    constexpr enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
     inline constexpr std::size_t StateCount = static_cast<std::size_t>(State::COUNT);
     inline constexpr std::size_t DirectionCount = static_cast<std::size_t>(Directions::COUNT);
     constexpr std::size_t to_index(State s) noexcept { return static_cast<std::size_t>(s);}
@@ -73,21 +74,17 @@ namespace esrovar {
         "res/player_sprite/run.png" };
 	constexpr char saveFileURI[23] = "res/user_dat/data.json";
 	extern std::array<sf::Texture, StateCount> kTextures;
-    static_assert(kFrameCount.size() == StateCount);
-    static_assert(kTexturePaths.size() == StateCount);
+    extern int chunk_area;
 	extern sf::Font mainfont;
     extern sf::Texture tileset;
     extern bool ChunkBorder;
     extern bool DebugMode;
-    extern bool Save;
-    // Declaring global variables
-    extern int pixel_size;
+    extern bool Save;   
     extern int frame_count;
     extern int scale;
     extern float player_size;
     extern float timer;
-    extern float speed;
-    extern int chunkarea;
+    extern float speed;  
     extern float movedirx;
     extern float movediry;
     extern float boost;
@@ -206,7 +203,6 @@ namespace esroops {
             int m_chunkGenerationLimit;
             unsigned int m_world_seed;
 			unsigned int m_tileColor;
-			float m_chunkframecounter;
             std::string getTileType(std::pair<float, float>);
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
             std::deque<std::pair<int, int>> m_required_chunks;

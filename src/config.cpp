@@ -20,6 +20,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <algorithm>
+#include <ranges>
 #include <array>
 #include <cstdlib>
 #include <format>
@@ -29,20 +30,18 @@
 // Global variables
 namespace esrovar {
 
-	int pixel_size = 50u;
-	int frame_count = 0u;
-	int scale = 2u;
-	int seed = 23091995;
-	float player_size = 50.0f;
-	float timer = 0.0f;
 	float speed = 100.0f;
-	int chunk_area = CHUNK_SIZE * pixel_size;
 	float movedirx = 0.0f;
 	float movediry = 0.0f;
 	float boost = 0.0f;
 	float dt = 0.0f;
 	float totalspeed = 0.0f;
 	int jumpboost = 0;
+	bool ChunkBorder = false;
+	bool DebugMode = false;
+	bool Save = false;
+	int chunk_area = CHUNK_SIZE * pixel_size;
+	int frame_count = 0;
 	sf::VideoMode desktop = desktop.getDesktopMode();
 	sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
 	FastNoiseLite noise;
@@ -98,10 +97,7 @@ namespace esrovar {
 		sf::Color(150, 160, 170),   // 23 - High Mountains (light rock)
 		sf::Color(200, 210, 220),   // 24 - Snowy Peaks
 	};
-	bool ChunkBorder = false;
-	bool DebugMode = false;
-	bool Save = false;
-	float globaldelta = 0.0f;
+	std::ranges::iota_view<int, int> centerPOS = std::views::iota(-esrovar::CHUNK_RADIUS, esrovar::CHUNK_RADIUS + 1);
 } // namespace esrovar ends
 
 // Global functions
@@ -239,8 +235,6 @@ namespace esroops {
 		m_unrequired_chunks;
 		m_world_seed = seed;
 		m_tileColor = 0u;
-		m_chunkframecounter = 0.0f;
-		// Initializing member functions
 		f_initialize_world();
 	}
 
@@ -432,8 +426,9 @@ namespace esroops {
 	}
 
 	void WorldManager::f_initialize_world() {
-		
+		// Get initial chunks required around player
 		getRequiredChunks();
+		
 		// Initializing set to hold required chunk in that frame
 		if (!m_required_chunks.empty() && !m_active_chunks.contains({m_required_chunks.front()})) {
 			Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
@@ -445,13 +440,13 @@ namespace esroops {
 
 	void WorldManager::getRequiredChunks() {
 		
-		// Clearing previous frame's required and unrequired chunks
+		// Clearing earlier required and unrequired chunks
 		m_required_chunks.clear();
 		m_unrequired_chunks.clear();
 		
 		// Function to calculate required chunks around player
-		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
-			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
+		for (int x : esrovar::centerPOS) {
+			for (int y : esrovar::centerPOS) {
 				int targetX = static_cast<int>(m_playerchunk_X) + x;
 				int targetY = static_cast<int>(m_playerchunk_Y) + y;
 				if(!m_active_chunks.contains({ targetX, targetY }))
@@ -492,8 +487,8 @@ namespace esroops {
 
 	void WorldManager::ChunkBorders(sf::RenderWindow& window) const {
 		// Drawing chunk borders for debugging
-		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
-			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
+		for (int x : esrovar::centerPOS) {
+			for (int y : esrovar::centerPOS) {
 				int targetX = static_cast<int>(m_playerchunk_X) + x;
 				int targetY = static_cast<int>(m_playerchunk_Y) + y;
 				sf::RectangleShape rectangle;
