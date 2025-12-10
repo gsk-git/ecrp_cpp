@@ -166,11 +166,11 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="config.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\config.cpp" />
+    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.hpp" />
+    <ClInclude Include="src\config.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="x64\Release\res\splash.png" />
