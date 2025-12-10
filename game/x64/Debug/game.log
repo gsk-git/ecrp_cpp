@@ -1,16 +1,2 @@
-﻿  config.cpp
-C:\Users\asus\Documents\esrocpp\src\config.cpp(455,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\asus\Documents\esrocpp\src\config.cpp(456,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\asus\Documents\esrocpp\src\config.cpp(497,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\asus\Documents\esrocpp\src\config.cpp(498,17): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-  main.cpp
-C:\Users\asus\Documents\esrocpp\src\main.cpp(207,9): warning C4293: '>>': shift count negative or too big, undefined behavior
-C:\Users\asus\Documents\esrocpp\src\main.cpp(208,7): warning C4305: '*=': truncation from 'unsigned __int64' to 'uint32_t'
-C:\Users\asus\Documents\esrocpp\src\main.cpp(209,9): warning C4293: '>>': shift count negative or too big, undefined behavior
-C:\Users\asus\Documents\esrocpp\src\main.cpp(210,7): warning C4305: '*=': truncation from 'unsigned __int64' to 'uint32_t'
-C:\Users\asus\Documents\esrocpp\src\main.cpp(211,9): warning C4293: '>>': shift count negative or too big, undefined behavior
-C:\Users\asus\Documents\esrocpp\src\main.cpp(316,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\asus\Documents\esrocpp\src\main.cpp(317,38): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-C:\Users\asus\Documents\esrocpp\src\main.cpp(252,22): warning C4101: 'data': unreferenced local variable
-  Generating Code...
+﻿  main.cpp
   game.vcxproj -> C:\Users\asus\Documents\esrocpp\x64\Debug\game.exe

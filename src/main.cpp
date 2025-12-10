@@ -1,6 +1,6 @@
 // Including all necessary libraries
 #include "config.hpp"
-#include "Json/json.hpp"
+#include <Json/json.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
@@ -201,15 +201,16 @@ static void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int
 
 // Generates a random world seed
 [[nodiscard]] static inline uint32_t GenerateWorldSeed() noexcept {
-	auto t = static_cast<uint32_t>(
-		std::chrono::high_resolution_clock::now().time_since_epoch().count());
+	
+	uint64_t t = static_cast<uint64_t>(
+	std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	// xorshift mix to spread bits
 	t ^= t >> 33; 
 	t *= 0xff51afd7ed558ccdULL;
 	t ^= t >> 33; 
 	t *= 0xc4ceb9fe1a85ec53ULL;
 	t ^= t >> 33;
-	return t;
+	return static_cast<uint32_t>(t & 0xFFFFFFFFu);
 }
 
 // Starts the game
@@ -249,7 +250,7 @@ static void StartGame() {
 	sf::Clock gameclock;
 	sf::Time elapsed = sf::Time::Zero;
 	esroops::Player player;
-	esroops::PlayerData data;
+	esroops::PlayerData data{};
 	esroops::WorldManager world(esrovar::PLAYER_POSITION, static_cast<int>(gameseed));
 	esroops::HudBox hudbox({ 350, 300 }, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
 	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
@@ -283,25 +284,25 @@ static void StartGame() {
 	
 	//Main game loop
 	while (esrovar::GameWindow.isOpen()) {
-
+		
 		// Delta time management
 		dt = clock.restart().asSeconds();
 		GameClock(gameclock, elapsed, seconds, minutes, day);
-
+		
 		// Increment Frames
 		frames++;
-
+		
 		// Maintaining game wide delta time
 		for (auto system : systemdelta) {
 			system->update(dt);
 		}
-
+		
 		//Handling windows events
 		ProcessWindowEvents(player);
-
+		
 		// Handling player inputs (keyboard)
 		InputHandler(player, world, dt);
-
+		
 		// Setting strings to HUD elements
 		if (fpsclock.getElapsedTime().asSeconds() >= 1.0f) {
 			fps = frames / static_cast<int>(fpsclock.getElapsedTime().asSeconds());
@@ -313,9 +314,9 @@ static void StartGame() {
 		swapChunk = esrofn::getChunkXY(esrovar::PLAYER_POSITION);
 		playerXY = esrofn::getPlayerXY(esrovar::PLAYER_POSITION);
 		tileType = world.getTileType(esrovar::PLAYER_POSITION);
-		world.m_playerchunk_X = std::get<0>(swapChunk);
-		world.m_playerchunk_Y = std::get<1>(swapChunk);
-
+		world.m_playerchunk_X = static_cast<float>(std::get<0>(swapChunk));
+		world.m_playerchunk_Y = static_cast<float>(std::get<1>(swapChunk));
+		
 		// Updating current and previous chunk values
 		if (swapChunk != currentChunk) {
 			previousChunk = currentChunk;
@@ -323,13 +324,13 @@ static void StartGame() {
 
 			world.getRequiredChunks();
 		}
-
+		
 		// New required chunks will be generated for every 5th frame
 		if (frames % chunkGenerationFrameLimit == 0) world.update(dt);
-
+		
 		// Updating player, world and HUD elements
 		player.update(dt);
-
+		
 		// Smooth logical camera
 		sf::Vector2f targetCenter = player.getPosition();
 		float lerpFactor = 3.0f * dt;
@@ -338,23 +339,13 @@ static void StartGame() {
 		drawCenter.x = std::floor(drawCenter.x + 0.5f);
 		drawCenter.y = std::floor(drawCenter.y + 0.5f);
 		view.setCenter(drawCenter);
-
+		
 		// Saving game data
 		if (esrovar::Save) {
 			savegame(gameJSON);
 			esrovar::Save = false;
 		}
-
-		// Placing tree
-		sf::Texture worldasset;
-		if (!worldasset.loadFromFile("res/plains_asset_tree1.png"))
-			LOG("Tree asset not found or path is incorrect");
-		worldasset.setRepeated(false);
-		sf::Sprite tree(worldasset);
-		tree.setOrigin({ worldasset.getSize().x / 2.0f, worldasset.getSize().y - 1.0f });
-		tree.setPosition({40.f, 30.f});
-		tree.setTexture(worldasset);
-
+		
 		// Initializating and generating world chunks, player, view and UI elements.
 		esrovar::GameWindow.clear();
 		esrovar::GameWindow.setView(view);

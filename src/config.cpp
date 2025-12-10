@@ -452,8 +452,8 @@ namespace esroops {
 		// Function to calculate required chunks around player
 		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
 			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
-				int targetX = m_playerchunk_X + x;
-				int targetY = m_playerchunk_Y + y;
+				int targetX = static_cast<int>(m_playerchunk_X) + x;
+				int targetY = static_cast<int>(m_playerchunk_Y) + y;
 				if(!m_active_chunks.contains({ targetX, targetY }))
 					m_required_chunks.push_back({ targetX, targetY });
 			}
@@ -494,8 +494,8 @@ namespace esroops {
 		// Drawing chunk borders for debugging
 		for (int x = -esrovar::CHUNK_RADIUS; x <= esrovar::CHUNK_RADIUS; ++x) {
 			for (int y = -esrovar::CHUNK_RADIUS; y <= esrovar::CHUNK_RADIUS; ++y) {
-				int targetX = m_playerchunk_X + x;
-				int targetY = m_playerchunk_Y + y;
+				int targetX = static_cast<int>(m_playerchunk_X) + x;
+				int targetY = static_cast<int>(m_playerchunk_Y) + y;
 				sf::RectangleShape rectangle;
 				rectangle.setSize(sf::Vector2f(static_cast<float>(esrovar::chunk_area), static_cast<float>(esrovar::chunk_area)));
 				rectangle.setFillColor(sf::Color::Transparent);

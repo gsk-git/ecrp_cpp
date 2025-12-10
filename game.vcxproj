@@ -71,8 +71,8 @@
   <!-- Consolidated include/library paths for x64 configurations -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <!-- include both SFML and FastNoise and preserve system tokens -->
-    <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib;$(VC_IncludePath);$(WindowsSDK_IncludePath);%(IncludePath)</IncludePath>
-    <LibraryPath>C:\lib\SFML\lib;C:\lib\FastNoise\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);%(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\asus\Documents\esrocpp\src\include\SFML\include;C:\Users\asus\Documents\esrocpp\src\include\Json;C:\Users\asus\Documents\esrocpp\src\include\FastNoise2\include;C:\lib;C:\lib\SFML\include;C:\lib\FastNoise\include;%(IncludePath);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\asus\Documents\esrocpp\src\include\FastNoise2\lib;C:\Users\asus\Documents\esrocpp\src\include\SFML\lib;C:\lib\SFML\lib;C:\lib\FastNoise\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);%(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\lib\SFML\include;C:\lib\FastNoise\include;C:\lib;$(VC_IncludePath);$(WindowsSDK_IncludePath);%(IncludePath)</IncludePath>
@@ -127,14 +127,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\lib\SFML\include;C:\lib\FastNoise\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\asus\Documents\esrocpp\src\include\FastNoise2\include;C:\Users\asus\Documents\esrocpp\src\include\SFML\include;C:\lib\SFML\include;C:\lib\FastNoise\include;$(ProjectDir)src\include;%(AdditionalIncludeDrectories);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\lib\SFML\lib;C:\lib\FastNoise\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\asus\Documents\esrocpp\src\include\FastNoise2\lib;C:\Users\asus\Documents\esrocpp\src\include\SFML\lib;C:\lib\SFML\lib;C:\lib\FastNoise\lib;$(ProjectDir)src\include;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;FastNoiseD.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClCompile Include="src\config.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="tests\tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\config.hpp" />
