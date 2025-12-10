@@ -335,10 +335,9 @@ static void StartGame() {
 		sf::Vector2f targetCenter = player.getPosition();
 		float lerpFactor = 3.0f * dt;
 		cameraCenter += (targetCenter - cameraCenter) * lerpFactor;
-		sf::Vector2f drawCenter = cameraCenter;
-		drawCenter.x = std::floor(drawCenter.x + 0.5f);
-		drawCenter.y = std::floor(drawCenter.y + 0.5f);
-		view.setCenter(drawCenter);
+		cameraCenter.x = std::floor(cameraCenter.x + 0.5f);
+		cameraCenter.y = std::floor(cameraCenter.y + 0.5f);
+		view.setCenter(cameraCenter);
 		
 		// Saving game data
 		if (esrovar::Save) {
