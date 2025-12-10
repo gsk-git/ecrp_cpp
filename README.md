@@ -92,9 +92,8 @@ Here is a sample step-by-step to build the project:
      ./vcpkg/vcpkg integrate install
 
 3. Install Depndencies
-     - ./vcpkg/vcpkg install gtest
-     - SFML from webite
-     - Fastnoise2 from website
+     - Create a dir "C:\lib"
+     - Move the contents inside C:\src\include to above lib folder
 
 
 
