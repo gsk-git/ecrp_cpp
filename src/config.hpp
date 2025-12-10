@@ -235,10 +235,10 @@ namespace esroops {
 			HudBox() = default;
 			~HudBox() override = default;
             using sf::Transformable::getPosition;
-            void setSize(sf::Vector2f size)             { hudbox.setSize(size);}
-            void setFillColor(sf::Color color)         { hudbox.setFillColor(color); }
-            void setOutlineColor(sf::Color outcolor)   { hudbox.setOutlineColor(outcolor); }
-            void setOutlineThickness(float thickness)  { hudbox.setOutlineThickness(thickness); }
+            void setSize(sf::Vector2f size) { hudbox.setSize(size);}
+            void setFillColor(sf::Color color) { hudbox.setFillColor(color); }
+            void setOutlineColor(sf::Color outcolor) { hudbox.setOutlineColor(outcolor); }
+            void setOutlineThickness(float thickness) { hudbox.setOutlineThickness(thickness); }
         private:
             sf::RectangleShape hudbox;
             void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
@@ -254,7 +254,7 @@ namespace esroops {
             sf::Color fillColor = sf::Color::White,
             unsigned int style = sf::Text::Regular,
             unsigned int size = 18)
-            : textbox(font, "", size) // Explicitly construct sf::Text with font, string, and size
+            : textbox(font, "", size)
         {
             textbox.setPosition(position);
             textbox.setFillColor(fillColor);
