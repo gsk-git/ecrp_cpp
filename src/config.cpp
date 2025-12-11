@@ -16,7 +16,6 @@
 #include <string>
 #include <utility>
 #include <Windows.h>
-#include <FastNoise/FastNoiseLite.h>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <algorithm>

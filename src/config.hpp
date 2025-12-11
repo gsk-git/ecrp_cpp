@@ -17,7 +17,7 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include "FastNoise2/include/FastNoise/FastNoiseLite.h"
+#include "FastNoise/include/FastNoise/FastNoiseLite.h"
 #include <deque>
 #include <SFML/Graphics/Rect.hpp>
 #include <vector>

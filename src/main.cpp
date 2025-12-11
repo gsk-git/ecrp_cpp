@@ -321,7 +321,6 @@ static void StartGame() {
 		if (swapChunk != currentChunk) {
 			previousChunk = currentChunk;
 			currentChunk = swapChunk;
-
 			world.getRequiredChunks();
 		}
 		

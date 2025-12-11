@@ -139,3 +139,43 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 
+# Build folders
+/build/
+/out/
+/bin/
+/lib/
+/dist/
+/CMakeFiles/
+/CMakeCache.txt
+
+# Visual Studio
+/.vs/
+/.vscode/
+/*.VC.db
+*.opendb
+*.sdf
+
+# Compiled objects
+*.obj
+*.o
+*.pdb
+*.ilk
+*.idb
+*.tlog
+*.cache
+*.log
+
+# SFML DLLs (optional, keep only if you want them in repo)
+*.dll
+
+# Generated Ninja files
+build.ninja
+rules.ninja
+
+# OS junk
+Thumbs.db
+.DS_Store
+/Local settings (.vs)
+/Global settings
+
+
