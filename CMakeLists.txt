@@ -95,40 +95,64 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<BOOL:${BUILD_TESTS}>:OFF>
 # On Windows, easiest is to download SFML and set SFML_DIR to its cmake folder.
 set(_sfml_ok FALSE)
 
-find_package(SFML 2.5 COMPONENTS graphics window system QUIET)
-if (SFML_FOUND)
-    message(STATUS "Found SFML 2.5-style package")
-    set(_sfml_ok TRUE)
-    # legacy targets are typically: sfml-graphics, sfml-window, sfml-system
-    if (TARGET sfml-graphics)
-        set(_sfml_targets sfml-graphics sfml-window sfml-system)
-    endif()
+# -----------------------
+# Robust SFML discovery
+# -----------------------
+# You can set SFML_STATIC_LIBRARIES to ON if you built static SFML libs.
+# e.g. -DSFML_STATIC_LIBRARIES=ON on command line or set in CMakeSettings.
+
+message(STATUS "DEBUG: SFML_DIR (before find_package) = ${SFML_DIR}")
+
+# Try SFML 3 style (capitalized components). This matches the SFMLConfig.cmake you shared.
+set(_sfml_ok FALSE)
+if (NOT DEFINED SFML_STATIC_LIBRARIES)
+    set(SFML_STATIC_LIBRARIES OFF) # default to shared unless user requested static
 endif()
 
-# If not found, try SFML 3+ style (capitalized components / namespaced targets)
+# First try explicit SFML 3 call (capitalized component names)
+find_package(SFML COMPONENTS Graphics Window System QUIET)
+if (SFML_FOUND)
+    message(STATUS "Found SFML via: find_package(SFML COMPONENTS Graphics Window System)")
+    set(_sfml_ok TRUE)
+    set(_sfml_targets SFML::Graphics SFML::Window SFML::System)
+endif()
+
+# If not found, try lowercase (SFML 2.x style)
 if (NOT _sfml_ok)
-    find_package(SFML COMPONENTS Graphics Window System QUIET)
+    find_package(SFML 2.5 COMPONENTS graphics window system QUIET)
     if (SFML_FOUND)
-        message(STATUS "Found SFML 3-style package")
+        message(STATUS "Found SFML via: find_package(SFML 2.5 COMPONENTS graphics window system)")
         set(_sfml_ok TRUE)
-        # modern exported targets often use namespaces like SFML::Graphics
-        # we prefer those if they exist
-        if (TARGET SFML::Graphics)
+        # legacy names may export sfml-graphics etc. CMake will handle targets if exported.
+        if (TARGET sfml-graphics)
+            set(_sfml_targets sfml-graphics sfml-window sfml-system)
+        elseif (TARGET SFML::Graphics)
             set(_sfml_targets SFML::Graphics SFML::Window SFML::System)
         endif()
     endif()
 endif()
 
+# If still not found, give helpful diagnostics and fail
 if (NOT _sfml_ok)
-    message(FATAL_ERROR "SFML not found. Install SFML 2.5.x or SFML 3 and set SFML_DIR appropriately.")
+    message(STATUS "DEBUG: Searching SFML_DIR = ${SFML_DIR}")
+    file(GLOB_RECURSE _sfml_listing RELATIVE "${SFML_DIR}" "${SFML_DIR}/*")
+    message(STATUS "DEBUG: ${SFML_DIR} contains (first 30):")
+    foreach(_i RANGE 0 29)
+        list(GET _sfml_listing ${_i} _item QUIET)
+        if (_item)
+            message(STATUS "  ${_item}")
+        endif()
+    endforeach()
+    message(FATAL_ERROR "SFML not found. Please set SFML_DIR to the folder that contains SFMLConfig.cmake (e.g. .../lib/cmake/SFML) and ensure you call find_package with components. Example: -DSFML_DIR=\"C:/path/to/SFML/lib/cmake/SFML\"")
 endif()
 
-# Link the targets we discovered (or try fallbacks)
+# Link discovered targets
 if (DEFINED _sfml_targets)
+    message(STATUS "Linking SFML targets: ${_sfml_targets}")
     target_link_libraries(${PROJECT_NAME} PRIVATE ${_sfml_targets})
 else()
-    # Last resort: try commonly used names (some packages export these)
-    target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-window sfml-system SFML::Graphics SFML::Window SFML::System)
+    # fallback
+    target_link_libraries(${PROJECT_NAME} PRIVATE SFML::Graphics SFML::Window SFML::System)
 endif()
 
 # -- Resources: copy res/ to output ---------------------------------------
