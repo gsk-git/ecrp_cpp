@@ -41,8 +41,7 @@ namespace esrovar {
 	bool Save = false;
 	int chunk_area = CHUNK_SIZE * pixel_size;
 	int frame_count = 0;
-	sf::VideoMode desktop = desktop.getDesktopMode();
-	sf::RenderWindow GameWindow(desktop, "ESRO", sf::Style::None);
+	sf::RenderWindow GameWindow;
 	FastNoiseLite noise;
 	std::pair<float, float> PLAYER_POSITION = {0.0f, 0.0f};
 	std::array<sf::Texture, StateCount> kTextures;
@@ -50,11 +49,11 @@ namespace esrovar {
 	sf::Texture tileset;
 	std::vector<sf::Color> biome_colors = {
 		sf::Color(170, 200, 120),   // 0 - Plains
-		sf::Color(240, 224, 170),   // 1 - dirt
-		sf::Color(216, 184, 100),   // 2 - Beach
+		sf::Color(240, 224, 170),   // 1 - Beach
+		sf::Color(216, 184, 100),   // 2 - Desert
 		sf::Color(33, 87, 141),     // 3 - Ocean
 		sf::Color(26, 123, 59),     // 4 - Jungle
-		sf::Color(110, 118, 130),   // 5 - Mountains
+		sf::Color(110, 118, 130)   // 5 - Mountains
 	};
 	std::vector<sf::Color> biome_variants = {
 		// --- OCEAN & WATER ---
@@ -316,6 +315,7 @@ namespace esroops {
 				
 				// Setting tile's type at XY
 				tileAt(x, y).type = static_cast<BlockType>(noiseIDX);
+				
 			}
 		}
 		
@@ -456,7 +456,7 @@ namespace esroops {
 		for (const auto& [coords, _chunk] : m_active_chunks) {
 			auto& [cx, cy] = coords;
 			if (std::abs(cx - m_playerchunk_X) > esrovar::CHUNK_RADIUS || std::abs(cy - m_playerchunk_Y) > esrovar::CHUNK_RADIUS) {
-				m_unrequired_chunks.push_back({ cx, cy });
+				m_unrequired_chunks.push_back({ cx, cy });	
 			}
 		}
 	}
@@ -472,8 +472,12 @@ namespace esroops {
 		}
 		// Remove one chunk out from unrequiredchunk array
 		if (!m_unrequired_chunks.empty()) {
-			m_active_chunks.at(m_unrequired_chunks.front()).m_isGenerated = false;
-			m_active_chunks.erase(m_unrequired_chunks.front());
+			auto key = m_unrequired_chunks.front();
+			auto it = m_active_chunks.find(key);
+			if (it != m_active_chunks.end()) {
+				it->second.m_isGenerated = false;
+				m_active_chunks.erase(it);
+			}
 			m_unrequired_chunks.pop_front();
 		}
 	}

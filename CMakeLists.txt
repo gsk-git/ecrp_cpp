@@ -9,6 +9,7 @@ option(BUILD_TESTS "Build unit tests (Catch2)" OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Make multi-config generators consistent for outputs
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -85,7 +86,7 @@ target_include_directories(${PROJECT_NAME}
 )
 
 # Define a macro for test builds so code can enable test-only accessors
-target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<BOOL:${BUILD_TESTS}>:OFF>)
+target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<BOOL:${BUILD_TESTS}>:BUILD_TESTS=1>)
 
 # -- FastNoiseLite (header-only) -----------------------------------------
 # If you put FastNoise in src/include/FastNoise/FastNoiseLite.h nothing special needed.
@@ -105,9 +106,15 @@ message(STATUS "DEBUG: SFML_DIR (before find_package) = ${SFML_DIR}")
 
 # Try SFML 3 style (capitalized components). This matches the SFMLConfig.cmake you shared.
 set(_sfml_ok FALSE)
-if (NOT DEFINED SFML_STATIC_LIBRARIES)
-    set(SFML_STATIC_LIBRARIES OFF) # default to shared unless user requested static
+
+option(SFML_STATIC_LIBRARIES "Link SFML statically (static libs) instead of shared (DLLs)" ON)
+
+# If user requested static SFML, ensure SFML headers know it
+if(SFML_STATIC_LIBRARIES)
+    message(STATUS "SFML static linking requested (SFML_STATIC_LIBRARIES=ON)")
+    add_compile_definitions(SFML_STATIC)
 endif()
+
 
 # First try explicit SFML 3 call (capitalized component names)
 find_package(SFML COMPONENTS Graphics Window System QUIET)
@@ -213,3 +220,31 @@ add_custom_target(run
 # * If you link SFML statically, you may need to define SFML_STATIC and add additional libs.
 # * If you use other libs (e.g., FastNoise as a static lib), add find_package or target_link_libraries accordingly.
 # * If globbing causes issues with IDEs, replace `file(GLOB_RECURSE ...)` with an explicit list of sources.
+
+# ---------------------------
+# Ensure includes & compile flags are attached to the target
+# ---------------------------
+# Define an include root variable (useful and safe)
+set(PROJECT_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/src/include")
+
+# Expose include directories to the target (IntelliSense needs this)
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${PROJECT_INCLUDE_DIR}
+        ${SRC_DIR}                    # your src root
+        ${CMAKE_SOURCE_DIR}           # project root (defensive)
+)
+
+# Make sure the target knows language features & visibility
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+if(MSVC)
+    # Keep /W4 set but also give IntelliSense the same defines
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive-)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-unused-parameter)
+endif()
+
+# Export compile commands file to repo root (some tools/readers rely on this)
+# (You already set CMAKE_EXPORT_COMPILE_COMMANDS ON; this ensures it's generated for the build).
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+

@@ -236,6 +236,9 @@ static void StartGame() {
 	std::tuple<int, int> currentChunk = { 0, 0 };
 	std::tuple<int, int> previousChunk = { 0, 0 };
 	std::tuple<int, int> swapChunk = { 0, 0 };
+	sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+	sf::RenderWindow gamewin(desktop, "ESRO", sf::Style::None);
+	esrovar::GameWindow = std::move(gamewin);
 	
 	// Loading Assets
 	esrofn::LoadSpriteSheetsnew();
@@ -343,7 +346,7 @@ static void StartGame() {
 		if (esrovar::Save) {
 			savegame(gameJSON);
 			esrovar::Save = false;
-		}
+		}		
 		
 		// Initializating and generating world chunks, player, view and UI elements.
 		esrovar::GameWindow.clear();

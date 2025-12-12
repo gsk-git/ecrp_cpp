@@ -57,8 +57,8 @@ namespace esrovar {
     constexpr int PLAYER_SPRITE = 64;
     constexpr uint32_t gameseed = 23091995;
     constexpr unsigned int pixel_size = 50u; 
-    constexpr enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
-    constexpr enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
+    enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
+    enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
     inline constexpr std::size_t StateCount = static_cast<std::size_t>(State::COUNT);
     inline constexpr std::size_t DirectionCount = static_cast<std::size_t>(Directions::COUNT);
     constexpr std::size_t to_index(State s) noexcept { return static_cast<std::size_t>(s);}
@@ -90,7 +90,7 @@ namespace esrovar {
     extern float boost;
     extern float totalspeed;
     extern int jumpboost;
-    extern float globaldelta;
+    extern float globaldelta;    
     extern sf::RenderWindow GameWindow;
 	extern FastNoiseLite noise;
     extern std::pair<float, float> PLAYER_POSITION;
