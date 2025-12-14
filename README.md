@@ -11,9 +11,9 @@
 - [Features](#features)  
 - [Architecture](#architecture)  
 - [Getting Started](#getting-started)  
-  - [Prerequisites](#prerequisites)  
-  - [Building Locally](#building-locally)  
-  - [Running the Game](#running-the-game)  
+    - [Prerequisites](#prerequisites)  
+    - [Building Locally](#building-locally)  
+    - [Running the Game](#running-the-game)  
 - [Usage](#usage)  
 - [Project Structure](#project-structure)  
 - [Configuration](#configuration)  
@@ -82,18 +82,9 @@ To build and run this project, you might need:
 Here is a sample step-by-step to build the project:
 
 1. **Clone the repository**  
-     ```bash
-     git clone https://github.com/gsk-git/ecrp_cpp.git
-     cd ecrp_cpp
-2. Example (assuming vcpkg is not yet bootstrapped)
-     ```bash
-     git clone https://github.com/microsoft/vcpkg.git
-     ./vcpkg/bootstrap-vcpkg.sh
-     ./vcpkg/vcpkg integrate install
-
-3. Install Depndencies
-     - Create a dir "C:\lib"
-     - Move the contents inside C:\src\include to above lib folder
-
-
-
+    ```bash
+    git clone https://github.com/gsk-git/ecrp_cpp.git
+    cd ecrp_cpp\
+2. Install Depndencies
+    - Create a dir "C:\lib"
+    - Move the contents inside C:\src\include to above lib folder
