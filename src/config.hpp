@@ -56,7 +56,7 @@ namespace esrovar {
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
     constexpr uint32_t gameseed = 23091995;
-    constexpr unsigned int pixel_size = 50u; 
+    extern int pixel_size; 
     enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
     enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
     inline constexpr std::size_t StateCount = static_cast<std::size_t>(State::COUNT);

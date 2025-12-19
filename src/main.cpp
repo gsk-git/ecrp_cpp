@@ -232,7 +232,6 @@ static void StartGame() {
 	std::mt19937 rng(gameseed);
 	std::uniform_int_distribution dist(0, 5);
 	std::tuple<int, int> playerXY = { 0, 0 };
-	std::tuple<int, int> playerChunkXY = { 0, 0 };
 	std::tuple<int, int> currentChunk = { 0, 0 };
 	std::tuple<int, int> previousChunk = { 0, 0 };
 	std::tuple<int, int> swapChunk = { 0, 0 };
@@ -242,7 +241,6 @@ static void StartGame() {
 	
 	// Loading Assets
 	esrofn::LoadSpriteSheetsnew();
-	//esrofn::LoadTileSheet();
 	esrofn::LoadFonts();
 	loadgame(gameJSON);
 	
@@ -267,7 +265,7 @@ static void StartGame() {
 	esroops::HudText tiletype(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 9 }, sf::Color::White, sf::Text::Regular, 18);
 	
 	// Setting framerate limit
-	esrovar::GameWindow.setFramerateLimit(esrovar::FPS);
+	esrovar::GameWindow.setVerticalSyncEnabled(true);
 	
 	// Setting world seed and player position
 	world.m_world_seed = dist(rng);
@@ -335,11 +333,10 @@ static void StartGame() {
 		
 		// Smooth logical camera
 		sf::Vector2f targetCenter = player.getPosition();
-		float lerpFactor = 3.0f * dt;
-		cameraCenter += (targetCenter - cameraCenter) * lerpFactor;
+		cameraCenter += (targetCenter - cameraCenter) * (2.1f * dt);
 		sf::Vector2f drawCenter = cameraCenter;
-		drawCenter.x = std::floor(drawCenter.x + 0.5f);
-		drawCenter.y = std::floor(drawCenter.y + 0.5f);
+		drawCenter.x = std::floor(drawCenter.x);
+		drawCenter.y = std::floor(drawCenter.y);
 		view.setCenter(drawCenter);
 		
 		// Saving game data

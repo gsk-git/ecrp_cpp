@@ -30,16 +30,7 @@ if(ENABLE_SANITIZERS AND (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang"))
     link_libraries(-fsanitize=address -fsanitize=undefined)
 endif()
 
-# -- Source layout --------------------------------------------------------
-# Assumed layout:
-#  ProjectRoot/
-#    src/
-#      include/         (your headers and thirdparty headers, e.g. FastNoise)
-#      main.cpp
-#      config.cpp
-#      ... other .cpp files ...
-#    res/               (resources: images, fonts, tile.png, etc.)
-#    libs/              (optional: SFML libs if you ship them locally)
+# -- Source layout -----------------------------------------------------
 
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 
@@ -48,7 +39,6 @@ file(GLOB_RECURSE ALL_CPP_REL
     "${SRC_DIR}/*.cpp"
 )
 
-# Exclude common folders that should not be part of the build
 # Add or remove patterns to match your repo layout
 list(FILTER ALL_CPP_REL EXCLUDE REGEX ".*/\\.git/.*")
 list(FILTER ALL_CPP_REL EXCLUDE REGEX ".*/out/.*")
@@ -75,7 +65,7 @@ if (NOT GAME_SOURCES)
 endif()
 
 # -- Target ----------------------------------------------------------------
-add_executable(${PROJECT_NAME} ${GAME_SOURCES}) 
+add_executable(${PROJECT_NAME} WIN32 ${GAME_SOURCES}) 
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
@@ -117,16 +107,16 @@ endif()
 
 
 # First try explicit SFML 3 call (capitalized component names)
-find_package(SFML COMPONENTS Graphics Window System QUIET)
+find_package(SFML COMPONENTS Graphics Window System Main QUIET)
 if (SFML_FOUND)
     message(STATUS "Found SFML via: find_package(SFML COMPONENTS Graphics Window System)")
     set(_sfml_ok TRUE)
-    set(_sfml_targets SFML::Graphics SFML::Window SFML::System)
+    set(_sfml_targets SFML::Graphics SFML::Window SFML::System SFML::Main)
 endif()
 
 # If not found, try lowercase (SFML 2.x style)
 if (NOT _sfml_ok)
-    find_package(SFML 2.5 COMPONENTS graphics window system QUIET)
+    find_package(SFML 2.5 COMPONENTS graphics window system main QUIET)
     if (SFML_FOUND)
         message(STATUS "Found SFML via: find_package(SFML 2.5 COMPONENTS graphics window system)")
         set(_sfml_ok TRUE)
@@ -134,7 +124,7 @@ if (NOT _sfml_ok)
         if (TARGET sfml-graphics)
             set(_sfml_targets sfml-graphics sfml-window sfml-system)
         elseif (TARGET SFML::Graphics)
-            set(_sfml_targets SFML::Graphics SFML::Window SFML::System)
+            set(_sfml_targets SFML::Graphics SFML::Window SFML::System SFML::Main)
         endif()
     endif()
 endif()
@@ -243,8 +233,4 @@ if(MSVC)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-unused-parameter)
 endif()
-
-# Export compile commands file to repo root (some tools/readers rely on this)
-# (You already set CMAKE_EXPORT_COMPILE_COMMANDS ON; this ensures it's generated for the build).
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 

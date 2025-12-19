@@ -36,6 +36,7 @@ namespace esrovar {
 	float dt = 0.0f;
 	float totalspeed = 0.0f;
 	int jumpboost = 0;
+	int pixel_size = 50;
 	bool ChunkBorder = false;
 	bool DebugMode = false;
 	bool Save = false;
@@ -265,8 +266,8 @@ namespace esroops {
 				auto tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
 				
 				// World Tile XY for noise logic
-				auto worldTileX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE + x);
-				auto worldtileY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE + y);
+				float worldTileX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE + x);
+				float worldtileY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE + y);
 				
 				// Getting noise value for current tile
 				int noiseIDX = 0;				
@@ -287,12 +288,12 @@ namespace esroops {
 				//auto tv = 0;
 				
 				// Chunk pixel offset
-				auto chunkOffsetX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE) * tilesize.x;
-				auto chunkOffsetY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE) * tilesize.y;
+				float chunkOffsetX = m_chunkX * esrovar::CHUNK_SIZE * tilesize.x;
+				float chunkOffsetY = m_chunkY * esrovar::CHUNK_SIZE * tilesize.y;
 				
 				// XY of independent tile
-				auto tx = chunkOffsetX + static_cast<float>(x) * tilesize.x;
-				auto ty = chunkOffsetY + static_cast<float>(y) * tilesize.y;
+				float tx = chunkOffsetX + x * tilesize.x;
+				float ty = chunkOffsetY + y * tilesize.y;
 				
 				// XY for independent tile texture - Required in future implementations
 				//auto texX = static_cast<float>(tu) * tilesize.x;
@@ -324,7 +325,6 @@ namespace esroops {
 	}
 
 	void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-		states.transform *= getTransform();
 		target.draw(m_grid, states);
 	}    
 
@@ -415,7 +415,6 @@ namespace esroops {
 		
 		// Updating texture rectangle
 		m_playersprite->setTextureRect( sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE } ));
-		//m_playersprite->setPosition(m_playerXY);
 	}
 
 	void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
