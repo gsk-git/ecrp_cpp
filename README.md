@@ -1,4 +1,4 @@
-![Game screenshot](res/esro.png)
+![Game screenshot](res/esro1.png)
 # ESRO Game (ecrp_cpp)
 
 **ESRO** is a C++-based game built using a modular “state machine” architecture. This repository (`ecrp_cpp`) holds the game engine code, state management, resources, and configuration needed to build and run the game.

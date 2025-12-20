@@ -52,7 +52,7 @@ namespace esrovar {
     constexpr unsigned int SCRWDT = 1920u;
     constexpr unsigned int SCRHGT = 1080u;
     constexpr unsigned int FPS = 60u;
-    constexpr int CHUNK_SIZE = 16;
+    constexpr int CHUNK_SIZE = 32;
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
     extern int pixel_size; 

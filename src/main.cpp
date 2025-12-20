@@ -51,12 +51,12 @@ static void savegame(json& gfile) {
 }
 
 // Handling player input
-static void InputHandler(esroops::Player& player, esroops::WorldManager& world, float& dt) {
+static void InputHandler(esroops::Player& player, float& dt) {
 	
 	// Resetting movement direction and boost
 	esrovar::movedirx = 0.f;
 	esrovar::movediry = 0.f;
-	esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 1.f;
+	esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 0.6f;
 	
 	// Setting running state
 	player.m_IsRunning = esrovar::boost == 2.0f ? true : false;
@@ -223,10 +223,10 @@ static void StartGame() {
 	int minutes = 0;
 	int day = 0;
 	float dt = 0.0f;
-	const uint32_t gameseed = 23091995;
 	float playerX;
 	float playerY;
 	json gameJSON;
+	const uint32_t gameseed = 23091995;
 	std::string tileType;
 	std::mt19937 rng(gameseed);
 	std::uniform_int_distribution dist(0, 5);
@@ -303,7 +303,7 @@ static void StartGame() {
 		ProcessWindowEvents(player);
 		
 		// Handling player inputs (keyboard)
-		InputHandler(player, world, dt);
+		InputHandler(player, dt);
 		
 		// Setting strings to HUD elements
 		if (fpsclock.getElapsedTime().asSeconds() >= 1.0f) {
@@ -335,7 +335,7 @@ static void StartGame() {
 		
 		// Smooth logical camera
 		sf::Vector2f targetCenter = player.getPosition();
-		cameraCenter += (targetCenter - cameraCenter) * (2.1f * dt);
+		cameraCenter += (targetCenter - cameraCenter) * (1.5f * dt);
 		sf::Vector2f drawCenter = cameraCenter;
 		drawCenter.x = std::floor(drawCenter.x);
 		drawCenter.y = std::floor(drawCenter.y);

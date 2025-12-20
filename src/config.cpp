@@ -36,7 +36,7 @@ namespace esrovar {
 	float dt = 0.0f;
 	float totalspeed = 0.0f;
 	int jumpboost = 0;
-	int pixel_size = 50;
+	int pixel_size = 30;
 	bool ChunkBorder = false;
 	bool DebugMode = false;
 	bool Save = false;
