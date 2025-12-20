@@ -223,7 +223,6 @@ static void StartGame() {
 	int minutes = 0;
 	int day = 0;
 	float dt = 0.0f;
-	int chunkGenerationFrameLimit = 2;
 	const uint32_t gameseed = 23091995;
 	float playerX;
 	float playerY;
@@ -252,7 +251,7 @@ static void StartGame() {
 	sf::Time elapsed = sf::Time::Zero;
 	esroops::Player player;
 	esroops::PlayerData data{};
-	esroops::WorldManager world(esrovar::PLAYER_POSITION, static_cast<int>(gameseed));
+	esroops::WorldManager world(esrovar::PLAYER_POSITION, gameseed);
 	esroops::HudBox hudbox({ 350, 300 }, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
 	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText playerpos(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 2 }, sf::Color::White, sf::Text::Regular, 18);
@@ -326,7 +325,7 @@ static void StartGame() {
 		}
 		
 		// New required chunks will be generated for every 5th frame
-		if (frames % chunkGenerationFrameLimit == 0) world.update(dt);
+		if (frames % world.m_chunkGenerationLimit == 0) world.update(dt);
 		
 		// Updating player, world and HUD elements
 		player.update(dt);

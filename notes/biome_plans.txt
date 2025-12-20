@@ -1,0 +1,258 @@
+🧭 Biome Block Mapping Table
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Biome	    Elevation	    Moisture	    Temperature	    Block Type	    Color (Sample)	        Walkable?       Notes
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Ocean	    Low (< 0.3)	    Any	            Any	            Water	        PYGAME_BLUE_WATER	    ❌              Deep water, animated ripple later
+Beach	    Low-Mid	        Low-Mid	        Mid-High	    Sand	        PYGAME_LIGHT_SAND	    ✅              Transition zone between land and sea
+Plains	    Mid	            Mid	            Mid	            Grass	        PYGAME_GRASS_GREEN	    ✅              Add grass animation later
+Forest	    Mid	            High	        Low-Mid	        Dark Dirt	    PYGAME_FOREST_GREEN	    ✅              Thicker vegetation
+Jungle	    Mid	            High	        High	        Jungle Dirt	    PYGAME_JUNGLE_GREEN	    ✅              Denser, vibrant foliage
+Swamp	    Low-Mid	        Very High	    Low-Mid	        Swamp	        PYGAME_SWAMP_GREEN	    ❌/✅           (slows)	Slows player movement
+Desert	    Mid	            Arid	        High	        Dirt	        PYGAME_LIGHT_SAND	    ✅              Sparse vegetation
+Mountain	High (> 0.7)	Low	            Low-Mid	        Rock	        PYGAME_GRAY_ROCK	    ✅/❌           Could require climbing later
+Snow    	High	        Mid-High	    Very Low	    Snow	        PYGAME_SNOW	            ✅              Icy biome variant
+Tundra	    Mid	            Low-Mid	        Very Low        Frozen Dirt	    Light gray-blue	        ✅              Barren cold land
+Crater	    Any	            Very Low	    Very High	    Burnt Rock	    DARK_GRAY	            ✅/❌           Alien or hostile world area
+Lava Zone	Any	            Low	            Very High	    Lava	        Orange-Red	            ❌              Hazardous zone (future danger!)
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+🧬 Block Properties (Per Block Type)
+
+-------------------------------------------------------------------------------------------------
+Block Type	    Base Class	    Visual Texture	                Future Plans
+-------------------------------------------------------------------------------------------------
+Water	        Water	        Ripple effect (shader/anim)	    Boat mechanics, drowning
+Sand	        Dirt	        Light with grains	            Slower walking, shifting
+Grass	        Dirt	        Green overlay, sparse dots	    Spreading mechanic
+Rock	        Rock	        Jagged dark texture	            Mining, cave gen
+Snow	        Rock/Dirt	    Bright white, soft speckled	    Slippery effect, snowstorms
+Swamp	        Water/Dirt	    Murky green, vines	            Movement slow, particle fx
+Jungle Dirt	    Dirt	        Dense green/roots overlay	    Rich biomass, animal spawns
+Burnt Rock	    Rock	        Charcoal black + cracks	        Alien structure areas
+Lava	        Custom	        Animated orange-red glow	    Damage zone, light source
+-------------------------------------------------------------------------------------------------
+
+🌍 Interstellar Civilization – World Generation Roadmap (Delta Plan)
+
+-------------------------------------------------------------------------------------------------
+Phase	Focus Area	                    Description
+-------------------------------------------------------------------------------------------------
+0	    Core Terrain	                ✅ Elevation + water generation with Perlin noise
+1	    Climate Layers	                🌡️ Add Perlin-based temperature & moisture maps
+2	    Zoom Refinement	                🔍 Expand low-res biome maps into high-res realistic shapes
+3	    Edge Smoothing	                🎨 Blend biome borders, add shores/swamps
+4	    Rivers & Special Biomes	        🏞️ Carve rivers, add rare biomes (mushroom, deep ocean)
+5	    Terrain Ruggedness	            ⛰️ Add hills, cliffs, snowcaps based on elevation
+6	    Caves & Subterranean	        🕳️ Generate cave systems using 3D noise carving
+7	    Ore & Mineral Distribution	    💎 Spawn materials based on biome/depth
+8	    Vegetation & Structures	        🌲 Add trees, plants, ruins, villages
+-------------------------------------------------------------------------------------------------
+
+🌍 Terrain Rule System v1.0
+
+1. Elevation Representation
+
+    Store elevation as a float or int per block (0.0 = sea level, 1.0 = mountain).
+    Round to discrete tiers (e.g., 0, 1, 2, 3...) for visual rendering and pathfinding.
+
+2. Movement Rules
+    Elevation   Diff         Movement Allowed	Notes
+    0	        ✅ Yes      Normal movement
+    ±5	        ⚠️ Maybe	Slower or energy-consuming
+    >±7	        ❌ No	   Requires alternate path or special item
+
+    Optional: introduce "Climb Tools" or "Jetpacks" for crossing steep cliffs.
+
+3. Visual Layers
+
+    Use shading or block stacking to show elevation differences.
+    Sloped edges (pseudo-3D feel) for smoother transitions.
+
+4. Water & Terrain Traverse Logic
+
+-------------------------------------------------------------------------------------------------
+    Terrain Type	Elevation       Rules	Movement
+-------------------------------------------------------------------------------------------------
+    Water	        ≤ 0.35	        ❌ unless boat or swimming tech
+    Flatland	    0.35 – 0.6	    ✅
+    Hills	        0.5 – 0.7	    ⚠️ slow movement
+    Mountains	    > 0.7	        ❌ no movement unless equipped
+-------------------------------------------------------------------------------------------------
+
+5. Future-Proofing
+
+    Add a block.tags array per block (walkable, swimmable, climbable, etc.)
+
+    AI and game logic can refer to these tags to adapt to terrain rules
+
+
+############################################################################################################################################################
+
+## 🧭 **Biome Generation: Zoom Layer Plan**
+
+### 🌍 Goal:
+
+To generate **large-scale** biome layout first, then **refine it layer-by-layer** into detailed terrain using *zooming* and *rules*, while preserving natural transitions.
+
+---
+
+### 🔢 **Layer Stack Plan (Top-Down):**
+
+------------------------------------------------------------------------------------------------------------------------------
+| Layer Name                   | Resolution (tiles) | Function                        | Output                               |
+| ---------------------------- | ------------------ | ------------------------------- | ------------------------------------ |
+| **Layer 0: Base Seed**       | 1:4096             | Places random "continent" seeds | `OCEAN`, `LAND`                      |
+| **Layer 1: Large Biome**     | 1:2048             | Assigns general biomes          | `DESERT`, `TUNDRA`, `FOREST`, `SEA`  |
+| **Layer 2: Climate Blend**   | 1:1024             | Adds logic via temp/moisture    | Refines into `SWAMP`, `JUNGLE`, etc. |
+| **Layer 3: River Init**      | 1:512              | Detects elevation troughs       | Sets up potential river paths        |
+| **Layer 4: Zoom + Edge Mix** | 1:256              | Zoom + add fuzzy biome borders  | Blends biome edges w/ noise          |
+| **Layer 5: Sub-Biomes**      | 1:128              | Adds details (clearing, forest) | E.g. `Jungle → Dense`, `Clear`       |
+| **Layer 6: Surface Type**    | 1:64               | Assigns block types             | `Grass`, `Sand`, `Snow`, etc.        |
+| **Layer 7: Final Zoom**      | 1:1                | Zoom to pixel/block level       | World blocks (for chunk use)         |
+
+------------------------------------------------------------------------------------------------------------------------------
+
+### 📜 Example Flow:
+
+1. Start with a 2D array filled with base land/ocean blobs.
+2. Zoom once → fill in biome types (temp + moisture rules).
+3. Zoom again → blend biome edges using Perlin/jitter.
+4. Add rivers by checking elevation dips across chunks.
+5. Zoom again → generate **sub-biomes**, like beaches, marshes.
+6. Final zoom step: assign block IDs/textures for map use.
+
+---
+
+### 🔬 How Does Zoom Work in Each Layer?
+
+Each zoom **doubles the resolution** but introduces **new values** using:
+
+* Neighbor-aware decisions
+* Noise/random jitter
+* Weighted blending rules (e.g., Forest + Desert → Savanna)
+
+---
+
+### 🧠 Logic You’ll Need To Design
+
+For each layer you’ll want to define:
+
+| Element             | Description                            |
+| ------------------- | -------------------------------------- |
+| **Input Map**       | From previous layer (2D grid)          |
+| **Zoom Rule**       | How to expand cells                    |
+| **Conflict Solver** | How to decide if neighbors differ      |
+| **Noise Factor**    | Add variety to transitions             |
+| **Output Map**      | Refined 2D grid with higher resolution |
+
+---------------------------------------------------------------
+
+### 🧩 Bonus Ideas (Optional Enhancements)
+
+* Use **Voronoi-based base seeding** for natural shapes.
+* Add **multi-axis noise blending** (e.g., combine elevation + rainfall).
+* Generate **moisture maps** alongside elevation for more nuanced biomes.
+* Add **seed-based deterministic randomness** to keep worlds consistent.
+
+---
+
+#############################################################################################################################################################################################
+
+🌐 Layer 0 vs Layer 1 vs Layer 2: What Each Really Does
+-------------------------------------------------------------------------------------------------
+Layer   Name	            Purpose	                        Uses Noise?	    Decides Biome?
+-------------------------------------------------------------------------------------------------
+0	    Continent/Ocean	    Land vs Ocean	                ✅ (low-freq)   ❌
+1	    Biome Zones	        Broad zoning (labels only)	    ✅	           ❌ (just zones)
+2	    Climate Control	    Refines real biome using logic	✅ ✅ ✅	    ✅
+-------------------------------------------------------------------------------------------------
+
+So here’s how they interact:
+🧭 Example: How They All Work Together
+👣 Step 1: Layer 0
+
+    Perlin noise tells you this region is land (value > 0.35).
+    That’s your elevation base.
+
+🧱 Step 2: Layer 1
+
+    Randomized zoning assigns Desert Zone or Tundra Zone or Jungle Zone here.
+    Think of this as a "label" layer, not truth yet.
+
+Example:
+
+Zone = 'Desert Zone' (but doesn't mean it's dry yet)
+
+🌡️ Step 3: Layer 2
+
+    Now comes the actual biome determination.
+    Based on:
+
+        Elevation (from Layer )
+        Temperature (Perlin #1)
+        Moisture (Perlin #2)
+
+You apply logic like:
+
+If Zone is 'Desert Zone' and
+   temp > 0.6 and moisture < 0.3 → Desert biome
+If Zone is 'Desert Zone' and
+   temp < 0.3 and moisture > 0.5 → Cold Dry biome
+If Zone is 'Jungle Zone' and
+   temp > 0.6 and moisture > 0.6 → Rainforest
+
+✅ Why Separate Them?
+
+Because Layer 1 provides regional continuity. If you didn’t have it, you'd get:
+
+    Desert next to snow biome,
+    Jungle next to tundra,
+    No cohesive "climate belt" or "region personality."
+
+So, separating zoning from execution allows:
+
+    Cleaner blending later (Layer 3)
+    Regional control (you can bias continents differently)
+    Biome variants within zones (Desert Zone → Cold desert, Hot desert)
+
+✅ Recommended Biome → Block Mapping (v1.0)
+
+Here’s a suggestion for what block types to assign:
+BIOME	BLOCK TYPE(s)
+Ocean	Water, Seabed, maybe Coral
+Mountain	Stone, Gravel, SnowCap (top)
+Sand	Sand, DryShrub, PalmTree
+Plain	Grass, Flowers, Bush
+Jungle	DenseLeaves, Vines, JungleWood
+Forest	Leaves, Tree, DarkSoil
+Swamp	WetMud, WaterPatch, Reed
+Desert	Sand, Cactus, CrackedSoil
+Snow	Snow, Ice, FrozenSoil
+Poles	Ice, PackedSnow, Permafrost
+🧠 Pro Tip: Encapsulate Biome Rules
+
+Instead of doing all biome-to-block checks inline, consider creating a biome config dictionary:
+
+BIOME_BLOCKS = {
+    "Ocean": ["Water"],
+    "Mountain": ["Stone", "SnowCap"],
+    "Jungle": ["DenseLeaves", "JungleWood"],
+    ...
+}
+
+Then:
+
+for block in BIOME_BLOCKS[BIOME]:
+    place_block(block)
+
+##########
+Cellular Automata
+for each cell:
+    if not a biome boundary:
+        continue
+    
+    count forest and desert around it:
+        - +2 if N/S/E/W = biome
+        - +1 if diagonal = biome
+
+    set cell to biome with highest score
