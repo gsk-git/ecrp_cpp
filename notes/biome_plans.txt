@@ -109,8 +109,9 @@ To generate **large-scale** biome layout first, then **refine it layer-by-layer*
 | **Layer 5: Sub-Biomes**      | 1:128              | Adds details (clearing, forest) | E.g. `Jungle → Dense`, `Clear`       |
 | **Layer 6: Surface Type**    | 1:64               | Assigns block types             | `Grass`, `Sand`, `Snow`, etc.        |
 | **Layer 7: Final Zoom**      | 1:1                | Zoom to pixel/block level       | World blocks (for chunk use)         |
-
 ------------------------------------------------------------------------------------------------------------------------------
+
+
 
 ### 📜 Example Flow:
 
@@ -188,18 +189,18 @@ Zone = 'Desert Zone' (but doesn't mean it's dry yet)
     Now comes the actual biome determination.
     Based on:
 
-        Elevation (from Layer )
-        Temperature (Perlin #1)
-        Moisture (Perlin #2)
+    Elevation (from Layer )
+    Temperature (Perlin #1)
+    Moisture (Perlin #2)
 
 You apply logic like:
 
 If Zone is 'Desert Zone' and
-   temp > 0.6 and moisture < 0.3 → Desert biome
+    temp > 0.6 and moisture < 0.3 → Desert biome
 If Zone is 'Desert Zone' and
-   temp < 0.3 and moisture > 0.5 → Cold Dry biome
+    temp < 0.3 and moisture > 0.5 → Cold Dry biome
 If Zone is 'Jungle Zone' and
-   temp > 0.6 and moisture > 0.6 → Rainforest
+    temp > 0.6 and moisture > 0.6 → Rainforest
 
 ✅ Why Separate Them?
 
