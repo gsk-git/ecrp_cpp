@@ -242,6 +242,8 @@ static void StartGame() {
 	// Loading Assets
 	esrofn::LoadSpriteSheetsnew();
 	esrofn::LoadFonts();
+	
+	// loading gamedata
 	loadgame(gameJSON);
 	
 	// Initializing game objects
@@ -264,9 +266,6 @@ static void StartGame() {
 	esroops::HudText gametime(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 8 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText tiletype(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 9 }, sf::Color::White, sf::Text::Regular, 18);
 	
-	// Setting framerate limit
-	esrovar::GameWindow.setVerticalSyncEnabled(true);
-	
 	// Setting world seed and player position
 	world.m_world_seed = dist(rng);
 	player.setPosition({esrovar::PLAYER_POSITION.first, esrovar::PLAYER_POSITION.second});
@@ -282,6 +281,9 @@ static void StartGame() {
 	sf::Vector2f viewArea = {esrovar::SCRWDT, esrovar::SCRHGT};
 	view.setSize(viewArea);
 	view.setCenter(cameraCenter);	
+	
+	// Setting framerate limit
+	esrovar::GameWindow.setVerticalSyncEnabled(true);
 	
 	//Main game loop
 	while (esrovar::GameWindow.isOpen()) {
@@ -310,6 +312,7 @@ static void StartGame() {
 			frames = 0;
 			fpsclock.restart();
 		}
+		
 		playerX = esrovar::PLAYER_POSITION.first;
 		playerY = esrovar::PLAYER_POSITION.second;
 		swapChunk = esrofn::getChunkXY(esrovar::PLAYER_POSITION);
