@@ -224,11 +224,11 @@ namespace esroops {
 		setOrigintoBottomCenter();
 	}
 
-	WorldManager::WorldManager(std::pair<float, float> PLAYERXY, int seed) {
+	WorldManager::WorldManager(std::pair<float, float> PLAYERXY, uint32_t seed) {
 		// Initializing member variables
 		m_playerchunk_X = PLAYERXY.first;
 		m_playerchunk_Y = PLAYERXY.second;
-		m_chunkGenerationLimit = 0;
+		m_chunkGenerationLimit = 2;
 		m_active_chunks;
 		m_required_chunks;
 		m_unrequired_chunks;
@@ -241,18 +241,20 @@ namespace esroops {
 		return &tileAt(x, y);
 	}
 
-	void Chunk::generate(sf::Vector2f tilesize) {
+	void Chunk::generate(sf::Vector2f tilesize, uint32_t seed) {
 		
-		// Noise seed
-		esrovar::noise.SetSeed(esrovar::gameseed);
-		esrovar::noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2S);
-		esrovar::noise.SetFrequency(0.015f);
-		esrovar::noise.SetDomainWarpType(FastNoiseLite::DomainWarpType::DomainWarpType_OpenSimplex2);
-		esrovar::noise.SetDomainWarpAmp(10.0f);
-		esrovar::noise.SetFractalType(FastNoiseLite::FractalType::FractalType_None);
+		// This is 1x layer for map noise generation
+		// need to implement minecraft level multilayer approach later
+		// Where Biome will be determined by combination of Elevation + Humidity + Temperature layer
+		esrovar::noise.SetSeed(seed);		
 		esrovar::noise.SetFractalOctaves(4);
-		esrovar::noise.SetFractalLacunarity(2.0f);
 		esrovar::noise.SetFractalGain(0.5f);
+		esrovar::noise.SetFrequency(0.015f);
+		esrovar::noise.SetDomainWarpAmp(10.0f);
+		esrovar::noise.SetFractalLacunarity(2.0f);
+		esrovar::noise.SetFractalType(FastNoiseLite::FractalType::FractalType_None);
+		esrovar::noise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2S);
+		esrovar::noise.SetDomainWarpType(FastNoiseLite::DomainWarpType::DomainWarpType_OpenSimplex2);
 		
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);
@@ -430,7 +432,7 @@ namespace esroops {
 		// Initializing set to hold required chunk in that frame
 		if (!m_required_chunks.empty() && !m_active_chunks.contains({m_required_chunks.front()})) {
 			Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
+			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }), m_world_seed);
 			m_active_chunks.try_emplace({ m_required_chunks.front() }, _chunk);
 			m_required_chunks.pop_front();
 		}
@@ -465,7 +467,7 @@ namespace esroops {
 		// Need to create logic to get one chunk out from requiredchunk array
 		if (!m_required_chunks.empty() && !m_active_chunks.contains({ m_required_chunks.front() })) {
 			Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
+			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }), m_world_seed);
 			m_active_chunks.try_emplace({m_required_chunks.front()}, _chunk);
 			m_required_chunks.pop_front();
 		}

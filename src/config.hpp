@@ -55,7 +55,6 @@ namespace esrovar {
     constexpr int CHUNK_SIZE = 16;
     constexpr int CHUNK_RADIUS = 2;
     constexpr int PLAYER_SPRITE = 64;
-    constexpr uint32_t gameseed = 23091995;
     extern int pixel_size; 
     enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
     enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
@@ -150,7 +149,7 @@ namespace esroops {
         sf::VertexArray m_grid;
         sf::Texture m_tileset;
         // Member functions
-        void generate(sf::Vector2f tilesize);
+        void generate(sf::Vector2f tilesize, uint32_t seed);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
 
@@ -196,12 +195,12 @@ namespace esroops {
         public:
 			// Member variables
 			WorldManager() = default;
-            WorldManager(std::pair<float, float>, int seed);
+            WorldManager(std::pair<float, float>, uint32_t seed);
             ~WorldManager() = default;
             float m_playerchunk_X;
             float m_playerchunk_Y;
             int m_chunkGenerationLimit;
-            unsigned int m_world_seed;
+            uint32_t m_world_seed;
 			unsigned int m_tileColor;
             std::string getTileType(std::pair<float, float>);
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
