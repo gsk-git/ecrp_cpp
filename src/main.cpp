@@ -32,7 +32,7 @@ using json = nlohmann::json;
 
 // Loading game data from file
 static void loadgame(json& open) {	
-	std::ifstream loadfile("res/data.json");
+	std::ifstream loadfile(esrovar::playerFileURI);
 	if (loadfile) {
 		loadfile >> open;
 		esrovar::PLAYER_POSITION.first = open.at("X");
@@ -46,7 +46,7 @@ static void savegame(json& gfile) {
 	esroops::PlayerData data = { esrovar::PLAYER_POSITION.first, esrovar::PLAYER_POSITION.second };
 	gfile["X"] = data.m_playerposX;
 	gfile["Y"] = data.m_playerposY;
-	std::ofstream file("res/data.json");
+	std::ofstream file(esrovar::playerFileURI);
 	file << gfile.dump(4);
 }
 

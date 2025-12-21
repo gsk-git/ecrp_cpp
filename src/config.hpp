@@ -71,7 +71,7 @@ namespace esrovar {
         "res/player_sprite/jump.png",
         "res/player_sprite/sit.png",
         "res/player_sprite/run.png" };
-	constexpr char saveFileURI[23] = "res/user_dat/data.json";
+	constexpr char playerFileURI[23] = "res/user_dat/data.json";
 	extern std::array<sf::Texture, StateCount> kTextures;
     extern int chunk_area;
 	extern sf::Font mainfont;
@@ -91,7 +91,7 @@ namespace esrovar {
     extern int jumpboost;
     extern float globaldelta;    
     extern sf::RenderWindow GameWindow;
-	extern FastNoiseLite noise;
+	extern FastNoiseLite elevationNoise;
     extern std::pair<float, float> PLAYER_POSITION;
 }// namespace esrovar ends
 
@@ -109,6 +109,14 @@ namespace esrofn {
     std::tuple<int, int> getPlayerXY(std::pair<float, float>);
     
     std::tuple<int, int> getPlayerChunkXY(std::pair<float, float>);
+
+    static void initElevationLayer(uint32_t& seed);
+
+    static void initTempHumLayer(uint32_t& seed);
+
+    static void initBiomeLayer(uint32_t& seed);
+
+    static void initRiverLayer(uint32_t& seed);
 }
 
 // Global objects and classes
@@ -149,7 +157,7 @@ namespace esroops {
         sf::VertexArray m_grid;
         sf::Texture m_tileset;
         // Member functions
-        void generate(sf::Vector2f tilesize, uint32_t seed);
+        void generate(sf::Vector2f tilesize);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
 
