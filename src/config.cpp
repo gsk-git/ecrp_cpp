@@ -352,7 +352,11 @@ namespace esroops {
 		m_AnimDuration = (m_IsMoving || m_IsJumping) ? 0.2f : 0.4f;
 		
 		// Setting player state, animation duration and handling other EDGE cases
-		if (m_IsMoving) {
+		if (m_IsJumping) {
+			m_StateEnum = esrovar::State::jump;
+			m_IsSitting = false;
+		}
+		else if (m_IsMoving) {
 			m_StateEnum = esrovar::State::walk;
 			m_IsSitting = false;
 			if(m_IsRunning) {
@@ -361,10 +365,6 @@ namespace esroops {
 			if(m_IsJumping) {
 				m_StateEnum = esrovar::State::jump;
 			}
-		}
-		else if (m_IsJumping) {
-			m_StateEnum = esrovar::State::jump;
-			m_IsSitting = false;
 		}
 		else if (m_IsSitting) {
 			m_StateEnum = esrovar::State::sit;
