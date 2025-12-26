@@ -157,7 +157,7 @@ namespace esroops {
         sf::VertexArray m_grid;
         sf::Texture m_tileset;
         // Member functions
-        void generate(sf::Vector2f tilesize);
+        void generate(sf::Vector2f tilesize, uint32_t seed);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
     };
 

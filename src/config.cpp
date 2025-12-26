@@ -265,7 +265,7 @@ namespace esroops {
 		return &tileAt(x, y);
 	}
 
-	void Chunk::generate(sf::Vector2f tilesize) {
+	void Chunk::generate(sf::Vector2f tilesize, uint32_t ) {
 		
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);
