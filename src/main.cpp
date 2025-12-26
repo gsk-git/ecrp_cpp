@@ -27,12 +27,14 @@
 #include <random>
 #include <tuple>
 #include <fstream>
+#include <filesystem>
 
 using json = nlohmann::json;
 
 // Loading game data from file
-static void loadgame(json& open) {	
-	std::ifstream loadfile(esrovar::playerFileURI);
+static void loadgame(json& open) {
+
+	std::ifstream loadfile(esrovar::playerFileURI + esrovar::saveFile);
 	if (loadfile) {
 		loadfile >> open;
 		esrovar::PLAYER_POSITION.first = open.at("X");
@@ -43,11 +45,26 @@ static void loadgame(json& open) {
 // Saving game data
 static void savegame(json& gfile) {
 	
+	// User file directory
+	std::filesystem::create_directories(esrovar::playerFileURI);
+	
+	// Creat full path for data.json
+	std::string fullPATH = esrovar::playerFileURI + esrovar::saveFile;
+	
+	// Creating save info as json
 	esroops::PlayerData data = { esrovar::PLAYER_POSITION.first, esrovar::PLAYER_POSITION.second };
 	gfile["X"] = data.m_playerposX;
 	gfile["Y"] = data.m_playerposY;
-	std::ofstream file(esrovar::playerFileURI);
-	file << gfile.dump(4);
+	
+	// Opening data.json
+	std::ofstream file(fullPATH);
+	if (file.is_open()) {
+		file << gfile.dump(4);
+		file.close();
+	}
+	else { 
+		std::cout << "Save File corrupted, check if the below path exists \n" << fullPATH; 
+	}
 }
 
 // Handling player input

@@ -20,11 +20,13 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <algorithm>
 #include <ranges>
+#include <random>
 #include <array>
 #include <cstdlib>
 #include <format>
 #include <tuple>
 #include <vector>
+#include <functional>
 
 // Global variables
 namespace esrovar {
@@ -41,6 +43,8 @@ namespace esrovar {
 	bool DebugMode = false;
 	bool Save = false;
 	int chunk_area = CHUNK_SIZE * pixel_size;
+	std::string playerFileURI = "res\\user_dat\\";
+	std::string saveFile = "data.json";
 	int frame_count = 0;
 	sf::RenderWindow GameWindow;
 	FastNoiseLite elevationNoise;
@@ -265,7 +269,20 @@ namespace esroops {
 		return &tileAt(x, y);
 	}
 
-	void Chunk::generate(sf::Vector2f tilesize) {
+	bool Chunk::getContinentLayer(int x, int y, uint32_t seed) {
+		// Here chunk checks at 4096x zoom level whether If currentChunk's XY falls in ocean or not
+		int macroX = std::floor(x / 64);
+		int macroY = std::floor(y / 64);
+		uint64_t coorhash = (uint64_t(uint32_t(macroX)) << 32 | uint32_t(macroY));
+		uint64_t worldHash = coorhash ^ uint64_t(seed);
+		// 74% land, 26% ocean distribution at 4096x zoom level
+		return (worldHash % 100) < 60;
+	}
+
+	void Chunk::generate(sf::Vector2f tilesize, uint32_t worldseed) {
+		
+		// Here chunk checks at 4096x zoom level whether If currentChunk's XY falls in ocean or not		
+		bool isLand = getContinentLayer(m_chunkX, m_chunkY, worldseed);
 		
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);
@@ -290,12 +307,16 @@ namespace esroops {
 				noiseValue = (noiseValue + 1.0f) * 0.5f;
 				
 				// Determining baseBiome based on baseNoise value
-				if (noiseValue < 0.22) noiseIDX = 3;		// Ocean
-				else if (noiseValue < 0.28) noiseIDX = 1;	// Beach
-				else if (noiseValue < 0.45) noiseIDX = 4;	// Plains
-				else if (noiseValue < 0.65) noiseIDX = 0;	// Forest
-				else if (noiseValue < 0.85) noiseIDX = 2;	// Dirt
-				else noiseIDX = 5;							// Mountain
+				if (isLand) {					
+					if (noiseValue < 0.22) noiseIDX = 3;		// lake
+					else if (noiseValue < 0.28) noiseIDX = 1;	// Beach
+					else if (noiseValue < 0.45) noiseIDX = 0;	// Plains -> Forest
+					else if (noiseValue < 0.65) noiseIDX = 4;	// Forest -> Plains
+					else if (noiseValue < 0.85) noiseIDX = 2;	// Dirt
+					else noiseIDX = 5;							// Mountain
+				}
+				else
+					noiseIDX = 3;								// Ocean
 				
 				// Chunk pixel offset
 				float chunkOffsetX = m_chunkX * esrovar::CHUNK_SIZE * tilesize.x;
@@ -436,8 +457,10 @@ namespace esroops {
 
 	void WorldManager::f_initialize_world() {
 		
+		initElevationLayer(m_world_seed);
+		
 		// Layers for map noise generation are initiated
-		esrofn::initElevationLayer(m_world_seed);
+		// esrofn::initElevationLayer(m_world_seed);
 		
 		// Get initial chunks required around player
 		getRequiredChunks();
@@ -445,7 +468,7 @@ namespace esroops {
 		// Initializing set to hold required chunk in that frame
 		if (!m_required_chunks.empty() && !m_active_chunks.contains({m_required_chunks.front()})) {
 			Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
+			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }), m_world_seed);
 			m_active_chunks.try_emplace({ m_required_chunks.front() }, _chunk);
 			m_required_chunks.pop_front();
 		}
@@ -480,7 +503,7 @@ namespace esroops {
 		// Need to create logic to get one chunk out from requiredchunk array
 		if (!m_required_chunks.empty() && !m_active_chunks.contains({ m_required_chunks.front() })) {
 			Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }));
+			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }), m_world_seed);
 			m_active_chunks.try_emplace({m_required_chunks.front()}, _chunk);
 			m_required_chunks.pop_front();
 		}
@@ -537,5 +560,17 @@ namespace esroops {
 		}
 		// Tile data not found case
 		return std::format("Tile data not found at ({}, {}) in chunk ({}, {})", playerchunkX, playerchunkY, chunkX, chunkY);
+	}
+
+	void WorldManager::initElevationLayer(uint32_t& seed) {
+		esrovar::elevationNoise.SetSeed(seed);
+		esrovar::elevationNoise.SetFractalOctaves(4);
+		esrovar::elevationNoise.SetFractalGain(0.5f);
+		esrovar::elevationNoise.SetFrequency(0.295f);
+		esrovar::elevationNoise.SetDomainWarpAmp(10.0f);
+		esrovar::elevationNoise.SetFractalLacunarity(2.0f);
+		esrovar::elevationNoise.SetFractalType(FastNoiseLite::FractalType::FractalType_None);
+		esrovar::elevationNoise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2S);
+		esrovar::elevationNoise.SetDomainWarpType(FastNoiseLite::DomainWarpType::DomainWarpType_OpenSimplex2);
 	}
 } // namespace esroops ends

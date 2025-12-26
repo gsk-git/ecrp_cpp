@@ -71,7 +71,8 @@ namespace esrovar {
         "res/player_sprite/jump.png",
         "res/player_sprite/sit.png",
         "res/player_sprite/run.png" };
-	constexpr char playerFileURI[23] = "res/user_dat/data.json";
+	extern std::string playerFileURI;
+    extern std::string saveFile;
 	extern std::array<sf::Texture, StateCount> kTextures;
     extern int chunk_area;
 	extern sf::Font mainfont;
@@ -157,8 +158,9 @@ namespace esroops {
         sf::VertexArray m_grid;
         sf::Texture m_tileset;
         // Member functions
-        void generate(sf::Vector2f tilesize);
+        void generate(sf::Vector2f tilesize, uint32_t worldseed);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+        bool getContinentLayer(int x, int y, uint32_t seed);
     };
 
     class Player : public sf::Drawable, public sf::Transformable, public sf::Texture, public IUpdatable {
@@ -217,12 +219,14 @@ namespace esroops {
             std::array<std::string, 10> tilevariation = {
                 "plains", "beach", "dirt", "ocean", "forest", "mountain", "swamp", "jungle", "frozenplain", "snow"
 			};
-			// Member functions
+			
+            // Member functions
             void update(float dt);
 			void getRequiredChunks();
             void f_drawChunks (sf::RenderWindow& window) const;
             void ChunkBorders(sf::RenderWindow& window) const;
             void f_initialize_world();
+			void initElevationLayer(uint32_t& seed);
     };
 
     class HudBox : public sf::Drawable, public sf::Transformable {
