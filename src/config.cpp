@@ -269,20 +269,7 @@ namespace esroops {
 		return &tileAt(x, y);
 	}
 
-	bool Chunk::getContinentLayer(int x, int y, uint32_t seed) {
-		// Here chunk checks at 4096x zoom level whether If currentChunk's XY falls in ocean or not
-		int macroX = std::floor(x / 64);
-		int macroY = std::floor(y / 64);
-		uint64_t coorhash = (uint64_t(uint32_t(macroX)) << 32 | uint32_t(macroY));
-		uint64_t worldHash = coorhash ^ uint64_t(seed);
-		// 74% land, 26% ocean distribution at 4096x zoom level
-		return (worldHash % 100) < 60;
-	}
-
-	void Chunk::generate(sf::Vector2f tilesize, uint32_t worldseed) {
-		
-		// Here chunk checks at 4096x zoom level whether If currentChunk's XY falls in ocean or not		
-		bool isLand = getContinentLayer(m_chunkX, m_chunkY, worldseed);
+	void Chunk::generate(sf::Vector2f tilesize) {
 		
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);
