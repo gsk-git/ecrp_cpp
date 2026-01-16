@@ -177,18 +177,6 @@ namespace esrofn {
 		return std::make_tuple(playerchunkX, playerchunkY);
 	}
 
-	static void initElevationLayer(uint32_t& seed) {
-		esrovar::elevationNoise.SetSeed(seed);
-		esrovar::elevationNoise.SetFractalOctaves(4);
-		esrovar::elevationNoise.SetFractalGain(0.5f);
-		esrovar::elevationNoise.SetFrequency(0.015f);
-		esrovar::elevationNoise.SetDomainWarpAmp(10.0f);
-		esrovar::elevationNoise.SetFractalLacunarity(2.0f);
-		esrovar::elevationNoise.SetFractalType(FastNoiseLite::FractalType::FractalType_None);
-		esrovar::elevationNoise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2S);
-		esrovar::elevationNoise.SetDomainWarpType(FastNoiseLite::DomainWarpType::DomainWarpType_OpenSimplex2);
-	}
-
 	static void initTempHumLayer(uint32_t& seed) {
 
 	}
@@ -269,7 +257,20 @@ namespace esroops {
 		return &tileAt(x, y);
 	}
 
-	void Chunk::generate(sf::Vector2f tilesize) {
+	bool Chunk::getContinentLayer(int x, int y, uint32_t seed) {
+		// Getting continent noise value
+		float worldTileX = static_cast<float>(x * esrovar::CHUNK_SIZE);
+		float worldTileY = static_cast<float>(y * esrovar::CHUNK_SIZE);
+		float noiseValue = esrovar::elevationNoise.GetNoise(worldTileX * 0.005f, worldTileY * 0.005f);
+		noiseValue = (noiseValue + 1.0f) * 0.5f;
+		// Determining land or ocean based on noise value
+		return noiseValue > 0.4f; // Threshold for land
+	}
+
+	void Chunk::generate(sf::Vector2f tilesize, uint32_t seed) {
+		
+		// Get baseMap logic
+		bool isLand = getContinentLayer(m_chunkX, m_chunkY, seed);
 		
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);
@@ -553,7 +554,7 @@ namespace esroops {
 		esrovar::elevationNoise.SetSeed(seed);
 		esrovar::elevationNoise.SetFractalOctaves(4);
 		esrovar::elevationNoise.SetFractalGain(0.5f);
-		esrovar::elevationNoise.SetFrequency(0.295f);
+		esrovar::elevationNoise.SetFrequency(0.015f);
 		esrovar::elevationNoise.SetDomainWarpAmp(10.0f);
 		esrovar::elevationNoise.SetFractalLacunarity(2.0f);
 		esrovar::elevationNoise.SetFractalType(FastNoiseLite::FractalType::FractalType_None);

@@ -1,33 +1,33 @@
 // Including all necessary libraries
-#include "config.hpp"
-#include <Json/json.hpp>
-#include <SFML/System/Clock.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
 #include <cmath>
-#include <cstdlib>
+#include <tuple>
 #include <vector>
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Window/WindowEnums.hpp>
-#include <SFML/Window/VideoMode.hpp>
-#include <SFML/Graphics/View.hpp>
 #include <chrono>
-#include <Windows.h>
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/Transformable.hpp>
-#include <SFML/Window/Window.hpp>
-#include <SFML/Window/WindowBase.hpp>
-#include <optional>
 #include <string>
 #include <random>
-#include <tuple>
 #include <fstream>
+#include <cstdlib>
 #include <filesystem>
+#include <optional>
+#include "config.hpp"
+#include <Windows.h>
+#include <Json/json.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/Graphics/View.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Window/Window.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowBase.hpp>
+#include <SFML/Window/WindowEnums.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Transformable.hpp>
 
 using json = nlohmann::json;
 

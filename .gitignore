@@ -19,6 +19,7 @@ data.json
 *.aps
 LICENSE.md
 pdb_archive
+pyProj
 *.json
 ## IntelliSense and DB
 *.VC.db
