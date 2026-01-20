@@ -154,6 +154,13 @@ else()
     target_link_libraries(${PROJECT_NAME} PRIVATE SFML::Graphics SFML::Window SFML::System)
 endif()
 
+# Add platform-specific libraries (WINAPI for desktop pet functionality)
+if (WIN32)
+    message(STATUS "Linking Windows-specific libraries: user32; dwmapi")
+    # target_link_libraries automatically handles .lib extensions for MSVC
+    target_link_libraries(${PROJECT_NAME} PRIVATE user32 dwmapi)
+endif()
+
 # -- Resources: copy res/ to output ---------------------------------------
 # So `res/tile.png` works when running the exe from build dir
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
