@@ -8,19 +8,7 @@
 ## Table of Contents
 
 - [About the Project](#about-the-project)  
-- [Features](#features)  
-- [Architecture](#architecture)  
-- [Getting Started](#getting-started)  
-    - [Prerequisites](#prerequisites)  
-    - [Building Locally](#building-locally)  
-    - [Running the Game](#running-the-game)  
-- [Usage](#usage)  
-- [Project Structure](#project-structure)  
-- [Configuration](#configuration)  
-- [Contributing](#contributing)  
-- [Roadmap](#roadmap)  
-- [License](#license)  
-- [Acknowledgments](#acknowledgments)  
+- [Features](#features)
 
 ---
 
