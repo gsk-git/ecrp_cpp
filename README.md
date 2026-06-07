@@ -8,19 +8,7 @@
 ## Table of Contents
 
 - [About the Project](#about-the-project)  
-- [Features](#features)  
-- [Architecture](#architecture)  
-- [Getting Started](#getting-started)  
-    - [Prerequisites](#prerequisites)  
-    - [Building Locally](#building-locally)  
-    - [Running the Game](#running-the-game)  
-- [Usage](#usage)  
-- [Project Structure](#project-structure)  
-- [Configuration](#configuration)  
-- [Contributing](#contributing)  
-- [Roadmap](#roadmap)  
-- [License](#license)  
-- [Acknowledgments](#acknowledgments)  
+- [Features](#features)
 
 ---
 
@@ -41,50 +29,3 @@ The goal of this project is to provide a simple but scalable game framework that
 - **Test Support**: Includes Google Test (via `vcpkg` packages) to write unit tests for game logic (if tests are added / maintained).
 
 ---
-
-## Architecture
-
-Here’s a high-level view of how the game is structured:
-
-Main (main.cpp)
-└── StateManager
-├── IState (interface)
-├── SplashState
-├── MainMenuState
-├── PauseState
-└── OtherStates...
-└── GameState (contains core game logic)
-└── Config (config.cpp / config.hpp to hold configurable parameters)
-
-
-- `StateManager` is responsible for switching between different states.
-- Each state implements a common interface (`IState`) to ensure consistency.
-- `GameState` handles the actual gameplay logic, independent of which state is active.
-- `config.hpp` / `config.cpp` allows defining parameters like window size, game speed, file paths, etc.
-
----
-
-## Getting Started
-
-### Prerequisites
-
-To build and run this project, you might need:
-
-- A **C++17 (or above)** compatible compiler (GCC, Clang, MSVC, etc.)  
-- **CMake** for building (if using cross-platform build system)  
-- **vcpkg** (or another package manager) — currently used for dependencies like Google Test  
-- A code editor or IDE (Visual Studio, VS Code, CLion, etc.)
-
----
-
-### Building Locally
-
-Here is a sample step-by-step to build the project:
-
-1. **Clone the repository**  
-    ```bash
-    git clone https://github.com/gsk-git/ecrp_cpp.git
-    cd ecrp_cpp\
-2. Install Depndencies
-    - Create a dir "C:\lib"
-    - Move the contents inside C:\src\include to above lib folder

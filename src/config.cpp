@@ -445,10 +445,8 @@ namespace esroops {
 
 	void WorldManager::f_initialize_world() {
 		
-		initElevationLayer(m_world_seed);
-		
 		// Layers for map noise generation are initiated
-		// esrofn::initElevationLayer(m_world_seed);
+		initElevationLayer(m_world_seed);
 		
 		// Get initial chunks required around player
 		getRequiredChunks();

@@ -11,6 +11,7 @@
 #include <optional>
 #include "config.hpp"
 #include <Windows.h>
+#include <dwmapi.h>
 #include <Json/json.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Clock.hpp>
@@ -29,10 +30,8 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 
-using json = nlohmann::json;
-
 // Loading game data from file
-static void loadgame(json& open) {
+static void loadgame(nlohmann::json& open) {
 
 	std::ifstream loadfile(esrovar::playerFileURI + esrovar::saveFile);
 	if (loadfile) {
@@ -43,7 +42,7 @@ static void loadgame(json& open) {
 }
 
 // Saving game data
-static void savegame(json& gfile) {
+static void savegame(nlohmann::json& gfile) {
 	
 	// User file directory
 	std::filesystem::create_directories(esrovar::playerFileURI);
@@ -154,24 +153,19 @@ static void ProcessWindowEvents(esroops::Player& player) {
 	}
 }
 
-// Make SFML window transparent
-static void SplashWindow(sf::RenderWindow& window) {
-	
-	HWND hwnd = static_cast<HWND>(window.getNativeHandle());
-	LONG exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-	SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED | WS_EX_TRANSPARENT);
-	
-	// Set alpha to 0 for full transparency and click-through
-	SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
-	SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
-}
-
 // Generates the splash screen
 static void RunSplash() {
-	// Create a transparent splash window
-	sf::RenderWindow splash(sf::VideoMode({ 512, 512 }), "Splash", sf::Style::None);
-	// HWND handle for the splash window
-	SplashWindow(splash);
+
+	// Create a borderless window
+	sf::RenderWindow splash(sf::VideoMode({ 800, 600 }), "Floating Character", sf::Style::None);
+	HWND hwnd = splash.getNativeHandle();
+	// Set window styles for transparency and click-through
+	SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
+	// Make background fully transparent using DWM
+	MARGINS margins = { -1 };
+	DwmExtendFrameIntoClientArea(hwnd, &margins);
+	// Set window as 'Always on Top'
+	SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	// Texture for the logo
 	sf::Texture logoTexture;
 	if (!logoTexture.loadFromFile("res/splash.png"))
@@ -189,7 +183,7 @@ static void RunSplash() {
 	while (splash.isOpen()) {
 		// Check if 10 seconds passed
 		auto now = std::chrono::steady_clock::now();
-		if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 2) {
+		if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 20) {
 			splash.close();
 		}
 		splash.clear(sf::Color(0,0,0,0));
@@ -242,7 +236,7 @@ static void StartGame() {
 	float dt = 0.0f;
 	float playerX;
 	float playerY;
-	json gameJSON;
+	nlohmann::json gameJSON;
 	const uint32_t gameseed = 23091995;
 	std::string tileType;
 	std::mt19937 rng(gameseed);
@@ -403,7 +397,7 @@ int main() {
 	// Displays splash image
 	RunSplash();	
 	// Starts game
-	StartGame();	
+	// StartGame();	
 	// Exits game
 	return EXIT_SUCCESS;
 }
