@@ -1,7 +1,8 @@
+# System Requirements and Metadata
 cmake_minimum_required(VERSION 3.20)
 project(ESRO VERSION 0.1 LANGUAGES CXX)
 
-# -- Options ---------------------------------------------------------------
+# Dev Options ---------------------------------------------------------------
 option(ENABLE_SANITIZERS "Build with ASan/UBSan (debug only)" OFF)
 option(BUILD_TESTS "Build unit tests (Catch2)" OFF)
 
@@ -66,9 +67,10 @@ endif()
 
 # -- Target ----------------------------------------------------------------
 # Release
-add_executable(${PROJECT_NAME} WIN32 ${GAME_SOURCES}) 
+# add_executable(${PROJECT_NAME} WIN32 ${GAME_SOURCES}) 
 # Debug
-# add_executable(${PROJECT_NAME} ${GAME_SOURCES}) 
+add_executable(${PROJECT_NAME} ${GAME_SOURCES})
+
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         ${INCLUDE_DIR}

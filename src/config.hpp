@@ -111,8 +111,6 @@ namespace esrofn {
     
     std::tuple<int, int> getPlayerChunkXY(std::pair<float, float>);
 
-    static void initElevationLayer(uint32_t& seed);
-
     static void initTempHumLayer(uint32_t& seed);
 
     static void initBiomeLayer(uint32_t& seed);
@@ -151,7 +149,7 @@ namespace esroops {
         int m_chunkX;
         int m_chunkY;
 		bool m_isGenerated;
-        Tile* getTileData(int x, int y);
+        const Tile* getTileData(int x, int y) const;
         std::vector<Tile> tiles;
         Tile& tileAt(int x, int y);
         const Tile& tileAt(int x, int y) const;
@@ -212,7 +210,7 @@ namespace esroops {
             int m_chunkGenerationLimit;
             uint32_t m_world_seed;
 			unsigned int m_tileColor;
-            std::string getTileType(std::pair<float, float>);
+            std::string getTileType(const std::pair<float, float>&) const;
             std::map<std::pair<int, int>, Chunk> m_active_chunks;
             std::deque<std::pair<int, int>> m_required_chunks;
             std::deque<std::pair<int, int>> m_unrequired_chunks;

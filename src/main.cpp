@@ -29,6 +29,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Transformable.hpp>
+#include <utility>
+#include <cstdint>
 
 // Loading game data from file
 static void loadgame(nlohmann::json& open) {
@@ -67,7 +69,7 @@ static void savegame(nlohmann::json& gfile) {
 }
 
 // Handling player input
-static void InputHandler(esroops::Player& player, float& dt) {
+static void InputHandler(esroops::Player& player, float dt) {
 	
 	// Resetting movement direction and boost
 	esrovar::movedirx = 0.f;
@@ -260,10 +262,11 @@ static void StartGame() {
 	sf::View view;
 	sf::Clock clock;
 	sf::Clock fpsclock;
+	sf::Clock debugUIclock;
 	sf::Clock gameclock;
+	float worlUpdateClock = 0.0f;
 	sf::Time elapsed = sf::Time::Zero;
 	esroops::Player player;
-	esroops::PlayerData data{};
 	esroops::WorldManager world(esrovar::PLAYER_POSITION, gameseed);
 	esroops::HudBox hudbox({ 350, 300 }, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
 	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
@@ -293,7 +296,7 @@ static void StartGame() {
 	view.setCenter(cameraCenter);	
 	
 	// Setting framerate limit
-	esrovar::GameWindow.setVerticalSyncEnabled(true);
+	esrovar::GameWindow.setVerticalSyncEnabled(false);
 	
 	//Main game loop
 	while (esrovar::GameWindow.isOpen()) {
@@ -301,6 +304,7 @@ static void StartGame() {
 		// Delta time management
 		dt = clock.restart().asSeconds();
 		GameClock(gameclock, elapsed, seconds, minutes, day);
+		worlUpdateClock += dt;
 		
 		// Increment Frames
 		frames++;
@@ -338,11 +342,13 @@ static void StartGame() {
 			world.getRequiredChunks();
 		}
 		
-		// New required chunks will be generated for every 5th frame
-		if (frames % world.m_chunkGenerationLimit == 0) world.update(dt);
+		// New required chunks will be generated for every 5ms to prevent frame drops, and world will be updated with new chunks
+		if (worlUpdateClock >= 0.05f) {
+			world.update(dt);
+			worlUpdateClock = 0.0f;
+		}
 		
-		// Updating player, world and HUD elements
-		player.update(dt);
+		// player.update(dt);
 		
 		// Smooth logical camera
 		sf::Vector2f targetCenter = player.getPosition();
@@ -366,16 +372,21 @@ static void StartGame() {
 		esrovar::GameWindow.draw(player);
 		esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
 		if (esrovar::DebugMode) {
-			// Updating HUD elements
-			playertext.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
-			playerpos.setString(std::format("Global POS: X::{:.2f}, Y::{:.2f}", playerX, playerY));
-			playerxy.setString(std::format("Player POS: X::{}, Y::{}", std::get<0>(playerXY), std::get<1>(playerXY)));
-			cchunkxy.setString(std::format("currentChunk: X::{}, Y::{}", (std::get<0>(currentChunk)), std::get<1>(currentChunk)));
-			pchunkxy.setString(std::format("previousChunk: X::{}, Y::{}", std::get<0>(previousChunk), std::get<1>(previousChunk)));
-			tiletype.setString(std::format("TileType: {}", tileType));
-			activechunks.setString(std::format("activeChunk: {}", world.m_active_chunks.size()));
-			fpsrate.setString(std::format("FPS: {}", fps));
-			gametime.setString(std::format("Game Time : {:0>2}:{:0>2}", minutes, seconds));
+			// Updating debug UI elements every 0.25 seconds
+			if(debugUIclock.getElapsedTime().asSeconds() >= 0.25f)
+			{
+				playertext.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
+				playerpos.setString(std::format("Global POS: X::{:.2f}, Y::{:.2f}", playerX, playerY));
+				playerxy.setString(std::format("Player POS: X::{}, Y::{}", std::get<0>(playerXY), std::get<1>(playerXY)));
+				cchunkxy.setString(std::format("currentChunk: X::{}, Y::{}", (std::get<0>(currentChunk)), std::get<1>(currentChunk)));
+				pchunkxy.setString(std::format("previousChunk: X::{}, Y::{}", std::get<0>(previousChunk), std::get<1>(previousChunk)));
+				tiletype.setString(std::format("TileType: {}", tileType));
+				activechunks.setString(std::format("activeChunk: {}", world.m_active_chunks.size()));
+				fpsrate.setString(std::format("FPS: {}", fps));
+				gametime.setString(std::format("Game Time : {:0>2}:{:0>2}", minutes, seconds));
+				debugUIclock.restart();
+			}
+			// Drawing debug UI elements
 			esrovar::GameWindow.draw(hudbox);
 			esrovar::GameWindow.draw(playertext);
 			esrovar::GameWindow.draw(playerpos);
@@ -392,12 +403,33 @@ static void StartGame() {
 }
 
 //  Game main function
-int main() {
+int main(int argCount, char* argVector[]) {
+	
+	// Displaying game title and version
+	std::cout << "Earth Space Research Organization [Versio 01.0.2395]\n";
+	std::cout << "(c) RagnorakRage Studio. All rights reserved.\n";
+	
+	// Handling command line arguments
+	if (argCount > 1) {
+		if (std::string(argVector[1]) == "--debug" || std::string(argVector[1]) == "-d") {
+			esrovar::DebugMode = true;
+			std::cout << "\nDebug mode enabled\n";
+		}
+		if (std::string(argVector[1]) == "--help" || std::string(argVector[1]) == "-h") {			
+			std::cout << "\nHelp Options:\n";
+			std::cout << "  --debug, -d   Enable debug mode\n";
+			std::cout << "  --help, -h    Show this help message\n";
+			std::cout << "\nUsage: " << argVector[0] << " [options]\n";
+			return EXIT_SUCCESS;
+		}
+	}
 	
 	// Displays splash image
-	RunSplash();	
+	// QRunSplash();	
+	
 	// Starts game
-	// StartGame();	
+	StartGame();	
+	
 	// Exits game
 	return EXIT_SUCCESS;
 }

@@ -253,7 +253,7 @@ namespace esroops {
 		f_initialize_world();
 	}
 
-	Tile* Chunk::getTileData(int x, int y) {        
+	const Tile* Chunk::getTileData(int x, int y) const {        
 		return &tileAt(x, y);
 	}
 
@@ -367,7 +367,7 @@ namespace esroops {
 		m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
 		
 		// Setting animation duration based on player state
-		m_AnimDuration = (m_IsMoving || m_IsJumping) ? 0.2f : 0.4f;
+		m_AnimDuration = (m_IsMoving || m_IsJumping) ? 0.1f : 0.3f;
 		
 		// Setting player state, animation duration and handling other EDGE cases
 		if (m_IsJumping) {
@@ -485,20 +485,31 @@ namespace esroops {
 	}
 
 	void WorldManager::update(float dt) {
-
+		
 		// Need to create logic to get one chunk out from requiredchunk array
-		if (!m_required_chunks.empty() && !m_active_chunks.contains({ m_required_chunks.front() })) {
-			Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }), m_world_seed);
-			m_active_chunks.try_emplace({m_required_chunks.front()}, _chunk);
+		// Check if required chunks deque is not empty
+		if (!m_required_chunks.empty()) {
+			// Reference variable for first chunk in m_required_chunks
+			const auto& firstChunk = m_required_chunks.front();
+			// Check if active chunks pair does not contains targeted required chunk
+			if(!m_active_chunks.contains(firstChunk))
+			{
+				// Init new Chunk
+				Chunk _chunk(firstChunk.first, firstChunk.second);
+				// Generate initialized chunk
+				_chunk.generate(sf::Vector2f( static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size)), m_world_seed);
+				// Add generated chunk to active chunks registry
+				m_active_chunks.try_emplace(firstChunk, std::move(_chunk));
+			}
+			// Remove one chunk out from requiredchunk array
 			m_required_chunks.pop_front();
 		}
+		
 		// Remove one chunk out from unrequiredchunk array
 		if (!m_unrequired_chunks.empty()) {
-			auto key = m_unrequired_chunks.front();
+			const auto& key = m_unrequired_chunks.front();
 			auto it = m_active_chunks.find(key);
 			if (it != m_active_chunks.end()) {
-				it->second.m_isGenerated = false;
 				m_active_chunks.erase(it);
 			}
 			m_unrequired_chunks.pop_front();
@@ -528,7 +539,7 @@ namespace esroops {
 		}
 	}
 
-	std::string WorldManager::getTileType(std::pair<float, float> playerXY) {
+	std::string WorldManager::getTileType(const std::pair<float, float>& playerXY) const {
 		
 		// Getting chunk coordinates from player coordinates
 		auto [chunkX, chunkY] = esrofn::getChunkXY(playerXY);
@@ -536,11 +547,20 @@ namespace esroops {
 		// Getting player local chunk coordinates
 		auto [playerchunkX, playerchunkY] = esrofn::getPlayerChunkXY(playerXY);
 		
-		// Fetching tile data from active chunks
-		if (m_active_chunks.contains({ chunkX, chunkY })) {
-			Chunk& currentChunk = m_active_chunks.at({ chunkX, chunkY });
+		// Checking active chunks existance and fetching memory address
+		auto it = m_active_chunks.find({ chunkX, chunkY });
+		
+		// Check if the chunk exists in the active chunks map
+		if (it != m_active_chunks.end()) {
+			
+			// Access the chunk and get the tile data
+			const Chunk& currentChunk = it->second;
+			// Get the tile data at the player's local chunk coordinates
 			const Tile* tile = currentChunk.getTileData(static_cast<int>(playerchunkX), static_cast<int>(playerchunkY));
+			
+			// Check if the tile data is valid and return the corresponding tile type string
 			if (tile) {
+				// Return the string representation of the tile type using the tilevariation array
 				return tilevariation[static_cast<int>(tile->type)];
 			}
 		}
