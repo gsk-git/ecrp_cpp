@@ -404,6 +404,8 @@ static void StartGame() {
 
 //  Game main function
 int main(int argCount, char* argVector[]) {
+
+	bool SPLASH_FLAG = false;
 	
 	// Displaying game title and version
 	std::cout << "Earth Space Research Organization [Versio 01.0.2395]\n";
@@ -411,21 +413,30 @@ int main(int argCount, char* argVector[]) {
 	
 	// Handling command line arguments
 	if (argCount > 1) {
-		if (std::string(argVector[1]) == "--debug" || std::string(argVector[1]) == "-d") {
-			esrovar::DebugMode = true;
-			std::cout << "\nDebug mode enabled\n";
-		}
-		if (std::string(argVector[1]) == "--help" || std::string(argVector[1]) == "-h") {			
-			std::cout << "\nHelp Options:\n";
-			std::cout << "  --debug, -d   Enable debug mode\n";
-			std::cout << "  --help, -h    Show this help message\n";
-			std::cout << "\nUsage: " << argVector[0] << " [options]\n";
-			return EXIT_SUCCESS;
+		
+		for (int i = 0; i < argCount; i++) {
+			
+			if (std::string(argVector[i]) == "--debug" || std::string(argVector[i]) == "-d") {
+				esrovar::DebugMode = true;
+				std::cout << "\nDebug mode enabled\n";
+			}
+			else if (std::string(argVector[i]) == "--help" || std::string(argVector[i]) == "-h") {
+				std::cout << "\nHelp Options:\n";
+				std::cout << "  --debug, -d   Enable debug mode\n";
+				std::cout << "  --help, -h    Show this help message\n";
+				std::cout << "  --no-splash, -ns    Disables the splash screen\n";
+				std::cout << "\nUsage: " << argVector[0] << " [options]\n";
+				return EXIT_SUCCESS;
+			}
+			else if (std::string(argVector[i]) == "--no-splash" || std::string(argVector[i]) == "-ns") {
+				SPLASH_FLAG = true;
+				std::cout << "\nSplash disabled\n";
+			}
 		}
 	}
 	
 	// Displays splash image
-	// QRunSplash();	
+	if (!SPLASH_FLAG) RunSplash();
 	
 	// Starts game
 	StartGame();	
