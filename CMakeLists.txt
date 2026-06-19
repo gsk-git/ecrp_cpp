@@ -67,9 +67,9 @@ endif()
 
 # -- Target ----------------------------------------------------------------
 # Release
-# add_executable(${PROJECT_NAME} WIN32 ${GAME_SOURCES}) 
+add_executable(${PROJECT_NAME} WIN32 ${GAME_SOURCES})
 # Debug
-add_executable(${PROJECT_NAME} ${GAME_SOURCES})
+# add_executable(${PROJECT_NAME} ${GAME_SOURCES})
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE

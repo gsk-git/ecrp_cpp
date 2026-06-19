@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <optional>
-#include "config.hpp"
+#include "headers/config.hpp"
 #include <Windows.h>
 #include <dwmapi.h>
 #include <Json/json.hpp>
@@ -327,11 +327,18 @@ static void StartGame() {
 			fpsclock.restart();
 		}
 		
+		// Updating player position, chunk and tile type
 		playerX = esrovar::PLAYER_POSITION.first;
 		playerY = esrovar::PLAYER_POSITION.second;
+		
+		// Getting current chunk and player XY position
 		swapChunk = esrofn::getChunkXY(esrovar::PLAYER_POSITION);
+		
+		// Getting player XY position and tile type
 		playerXY = esrofn::getPlayerXY(esrovar::PLAYER_POSITION);
 		tileType = world.getTileType(esrovar::PLAYER_POSITION);
+		
+		// Updating world player chunk position
 		world.m_playerchunk_X = static_cast<float>(std::get<0>(swapChunk));
 		world.m_playerchunk_Y = static_cast<float>(std::get<1>(swapChunk));
 		
@@ -347,8 +354,6 @@ static void StartGame() {
 			world.update(dt);
 			worlUpdateClock = 0.0f;
 		}
-		
-		// player.update(dt);
 		
 		// Smooth logical camera
 		sf::Vector2f targetCenter = player.getPosition();
@@ -439,7 +444,7 @@ int main(int argCount, char* argVector[]) {
 	if (!SPLASH_FLAG) RunSplash();
 	
 	// Starts game
-	StartGame();	
+	StartGame();	  
 	
 	// Exits game
 	return EXIT_SUCCESS;

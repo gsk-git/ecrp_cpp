@@ -1,5 +1,5 @@
 ﻿// Including necessary libraries
-#include "config.hpp"
+#include "headers/config.hpp"
 #include <cmath>
 #include <cstdint>
 #include <SFML/Graphics/PrimitiveType.hpp>
@@ -132,7 +132,7 @@ namespace esrofn {
 	}
 
 	bool LoadFonts() {
-		if (!esrovar::mainfont.openFromFile("res/fonts/Roboto.ttf")) {
+		if (!esrovar::mainfont.openFromFile("res/fonts/PixelGame.otf")) {
 			LOG("Font not found or path is incorrect");
 			return false;
 		}
