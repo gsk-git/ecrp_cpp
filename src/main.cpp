@@ -306,6 +306,8 @@ static void StartGame() {
 		GameClock(gameclock, elapsed, seconds, minutes, day);
 		worlUpdateClock += dt;
 		
+		// Testing mouse cursor hider
+		esrovar::GameWindow.setMouseCursorVisible(false);
 		// Increment Frames
 		frames++;
 		
