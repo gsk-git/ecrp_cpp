@@ -54,8 +54,8 @@ namespace esrovar {
     constexpr unsigned int FPS = 60u;
     constexpr int CHUNK_SIZE = 32;
     constexpr int CHUNK_RADIUS = 2;
+    extern int pixel_size;
     constexpr int PLAYER_SPRITE = 64;
-    extern int pixel_size; 
     enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
     enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
     inline constexpr std::size_t StateCount = static_cast<std::size_t>(State::COUNT);
@@ -161,43 +161,6 @@ namespace esroops {
         bool getContinentLayer(int x, int y, uint32_t seed);
     };
 
-    class Player : public sf::Drawable, public sf::Transformable, public sf::Texture, public IUpdatable {
-    public:
-		
-        // Initializing player object
-        Player();
-        ~Player() final = default;		
-            
-        // Member variables
-        bool m_IsMoving;
-		bool m_IsSlashAttacking;
-		bool m_IsJumping;
-		bool m_IsSitting;
-		bool m_IsRunning;
-        bool m_IsTileOcean;		
-        int m_health;
-        int m_TotalFrames;
-        int m_CurrentFrame;
-        float m_AnimTimer;
-        float m_AnimDuration;
-        sf::Vector2f m_playerXY;
-        sf::Texture m_playerbody;
-        esrovar::State m_StateEnum;
-        esrovar::State m_PrevStateEnum;
-        esrovar::Directions m_DirectionEnum;
-        std::optional<sf::Sprite> m_playersprite;
-            
-        // Member functions
-        void update(float dt) override;
-        void animatesprite(float dt);
-        void setOrigintoBottomCenter();
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-    };
-
-    struct PlayerData {
-        float m_playerposX;
-        float m_playerposY;
-    };
 
     class WorldManager : public IUpdatable{
         public:

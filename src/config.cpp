@@ -132,7 +132,7 @@ namespace esrofn {
 	}
 
 	bool LoadFonts() {
-		if (!esrovar::mainfont.openFromFile("res/fonts/PixelGame.otf")) {
+		if (!esrovar::mainfont.openFromFile("res/fonts/Roboto.ttf")) {
 			LOG("Font not found or path is incorrect");
 			return false;
 		}
@@ -214,30 +214,6 @@ namespace esroops {
 		m_chunkY = y;
 		m_tileset = esrovar::tileset;
 		m_isGenerated = false;
-	}
-
-	Player::Player() {
-		// Initializing member variables
-		m_IsMoving = false;
-		m_IsSlashAttacking = false;
-		m_IsJumping = false;
-		m_IsSitting = false;
-		m_IsRunning = false;
-		m_IsTileOcean = false;
-		m_StateEnum = esrovar::State::idle;
-		m_PrevStateEnum = esrovar::State::idle;
-		m_DirectionEnum = esrovar::Directions::down;
-		m_playerXY = sf::Vector2f(0.0f, 0.0f);
-		m_TotalFrames = 0;
-		m_CurrentFrame = 0;
-		m_AnimTimer = 0.0f;
-		m_AnimDuration = 0.0f;
-		m_health = 500u;
-		m_playersprite.emplace(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
-		m_playersprite->setTextureRect(sf::IntRect({m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE }));
-		m_playersprite->setPosition({0, 0});
-		m_playersprite->setScale({ 1.f, 1.f });
-		setOrigintoBottomCenter();
 	}
 
 	WorldManager::WorldManager(std::pair<float, float> PLAYERXY, uint32_t seed) {
@@ -346,101 +322,6 @@ namespace esroops {
 
 	void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 		target.draw(m_grid, states);
-	}    
-
-	void Player::setOrigintoBottomCenter() {
-		// Setting origin to bottom center of player sprite
-		if (m_playersprite) {
-			sf::FloatRect bounds = m_playersprite->getLocalBounds();
-			m_playersprite->setOrigin({ bounds.size.x / 2.0f, bounds.size.y - 1 });
-		}
-	}
-
-	void Player::update(float dt) {
-		// Rendering and animating player sprite
-		animatesprite(dt);
-	}
-
-	void Player::animatesprite(float dt) {
-		
-		// Flag check for player movement
-		m_IsMoving = (esrovar::movedirx != 0 || esrovar::movediry != 0);
-		
-		// Setting animation duration based on player state
-		m_AnimDuration = (m_IsMoving || m_IsJumping) ? 0.1f : 0.3f;
-		
-		// Setting player state, animation duration and handling other EDGE cases
-		if (m_IsJumping) {
-			m_StateEnum = esrovar::State::jump;
-			m_IsSitting = false;
-		}
-		else if (m_IsMoving) {
-			m_StateEnum = esrovar::State::walk;
-			m_IsSitting = false;
-			if(m_IsRunning) {
-				m_StateEnum = esrovar::State::run;
-			}
-			if(m_IsJumping) {
-				m_StateEnum = esrovar::State::jump;
-			}
-		}
-		else if (m_IsSitting) {
-			m_StateEnum = esrovar::State::sit;
-		}
-		else if (m_IsSlashAttacking) {
-			m_StateEnum = esrovar::State::slash;
-			m_IsSitting = false;
-		}
-		else {
-			m_StateEnum = esrovar::State::idle;
-			m_IsSitting = false;
-		}
-		
-		// Resetting animation if there is change in player's state
-		if (m_StateEnum != m_PrevStateEnum) {
-			m_playersprite->setTexture(esrovar::kTextures[esrovar::to_index(m_StateEnum)]);
-			m_PrevStateEnum = m_StateEnum;
-			m_CurrentFrame = 0;
-			m_AnimTimer = 0.0f;
-		}		
-		
-		// Updating animation timing @ every frames
-		m_AnimTimer += dt;
-		
-		// Checking player state
-		if (m_StateEnum != esrovar::State::sit && m_StateEnum != esrovar::State::jump) {
-			while (m_AnimTimer >= m_AnimDuration) {
-				m_AnimTimer -= m_AnimDuration;
-				m_CurrentFrame++;
-				if (m_CurrentFrame >= esrovar::kFrameCount[esrovar::to_index(m_StateEnum)])
-					m_CurrentFrame = 0;
-			}
-		}
-		else if (m_StateEnum == esrovar::State::sit) {
-				m_CurrentFrame = 0;
-		}		
-		else if (m_StateEnum == esrovar::State::jump) {
-			while (m_AnimTimer >= m_AnimDuration) {
-				m_AnimTimer -= m_AnimDuration;
-				m_CurrentFrame++;
-				if (m_CurrentFrame == 2)
-					esrovar::jumpboost = 150;
-				if (m_CurrentFrame >= esrovar::kFrameCount[esrovar::to_index(m_StateEnum)]) {
-					m_CurrentFrame = 0;
-					m_IsJumping = false;
-					esrovar::jumpboost = 0;
-				}
-			}
-		}
-		
-		// Updating texture rectangle
-		m_playersprite->setTextureRect( sf::IntRect({ m_CurrentFrame * esrovar::PLAYER_SPRITE, static_cast<int>(esrovar::to_index(m_DirectionEnum)) * esrovar::PLAYER_SPRITE }, { esrovar::PLAYER_SPRITE, esrovar::PLAYER_SPRITE } ));
-	}
-
-	void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-		// Draws player object
-		states.transform *= getTransform();
-		target.draw(*m_playersprite, states);
 	}
 
 	void WorldManager::f_initialize_world() {

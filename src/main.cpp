@@ -10,6 +10,9 @@
 #include <filesystem>
 #include <optional>
 #include "headers/config.hpp"
+#include "headers/playerManager.hpp"
+#include "headers/chunkManager.hpp"
+#include "headers/worldManager.hpp"
 #include <Windows.h>
 #include <dwmapi.h>
 #include <Json/json.hpp>
@@ -35,11 +38,11 @@
 // Loading game data from file
 static void loadgame(nlohmann::json& open) {
 
-	std::ifstream loadfile(esrovar::playerFileURI + esrovar::saveFile);
+	std::ifstream loadfile(playerFileURI + saveFile);
 	if (loadfile) {
 		loadfile >> open;
-		esrovar::PLAYER_POSITION.first = open.at("X");
-		esrovar::PLAYER_POSITION.second = open.at("Y");
+		PLAYER_POSITION.first = open.at("X");
+		PLAYER_POSITION.second = open.at("Y");
 	}
 }
 
@@ -47,13 +50,13 @@ static void loadgame(nlohmann::json& open) {
 static void savegame(nlohmann::json& gfile) {
 	
 	// User file directory
-	std::filesystem::create_directories(esrovar::playerFileURI);
+	std::filesystem::create_directories(playerFileURI);
 	
 	// Creat full path for data.json
-	std::string fullPATH = esrovar::playerFileURI + esrovar::saveFile;
+	std::string fullPATH = playerFileURI + saveFile;
 	
 	// Creating save info as json
-	esroops::PlayerData data = { esrovar::PLAYER_POSITION.first, esrovar::PLAYER_POSITION.second };
+	PlayerData data = { PLAYER_POSITION.first, PLAYER_POSITION.second };
 	gfile["X"] = data.m_playerposX;
 	gfile["Y"] = data.m_playerposY;
 	
@@ -69,39 +72,38 @@ static void savegame(nlohmann::json& gfile) {
 }
 
 // Handling player input
-static void InputHandler(esroops::Player& player, float dt) {
-	
+static void InputHandler(Player& player, float dt) {
+
 	// Resetting movement direction and boost
-	esrovar::movedirx = 0.f;
-	esrovar::movediry = 0.f;
-	esrovar::boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 0.6f;
-	
+	movedirx = 0.f;
+	movediry = 0.f;
+	boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 0.6f;
+
 	// Setting running state
-	player.m_IsRunning = esrovar::boost == 2.0f ? true : false;
-	esrovar::totalspeed = esrovar::speed * esrovar::boost + esrovar::jumpboost;
-	
+	player.m_IsRunning = boost == 2.0f ? true : false;
+	totalspeed = speed * boost + jumpboost;
+
 	// Handling directional input
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
-		esrovar::movediry = -esrovar::totalspeed;
-		player.m_DirectionEnum = esrovar::Directions::up;
+		movediry = -totalspeed;
+		player.m_DirectionEnum = Directions::up;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)) {
-		esrovar::movediry = esrovar::totalspeed;
-		player.m_DirectionEnum = esrovar::Directions::down;
+		movediry = totalspeed;
+		player.m_DirectionEnum = Directions::down;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) {
-		esrovar::movedirx = -esrovar::totalspeed;
-		player.m_DirectionEnum = esrovar::Directions::left;
+		movedirx = -totalspeed;
+		player.m_DirectionEnum = Directions::left;
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)) {
-		esrovar::movedirx = esrovar::totalspeed;
-		player.m_DirectionEnum = esrovar::Directions::right;
+		movedirx = totalspeed;
+		player.m_DirectionEnum = Directions::right;
 	}
-	
+
 	// Creating directional vector
-	sf::Vector2f direction({ esrovar::movedirx, esrovar::movediry });
-	//std::cout << world.getTileType({ esrovar::PLAYER_POSITION.first + (direction.x * 0.2), esrovar::PLAYER_POSITION.second + (direction.y * 0.2) }) << " - " << esrovar::PLAYER_POSITION.first + direction.x << " - " << esrovar::PLAYER_POSITION.second + direction.y << "\n";
-	
+	sf::Vector2f direction({ movedirx, movediry });
+
 	// Check if directions are not 0
 	if (direction.x != 0.f || direction.y != 0.f) {
 		// Getting hypotenuse length
@@ -109,25 +111,25 @@ static void InputHandler(esroops::Player& player, float dt) {
 		// Normalizing vector movement
 		direction /= length;
 	}
-	
+
 	// Updating player movement
-	player.move(direction * esrovar::totalspeed * dt);
-	player.m_playerXY.x = esrovar::PLAYER_POSITION.first += direction.x * esrovar::totalspeed * dt;
-	player.m_playerXY.y = esrovar::PLAYER_POSITION.second += direction.y * esrovar::totalspeed * dt;
+	player.move(direction * totalspeed * dt);
+	player.m_playerXY.x = PLAYER_POSITION.first += direction.x * totalspeed * dt;
+	player.m_playerXY.y = PLAYER_POSITION.second += direction.y * totalspeed * dt;
 }
 
 // Processing window events
-static void ProcessWindowEvents(esroops::Player& player) {
+static void ProcessWindowEvents(Player& player, sf::RenderWindow& gamewin) {
 	// Process window events
-	while (const std::optional event = esrovar::GameWindow.pollEvent()) {
-		if (event -> is <sf::Event::Closed>())
-			esrovar::GameWindow.close();
+	while (const std::optional event = gamewin.pollEvent()) {
+		if (event->is <sf::Event::Closed>())
+			gamewin.close();
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q)) {
-			esrovar::GameWindow.close();
+			gamewin.close();
 		}
 		if (const auto* keyReleased = event->getIf<sf::Event::KeyReleased>()) {
 			if (keyReleased->scancode == sf::Keyboard::Scan::LControl) {
-				if(!player.m_IsSitting)
+				if (!player.m_IsSitting)
 					player.m_IsSitting = true;
 				else
 					player.m_IsSitting = false;
@@ -249,10 +251,9 @@ static void StartGame() {
 	std::tuple<int, int> swapChunk = { 0, 0 };
 	sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
 	sf::RenderWindow gamewin(desktop, "ESRO", sf::Style::None);
-	esrovar::GameWindow = std::move(gamewin);
 	
 	// Loading Assets
-	esrofn::LoadSpriteSheetsnew();
+	LoadSpriteSheetsnew();
 	esrofn::LoadFonts();
 	
 	// loading gamedata
@@ -266,8 +267,8 @@ static void StartGame() {
 	sf::Clock gameclock;
 	float worlUpdateClock = 0.0f;
 	sf::Time elapsed = sf::Time::Zero;
-	esroops::Player player;
-	esroops::WorldManager world(esrovar::PLAYER_POSITION, gameseed);
+	Player player;
+	esroops::WorldManager world(PLAYER_POSITION, gameseed);
 	esroops::HudBox hudbox({ 350, 300 }, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
 	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText playerpos(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 2 }, sf::Color::White, sf::Text::Regular, 18);
@@ -281,14 +282,10 @@ static void StartGame() {
 	
 	// Setting world seed and player position
 	world.m_world_seed = dist(rng);
-	player.setPosition({esrovar::PLAYER_POSITION.first, esrovar::PLAYER_POSITION.second});
+	player.setPosition({ PLAYER_POSITION.first, PLAYER_POSITION.second });
 	
 	// Setting camera center 
-	sf::Vector2f cameraCenter = player.getPosition();
-	
-	// Adding updatable systems
-	std::vector <esroops::IUpdatable*> systemdelta;
-	systemdelta.push_back(&player);
+	sf::Vector2f cameraCenter = player.getPosition();	
 	
 	//Init View
 	sf::Vector2f viewArea = {esrovar::SCRWDT, esrovar::SCRHGT};
@@ -296,10 +293,10 @@ static void StartGame() {
 	view.setCenter(cameraCenter);	
 	
 	// Setting framerate limit
-	esrovar::GameWindow.setVerticalSyncEnabled(false);
+	gamewin.setVerticalSyncEnabled(false);
 	
 	//Main game loop
-	while (esrovar::GameWindow.isOpen()) {
+	while (gamewin.isOpen()) {
 		
 		// Delta time management
 		dt = clock.restart().asSeconds();
@@ -307,17 +304,12 @@ static void StartGame() {
 		worlUpdateClock += dt;
 		
 		// Testing mouse cursor hider
-		esrovar::GameWindow.setMouseCursorVisible(false);
+		gamewin.setMouseCursorVisible(false);
 		// Increment Frames
 		frames++;
 		
-		// Maintaining game wide delta time
-		for (auto system : systemdelta) {
-			system->update(dt);
-		}
-		
 		//Handling windows events
-		ProcessWindowEvents(player);
+		ProcessWindowEvents(player, gamewin);
 		
 		// Handling player inputs (keyboard)
 		InputHandler(player, dt);
@@ -330,15 +322,15 @@ static void StartGame() {
 		}
 		
 		// Updating player position, chunk and tile type
-		playerX = esrovar::PLAYER_POSITION.first;
-		playerY = esrovar::PLAYER_POSITION.second;
+		playerX = PLAYER_POSITION.first;
+		playerY = PLAYER_POSITION.second;
 		
 		// Getting current chunk and player XY position
-		swapChunk = esrofn::getChunkXY(esrovar::PLAYER_POSITION);
+		swapChunk = esrofn::getChunkXY(PLAYER_POSITION);
 		
 		// Getting player XY position and tile type
-		playerXY = esrofn::getPlayerXY(esrovar::PLAYER_POSITION);
-		tileType = world.getTileType(esrovar::PLAYER_POSITION);
+		playerXY = esrofn::getPlayerXY(PLAYER_POSITION);
+		tileType = world.getTileType(PLAYER_POSITION);
 		
 		// Updating world player chunk position
 		world.m_playerchunk_X = static_cast<float>(std::get<0>(swapChunk));
@@ -357,6 +349,8 @@ static void StartGame() {
 			worlUpdateClock = 0.0f;
 		}
 		
+		player.update(dt);
+		
 		// Smooth logical camera
 		sf::Vector2f targetCenter = player.getPosition();
 		cameraCenter += (targetCenter - cameraCenter) * (1.5f * dt);
@@ -372,17 +366,17 @@ static void StartGame() {
 		}		
 		
 		// Initializating and generating world chunks, player, view and UI elements.
-		esrovar::GameWindow.clear();
-		esrovar::GameWindow.setView(view);
-		world.f_drawChunks(esrovar::GameWindow);
-		if (esrovar::ChunkBorder) world.ChunkBorders(esrovar::GameWindow);
-		esrovar::GameWindow.draw(player);
-		esrovar::GameWindow.setView(esrovar::GameWindow.getDefaultView());
+		gamewin.clear();
+		gamewin.setView(view);
+		world.f_drawChunks(gamewin);
+		if (esrovar::ChunkBorder) world.ChunkBorders(gamewin);
+		gamewin.draw(player);
+		gamewin.setView(gamewin.getDefaultView());
 		if (esrovar::DebugMode) {
 			// Updating debug UI elements every 0.25 seconds
 			if(debugUIclock.getElapsedTime().asSeconds() >= 0.25f)
 			{
-				playertext.setString("Player State: " + std::string(esrovar::kStateNames[esrovar::to_index(player.m_StateEnum)]));
+				playertext.setString("Player State: " + std::string(kStateNames[to_index(player.m_StateEnum)]));
 				playerpos.setString(std::format("Global POS: X::{:.2f}, Y::{:.2f}", playerX, playerY));
 				playerxy.setString(std::format("Player POS: X::{}, Y::{}", std::get<0>(playerXY), std::get<1>(playerXY)));
 				cchunkxy.setString(std::format("currentChunk: X::{}, Y::{}", (std::get<0>(currentChunk)), std::get<1>(currentChunk)));
@@ -394,18 +388,18 @@ static void StartGame() {
 				debugUIclock.restart();
 			}
 			// Drawing debug UI elements
-			esrovar::GameWindow.draw(hudbox);
-			esrovar::GameWindow.draw(playertext);
-			esrovar::GameWindow.draw(playerpos);
-			esrovar::GameWindow.draw(playerxy);
-			esrovar::GameWindow.draw(cchunkxy);
-			esrovar::GameWindow.draw(pchunkxy);
-			esrovar::GameWindow.draw(tiletype);
-			esrovar::GameWindow.draw(activechunks);
-			esrovar::GameWindow.draw(fpsrate);
-			esrovar::GameWindow.draw(gametime);
+			gamewin.draw(hudbox);
+			gamewin.draw(playertext);
+			gamewin.draw(playerpos);
+			gamewin.draw(playerxy);
+			gamewin.draw(cchunkxy);
+			gamewin.draw(pchunkxy);
+			gamewin.draw(tiletype);
+			gamewin.draw(activechunks);
+			gamewin.draw(fpsrate);
+			gamewin.draw(gametime);
 		}
-		esrovar::GameWindow.display();
+		gamewin.display();
 	}	
 }
 
