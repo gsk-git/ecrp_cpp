@@ -3,30 +3,23 @@
 #include <cmath>
 #include <cstdint>
 #include <SFML/Graphics/PrimitiveType.hpp>
-#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <SFML/Window/VideoMode.hpp>
-#include <SFML/Window/WindowEnums.hpp>
 #include <map>
 #include <string>
 #include <utility>
-#include <Windows.h>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
-#include <algorithm>
 #include <ranges>
-#include <random>
 #include <array>
 #include <cstdlib>
 #include <format>
 #include <tuple>
 #include <vector>
-#include <functional>
 
 // Global variables
 namespace esrovar {

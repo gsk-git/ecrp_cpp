@@ -6,7 +6,6 @@
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -14,7 +13,6 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <optional>
 #include <string>
 #include <utility>
 #include "FastNoise/include/FastNoise/FastNoiseLite.h"
@@ -161,8 +159,7 @@ namespace esroops {
         bool getContinentLayer(int x, int y, uint32_t seed);
     };
 
-
-    class WorldManager : public IUpdatable{
+    class WorldManager {
         public:
 			// Member variables
 			WorldManager() = default;
@@ -221,13 +218,11 @@ namespace esroops {
             sf::Vector2f position = { 0.f, 0.f },
             sf::Color fillColor = sf::Color::White,
             unsigned int style = sf::Text::Regular,
-            unsigned int size = 18)
-            : textbox(font, "", size)
-        {
-            textbox.setPosition(position);
-            textbox.setFillColor(fillColor);
-            textbox.setStyle(style);
-        }
+            unsigned int size = 18) : textbox(font, "", size) {
+                textbox.setPosition(position);
+                textbox.setFillColor(fillColor);
+                textbox.setStyle(style);
+            }
         void setCharacterSize(unsigned int size) { textbox.setCharacterSize(size); }
         void setFillColor(const sf::Color& fillColor) { textbox.setFillColor(fillColor); }
         void setStyle(unsigned int style) { textbox.setStyle(style);}
@@ -235,7 +230,6 @@ namespace esroops {
         void setPosition(const sf::Vector2f& position) { textbox.setPosition(position); }
         void setFont(const sf::Font& font) { textbox.setFont(font); }
         sf::FloatRect getLocalBounds() const { return localbounds; }
-
     private:
         sf::Text textbox;
 		sf::FloatRect localbounds;

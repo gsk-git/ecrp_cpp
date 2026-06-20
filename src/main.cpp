@@ -56,14 +56,18 @@ static void savegame(nlohmann::json& gfile) {
 	std::string fullPATH = playerFileURI + saveFile;
 	
 	// Creating save info as json
-	PlayerData data = { PLAYER_POSITION.first, PLAYER_POSITION.second };
+	PlayerData data = { PLAYER_POSITION.first, 
+						PLAYER_POSITION.second 
+						};
 	gfile["X"] = data.m_playerposX;
 	gfile["Y"] = data.m_playerposY;
 	
 	// Opening data.json
 	std::ofstream file(fullPATH);
 	if (file.is_open()) {
+		// Writing player data onto file
 		file << gfile.dump(4);
+		// Closing file
 		file.close();
 	}
 	else { 
@@ -408,10 +412,6 @@ int main(int argCount, char* argVector[]) {
 
 	bool SPLASH_FLAG = false;
 	
-	// Displaying game title and version
-	std::cout << "Earth Space Research Organization [Versio 01.0.2395]\n";
-	std::cout << "(c) RagnorakRage Studio. All rights reserved.\n";
-	
 	// Handling command line arguments
 	if (argCount > 1) {
 		
@@ -419,19 +419,9 @@ int main(int argCount, char* argVector[]) {
 			
 			if (std::string(argVector[i]) == "--debug" || std::string(argVector[i]) == "-d") {
 				esrovar::DebugMode = true;
-				std::cout << "\nDebug mode enabled\n";
-			}
-			else if (std::string(argVector[i]) == "--help" || std::string(argVector[i]) == "-h") {
-				std::cout << "\nHelp Options:\n";
-				std::cout << "  --debug, -d   Enable debug mode\n";
-				std::cout << "  --help, -h    Show this help message\n";
-				std::cout << "  --no-splash, -ns    Disables the splash screen\n";
-				std::cout << "\nUsage: " << argVector[0] << " [options]\n";
-				return EXIT_SUCCESS;
 			}
 			else if (std::string(argVector[i]) == "--no-splash" || std::string(argVector[i]) == "-ns") {
 				SPLASH_FLAG = true;
-				std::cout << "\nSplash disabled\n";
 			}
 		}
 	}
