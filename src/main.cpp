@@ -36,7 +36,7 @@
 #include <cstdint>
 
 // Loading game data from file
-static void loadgame(nlohmann::json& open) {
+static inline void loadgame(nlohmann::json& open) {
 
 	std::ifstream loadfile(playerFileURI + saveFile);
 	if (loadfile) {
@@ -47,7 +47,7 @@ static void loadgame(nlohmann::json& open) {
 }
 
 // Saving game data
-static void savegame(nlohmann::json& gfile) {
+static inline void savegame(nlohmann::json& gfile) {
 	
 	// User file directory
 	std::filesystem::create_directories(playerFileURI);
@@ -76,7 +76,7 @@ static void savegame(nlohmann::json& gfile) {
 }
 
 // Handling player input
-static void InputHandler(Player& player, float dt) {
+static inline void InputHandler(Player& player, float dt) {
 
 	// Resetting movement direction and boost
 	movedirx = 0.f;
@@ -123,7 +123,7 @@ static void InputHandler(Player& player, float dt) {
 }
 
 // Processing window events
-static void ProcessWindowEvents(Player& player, sf::RenderWindow& gamewin) {
+static inline void ProcessWindowEvents(Player& player, sf::RenderWindow& gamewin) {
 	// Process window events
 	while (const std::optional event = gamewin.pollEvent()) {
 		if (event->is <sf::Event::Closed>())
@@ -161,7 +161,7 @@ static void ProcessWindowEvents(Player& player, sf::RenderWindow& gamewin) {
 	}
 }
 
-// Generates the splash screen
+// Generates the suik bmnhplash screen
 static void RunSplash() {
 
 	// Create a borderless window
@@ -201,7 +201,7 @@ static void RunSplash() {
 }
 
 // Manages in-game clock
-static void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int& minutes, int& day) {
+static inline void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& seconds, int& minutes, int& day) {
 	elapsed += gameclock.restart();
 	
 	if (elapsed >= sf::seconds(1.0f)) {
