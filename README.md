@@ -33,12 +33,17 @@ In an open world environment, you will explore the world and interact with the e
 
 ## Supported CLI Commands
 
-	- To hide splash screen			| --no-splash, -ns
-	- Start game in debugging mode	| --debug, -d
-	
-	
-	- Usage Example -  .\<DIRPATH>\ESRO.exe --no-splash --debug
+ESRO supports direct execution arguments from PowerShell or Command Prompt to alter startup states configuration.
 
+| Feature Command | Short Flag | Description |
+| :--- | :--- | :--- |
+| `--no-splash` | `-ns` | Completely bypasses the opening graphical splash screen sequence. |
+| `--debug` | `-d` | Forces the engine to boot directly into internal Debugging Mode. |
+
+### 🛠️ Execution Example
+To bypass the splash screens and run the game with active debug overlays, run the executable directly from your terminal:
+```powershell
+.\build\bin\Debug\ESRO.exe --no-splash --debug
 
 ---
 
