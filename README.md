@@ -29,7 +29,7 @@ In an open world environment, you will explore the world and interact with the e
 - **Procedural world with new envirnoments, climate, civilizations etc**
 - **First in its type without inventory management but world with full of resourcs**
 - **In-built AI assistant as guide**
-- **Intelligent people and animal management**: Includes Google Test (via `vcpkg` packages) to write unit tests for game logic (if tests are added / maintained).
+- **Intelligent people, animal and environment management**
 
 ---
 
