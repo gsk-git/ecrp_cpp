@@ -7,8 +7,10 @@
 
 ## Table of Contents
 
-- [About the Project](#about-esro)  
-- [Features](#game-features)
+- [About ESRO](#about-esro)  
+- [Game Features](#game-features)
+- [Supported CLI Commands](#supported-cli-commands)
+- [Game Performance](#game-performance)
 
 ---
 
@@ -47,7 +49,8 @@ To bypass the splash screens and run the game with active debug overlays, run th
 ```
 ---
 
-## Game Performance - 21/06/2026
-- FPS = +570
-- Build Time - 8.831 ms
-- Build Size - 1,345 KB
+## Game Performance 
+- 21/06/2026
+	- FPS = +570
+	- Build Time - 8.831 ms
+	- Build Size - 1,345 KB
