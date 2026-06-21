@@ -416,10 +416,11 @@ int main(int argCount, char* argVector[]) {
 	if (argCount > 1) {
 		
 		for (int i = 0; i < argCount; i++) {
-			
+			// Checking for debug mode and no-splash flags in command line arguments
 			if (std::string(argVector[i]) == "--debug" || std::string(argVector[i]) == "-d") {
 				esrovar::DebugMode = true;
 			}
+			// Checking for no-splash flag in command line arguments
 			else if (std::string(argVector[i]) == "--no-splash" || std::string(argVector[i]) == "-ns") {
 				SPLASH_FLAG = true;
 			}
