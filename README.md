@@ -35,6 +35,10 @@ In an open world environment, you will explore the world and interact with the e
 
 	- To hide splash screen			| --no-splash, -ns
 	- Start game in debugging mode	| --debug, -d
+	
+	
+	- Usage Example -  .\<DIRPATH>\ESRO.exe --no-splash --debug
+
 
 ---
 
