@@ -44,7 +44,7 @@ ESRO supports direct execution arguments from PowerShell or Command Prompt to al
 To bypass the splash screens and run the game with active debug overlays, run the executable directly from your terminal:
 ```powershell
 .\build\bin\Debug\ESRO.exe --no-splash --debug
-
+```
 ---
 
 ## Game Performance - 21/06/2026
