@@ -147,7 +147,6 @@ namespace esroops {
         int m_chunkX;
         int m_chunkY;
 		bool m_isGenerated;
-        const Tile* getTileData(int x, int y) const;
         std::vector<Tile> tiles;
         Tile& tileAt(int x, int y);
         const Tile& tileAt(int x, int y) const;
@@ -176,8 +175,7 @@ namespace esroops {
             std::deque<std::pair<int, int>> m_unrequired_chunks;
             std::array<std::string, 10> tilevariation = {
                 "plains", "beach", "dirt", "ocean", "forest", "mountain", "swamp", "jungle", "frozenplain", "snow"
-			};
-			
+			};			
             // Member functions
             void update(float dt);
 			void getRequiredChunks();

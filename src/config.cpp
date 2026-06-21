@@ -186,12 +186,12 @@ namespace esrofn {
 // Global objects and classes
 namespace esroops {
 
-	inline esroops::Tile& Chunk::tileAt(int x, int y) {
+	inline Tile& Chunk::tileAt(int x, int y) {
 		const std::size_t idx = static_cast<std::size_t>(y) * static_cast<std::size_t>(esrovar::CHUNK_SIZE) + static_cast<std::size_t>(x);
 		return tiles[idx];
 	}
 
-	inline const esroops::Tile& Chunk::tileAt(int x, int y) const {
+	inline const Tile& Chunk::tileAt(int x, int y) const {
 		const std::size_t idx = static_cast<std::size_t>(y) * static_cast<std::size_t>(esrovar::CHUNK_SIZE) + static_cast<std::size_t>(x);
 		return tiles[idx];
 	}
@@ -222,10 +222,6 @@ namespace esroops {
 		f_initialize_world();
 	}
 
-	const Tile* Chunk::getTileData(int x, int y) const {        
-		return &tileAt(x, y);
-	}
-
 	bool Chunk::getContinentLayer(int x, int y) {
 		// Getting continent noise value
 		float worldTileX = static_cast<float>(x * esrovar::CHUNK_SIZE);
@@ -245,22 +241,34 @@ namespace esroops {
 		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);
 		m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
 		
+		std::size_t tileIndex;
+		float worldTileX;
+		float worldtileY;
+		int noiseIDX;
+		float lerp1;
+		float lerp2;
+		float noiseValue;
+		float chunkOffsetX = m_chunkX * esrovar::CHUNK_SIZE * tilesize.x;
+		float chunkOffsetY = m_chunkY * esrovar::CHUNK_SIZE * tilesize.y;
+		float tx;
+		float ty;
+		
 		// Instantiating vertex grid
 		for (int y = 0; y < esrovar::CHUNK_SIZE; ++y) {
 			for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
 				
 				// tileIndex identifies where the tile will sit in this grid
-				auto tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
+				tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
 				
 				// World Tile XY for noise logic
-				float worldTileX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE + x);
-				float worldtileY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE + y);
+				worldTileX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE + x);
+				worldtileY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE + y);
 				
 				// Getting baseNoise value for current tile
-				int noiseIDX = 0;				
-				float lerp1 = esrovar::elevationNoise.GetNoise(worldTileX, worldtileY);
-				float lerp2 = esrovar::elevationNoise.GetNoise(worldTileX + 0.7f, worldtileY + 0.3f);
-				float noiseValue = lerp1 + 0.2f * (lerp2 - lerp1);
+				noiseIDX = 0;				
+				lerp1 = esrovar::elevationNoise.GetNoise(worldTileX, worldtileY);
+				lerp2 = esrovar::elevationNoise.GetNoise(worldTileX + 0.7f, worldtileY + 0.3f);
+				noiseValue = lerp1 + 0.2f * (lerp2 - lerp1);
 				noiseValue = (noiseValue + 1.0f) * 0.5f;
 				
 				// Determining baseBiome based on baseNoise value
@@ -272,16 +280,11 @@ namespace esroops {
 					else if (noiseValue < 0.85) noiseIDX = 2;	// Dirt
 					else noiseIDX = 5;							// Mountain
 				}
-				else
-					noiseIDX = 3;								// Ocean
-				
-				// Chunk pixel offset
-				float chunkOffsetX = m_chunkX * esrovar::CHUNK_SIZE * tilesize.x;
-				float chunkOffsetY = m_chunkY * esrovar::CHUNK_SIZE * tilesize.y;
+				else noiseIDX = 3;								// Ocean
 				
 				// XY of independent tile
-				float tx = chunkOffsetX + x * tilesize.x;
-				float ty = chunkOffsetY + y * tilesize.y;
+				tx = chunkOffsetX + x * tilesize.x;
+				ty = chunkOffsetY + y * tilesize.y;
 				
 				// XY for independent tile texture - Required in future implementations
 				//auto texX = static_cast<float>(tu) * tilesize.x;
@@ -291,22 +294,22 @@ namespace esroops {
 				//auto tv = 0;
 				
 				// Triangle 1
-				m_grid[static_cast<size_t>(tileIndex) + 0].position = sf::Vector2f(tx, ty);
-				m_grid[static_cast<size_t>(tileIndex) + 1].position = sf::Vector2f(tx + tilesize.x, ty);
-				m_grid[static_cast<size_t>(tileIndex) + 2].position = sf::Vector2f(tx, ty + tilesize.y);
-				m_grid[static_cast<size_t>(tileIndex) + 0].color = esrovar::biome_colors[noiseIDX];
-				m_grid[static_cast<size_t>(tileIndex) + 1].color = esrovar::biome_colors[noiseIDX];
-				m_grid[static_cast<size_t>(tileIndex) + 2].color = esrovar::biome_colors[noiseIDX];	
+				m_grid[tileIndex + 0].position = sf::Vector2f(tx, ty);
+				m_grid[tileIndex + 1].position = sf::Vector2f(tx + tilesize.x, ty);
+				m_grid[tileIndex + 2].position = sf::Vector2f(tx, ty + tilesize.y);
+				m_grid[tileIndex + 0].color = esrovar::biome_colors[noiseIDX];
+				m_grid[tileIndex + 1].color = esrovar::biome_colors[noiseIDX];
+				m_grid[tileIndex + 2].color = esrovar::biome_colors[noiseIDX];	
 				// Triangle 2
-				m_grid[static_cast<size_t>(tileIndex) + 3].position = sf::Vector2f(tx + tilesize.x, ty);
-				m_grid[static_cast<size_t>(tileIndex) + 4].position = sf::Vector2f(tx + tilesize.x, ty + tilesize.y);
-				m_grid[static_cast<size_t>(tileIndex) + 5].position = sf::Vector2f(tx, ty + tilesize.y);
-				m_grid[static_cast<size_t>(tileIndex) + 3].color = esrovar::biome_colors[noiseIDX];
-				m_grid[static_cast<size_t>(tileIndex) + 4].color = esrovar::biome_colors[noiseIDX];
-				m_grid[static_cast<size_t>(tileIndex) + 5].color = esrovar::biome_colors[noiseIDX];
+				m_grid[tileIndex + 3].position = sf::Vector2f(tx + tilesize.x, ty);
+				m_grid[tileIndex + 4].position = sf::Vector2f(tx + tilesize.x, ty + tilesize.y);
+				m_grid[tileIndex + 5].position = sf::Vector2f(tx, ty + tilesize.y);
+				m_grid[tileIndex + 3].color = esrovar::biome_colors[noiseIDX];
+				m_grid[tileIndex + 4].color = esrovar::biome_colors[noiseIDX];
+				m_grid[tileIndex + 5].color = esrovar::biome_colors[noiseIDX];
 				
 				// Setting tile's type at XY
-				tileAt(x, y).type = static_cast<BlockType>(noiseIDX);				
+				tileAt(x, y).type = static_cast<BlockType>(noiseIDX);
 			}
 		}		
 		// Updating chunk generated status		
@@ -400,16 +403,16 @@ namespace esroops {
 		// Drawing chunk borders for debugging
 		for (int x : esrovar::centerPOS) {
 			for (int y : esrovar::centerPOS) {
+				sf::RectangleShape rectangle;
 				int targetX = static_cast<int>(m_playerchunk_X) + x;
 				int targetY = static_cast<int>(m_playerchunk_Y) + y;
-				sf::RectangleShape rectangle;
 				rectangle.setSize(sf::Vector2f(static_cast<float>(esrovar::chunk_area), static_cast<float>(esrovar::chunk_area)));
 				rectangle.setFillColor(sf::Color::Transparent);
 				rectangle.setOutlineColor(sf::Color::Red);
 				rectangle.setOutlineThickness(1.0f);
 				rectangle.setPosition(sf::Vector2f(static_cast<float>(targetX * esrovar::chunk_area), static_cast<float>(targetY * esrovar::chunk_area)));
 				window.draw(rectangle);
-			}
+			}			
 		}
 	}
 
@@ -430,12 +433,12 @@ namespace esroops {
 			// Access the chunk and get the tile data
 			const Chunk& currentChunk = it->second;
 			// Get the tile data at the player's local chunk coordinates
-			const Tile* tile = currentChunk.getTileData(static_cast<int>(playerchunkX), static_cast<int>(playerchunkY));
+			const Tile& tile = currentChunk.tileAt(static_cast<int>(playerchunkX), static_cast<int>(playerchunkY));
 			
 			// Check if the tile data is valid and return the corresponding tile type string
-			if (tile) {
+			if (&tile) {
 				// Return the string representation of the tile type using the tilevariation array
-				return tilevariation[static_cast<int>(tile->type)];
+				return tilevariation[static_cast<int>(tile.type)];
 			}
 		}
 		// Tile data not found case

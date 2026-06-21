@@ -296,8 +296,9 @@ static void StartGame() {
 	view.setSize(viewArea);
 	view.setCenter(cameraCenter);	
 	
-	// Setting framerate limit
+	// Setting VSync and mouse cursor
 	gamewin.setVerticalSyncEnabled(false);
+	gamewin.setMouseCursorVisible(false);
 	
 	//Main game loop
 	while (gamewin.isOpen()) {
@@ -305,10 +306,8 @@ static void StartGame() {
 		// Delta time management
 		dt = clock.restart().asSeconds();
 		GameClock(gameclock, elapsed, seconds, minutes, day);
-		worlUpdateClock += dt;
+		worlUpdateClock += dt;		
 		
-		// Testing mouse cursor hider
-		gamewin.setMouseCursorVisible(false);
 		// Increment Frames
 		frames++;
 		
@@ -431,7 +430,7 @@ int main(int argCount, char* argVector[]) {
 	if (!SPLASH_FLAG) RunSplash();
 	
 	// Starts game
-	StartGame();	  
+	StartGame();
 	
 	// Exits game
 	return EXIT_SUCCESS;
