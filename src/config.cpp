@@ -170,15 +170,15 @@ namespace esrofn {
 		return std::make_tuple(playerchunkX, playerchunkY);
 	}
 
-	static void initTempHumLayer(uint32_t& seed) {
+	[[maybe_unused]] static void initTempHumLayer() {
 
 	}
 
-	static void initBiomeLayer(uint32_t& seed) {
+	[[maybe_unused]] static void initBiomeLayer() {
 
 	}
 
-	static void initRiverLayer(uint32_t& seed) {
+	[[maybe_unused]] static void initRiverLayer() {
 
 	}
 } // namespace esrofn ends
@@ -226,7 +226,7 @@ namespace esroops {
 		return &tileAt(x, y);
 	}
 
-	bool Chunk::getContinentLayer(int x, int y, uint32_t seed) {
+	bool Chunk::getContinentLayer(int x, int y) {
 		// Getting continent noise value
 		float worldTileX = static_cast<float>(x * esrovar::CHUNK_SIZE);
 		float worldTileY = static_cast<float>(y * esrovar::CHUNK_SIZE);
@@ -239,7 +239,7 @@ namespace esroops {
 	void Chunk::generate(sf::Vector2f tilesize, uint32_t seed) {
 		
 		// Get baseMap logic
-		bool isLand = getContinentLayer(m_chunkX, m_chunkY, seed);
+		bool isLand = getContinentLayer(m_chunkX, m_chunkY);
 		
 		// Set vertex properties
 		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);

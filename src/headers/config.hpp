@@ -109,11 +109,11 @@ namespace esrofn {
     
     std::tuple<int, int> getPlayerChunkXY(std::pair<float, float>);
 
-    static void initTempHumLayer(uint32_t& seed);
+    [[maybe_unused]] static void initTempHumLayer();
 
-    static void initBiomeLayer(uint32_t& seed);
+    [[maybe_unused]] static void initBiomeLayer();
 
-    static void initRiverLayer(uint32_t& seed);
+    [[maybe_unused]] static void initRiverLayer();
 }
 
 // Global objects and classes
@@ -156,7 +156,7 @@ namespace esroops {
         // Member functions
         void generate(sf::Vector2f tilesize, uint32_t worldseed);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-        bool getContinentLayer(int x, int y, uint32_t seed);
+        bool getContinentLayer(int x, int y);
     };
 
     class WorldManager {
