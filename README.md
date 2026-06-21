@@ -31,6 +31,13 @@ In an open world environment, you will explore the world and interact with the e
 
 ---
 
+## Supported CLI Commands
+
+	- To hide splash screen			| --no-splash, -ns
+	- Start game in debugging mode	| --debug, -d
+
+---
+
 ## Game Performance - 21/06/2026
 - FPS = +570
 - Build Time - 8.831 ms
