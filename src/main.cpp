@@ -35,38 +35,45 @@
 #include <utility>
 #include <cstdint>
 
-// Loading game data from file
-static inline void loadgame(nlohmann::json& open) {
+const uint32_t magicNumber = 2135284562;
 
+// Loading game data from file
+static inline void loadgame() {
+
+	nlohmann::json savefile;
 	std::ifstream loadfile(playerFileURI + saveFile);
-	if (loadfile) {
-		loadfile >> open;
-		PLAYER_POSITION.first = open.at("X");
-		PLAYER_POSITION.second = open.at("Y");
+	uint32_t mNumber = 0;
+	if (loadfile.is_open()) {
+		loadfile >> savefile;
+			PLAYER_POSITION.first = savefile.at("X");
+			PLAYER_POSITION.second = savefile.at("Y");
+			loadfile.close();
 	}
 }
 
 // Saving game data
-static inline void savegame(nlohmann::json& gfile) {
+static inline void savegame() {
 	
+	nlohmann::json savefile;
 	// User file directory
-	std::filesystem::create_directories(playerFileURI);
-	
+	std::filesystem::create_directories(playerFileURI);	
 	// Creat full path for data.json
-	std::string fullPATH = playerFileURI + saveFile;
-	
+	std::string fullPATH = playerFileURI + saveFile;	
 	// Creating save info as json
-	PlayerData data = { PLAYER_POSITION.first, 
-						PLAYER_POSITION.second 
-						};
-	gfile["X"] = data.m_playerposX;
-	gfile["Y"] = data.m_playerposY;
-	
+	PlayerData data = { 
+		PLAYER_POSITION.first, 
+		PLAYER_POSITION.second 
+	};
+	// Adding player position to json object
+	savefile["magicNumber"] = magicNumber;
+	savefile["version"] = "0.1.0";
+	savefile["X"] = data.m_playerposX;
+	savefile["Y"] = data.m_playerposY;
 	// Opening data.json
 	std::ofstream file(fullPATH);
 	if (file.is_open()) {
 		// Writing player data onto file
-		file << gfile.dump(4);
+		file << savefile.dump();
 		// Closing file
 		file.close();
 	}
@@ -254,14 +261,14 @@ static void StartGame() {
 	std::tuple<int, int> previousChunk = { 0, 0 };
 	std::tuple<int, int> swapChunk = { 0, 0 };
 	sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-	sf::RenderWindow gamewin(desktop, "ESRO", sf::Style::None);
+	sf::RenderWindow gamewin(desktop, "ESRO™ v0.1.0", sf::Style::None);
 	
 	// Loading Assets
 	LoadSpriteSheetsnew();
 	esrofn::LoadFonts();
 	
 	// loading gamedata
-	loadgame(gameJSON);
+	// loadgame();
 	
 	// Initializing game objects
 	sf::View view;
@@ -364,7 +371,7 @@ static void StartGame() {
 		
 		// Saving game data
 		if (esrovar::Save) {
-			savegame(gameJSON);
+			savegame();
 			esrovar::Save = false;
 		}		
 		
