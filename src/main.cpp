@@ -36,49 +36,54 @@
 #include <cstdint>
 
 const uint32_t magicNumber = 2135284562;
+nlohmann::json gamefile;
 
 // Loading game data from file
-static inline void loadgame() {
-
-	nlohmann::json savefile;
-	std::ifstream loadfile(playerFileURI + saveFile);
-	uint32_t mNumber = 0;
-	if (loadfile.is_open()) {
-		loadfile >> savefile;
-			PLAYER_POSITION.first = savefile.at("X");
-			PLAYER_POSITION.second = savefile.at("Y");
-			loadfile.close();
+static void loadgame(nlohmann::json& lfile) {	
+	
+	std::ifstream loadfile(playerFileURI + saveFile, std::ios::binary);
+	if (loadfile) {
+		uint32_t uNum = 0;
+		loadfile.read(reinterpret_cast<char*>(&uNum), sizeof(uNum));
+		loadfile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		loadfile >> lfile;
+		if (uNum == magicNumber) {
+			PLAYER_POSITION.first = lfile.at("X");
+			PLAYER_POSITION.second = lfile.at("Y");
+		}
+		else {
+			std::cout << "Corrupted save file, couldn't use this file \n" << playerFileURI + saveFile;
+		}
 	}
+	else return;
 }
 
 // Saving game data
-static inline void savegame() {
+static void savegame(nlohmann::json& savefile) {
 	
-	nlohmann::json savefile;
 	// User file directory
 	std::filesystem::create_directories(playerFileURI);	
 	// Creat full path for data.json
 	std::string fullPATH = playerFileURI + saveFile;	
 	// Creating save info as json
-	PlayerData data = { 
-		PLAYER_POSITION.first, 
-		PLAYER_POSITION.second 
+	PlayerData data{
+		PLAYER_POSITION.first,
+		PLAYER_POSITION.second,
 	};
 	// Adding player position to json object
-	savefile["magicNumber"] = magicNumber;
-	savefile["version"] = "0.1.0";
 	savefile["X"] = data.m_playerposX;
 	savefile["Y"] = data.m_playerposY;
 	// Opening data.json
-	std::ofstream file(fullPATH);
-	if (file.is_open()) {
+	std::ofstream file(fullPATH, std::ios::binary);
+	if (file) {
+		file.write(reinterpret_cast<const char*>(&magicNumber), sizeof(magicNumber));
+		file.put('\n');
 		// Writing player data onto file
-		file << savefile.dump();
-		// Closing file
+		file << savefile.dump(4);
 		file.close();
 	}
 	else { 
-		std::cout << "Save File corrupted, check if the below path exists \n" << fullPATH; 
+		std::cout << "Save File corrupted, check if the below path exists \n" << fullPATH;
 	}
 }
 
@@ -251,7 +256,6 @@ static void StartGame() {
 	float dt = 0.0f;
 	float playerX;
 	float playerY;
-	nlohmann::json gameJSON;
 	const uint32_t gameseed = 23091995;
 	std::string tileType;
 	std::mt19937 rng(gameseed);
@@ -268,7 +272,7 @@ static void StartGame() {
 	esrofn::LoadFonts();
 	
 	// loading gamedata
-	// loadgame();
+	loadgame(gamefile);
 	
 	// Initializing game objects
 	sf::View view;
@@ -279,6 +283,7 @@ static void StartGame() {
 	float worlUpdateClock = 0.0f;
 	sf::Time elapsed = sf::Time::Zero;
 	Player player;
+	esrovar::Save = false;
 	esroops::WorldManager world(PLAYER_POSITION, gameseed);
 	esroops::HudBox hudbox({ 350, 300 }, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
 	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
@@ -371,7 +376,7 @@ static void StartGame() {
 		
 		// Saving game data
 		if (esrovar::Save) {
-			savegame();
+			savegame(gamefile);
 			esrovar::Save = false;
 		}		
 		
