@@ -72,7 +72,6 @@ extern std::pair<float, float> PLAYER_POSITION;
 
 // Player functions
 bool LoadSpriteSheetsnew();
-bool LoadTileSheet();
 std::tuple<int, int> getPlayerXY(std::pair<float, float>);
 std::tuple<int, int> getPlayerChunkXY(std::pair<float, float>);
 

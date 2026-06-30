@@ -119,13 +119,6 @@ namespace esrofn {
 // Global objects and classes
 namespace esroops {
 
-    class IUpdatable {
-    public:
-        virtual void update(float dt) = 0;
-        virtual ~IUpdatable() = default;
-        IUpdatable() = default;
-    };
-
     enum class BlockType {
         plains,
         beach,

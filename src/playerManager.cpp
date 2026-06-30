@@ -23,7 +23,6 @@ std::string saveFile = "data.json";
 int frame_count = 0;
 std::pair<float, float> PLAYER_POSITION = { 0.0f, 0.0f };
 std::array<sf::Texture, StateCount> kTextures;
-sf::Texture tileset;
 
 bool LoadSpriteSheetsnew() {
 	// Loading all player textures
@@ -36,15 +35,6 @@ bool LoadSpriteSheetsnew() {
 		}
 		// set smoothing (or disable) on success if desired
 		kTextures[i].setSmooth(false);
-	}
-	return true;
-}
-
-bool LoadTileSheet() {
-	// Loading tile sheet
-	if (!tileset.loadFromFile("res/tile.png")) {
-		LOG("Tilesheet not found or path is incorrect");
-		return false;
 	}
 	return true;
 }

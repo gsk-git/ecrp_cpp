@@ -89,16 +89,16 @@ static void savegame(nlohmann::json& savefile) {
 
 // Handling player input
 static inline void InputHandler(Player& player, float dt) {
-
+	
 	// Resetting movement direction and boost
 	movedirx = 0.f;
 	movediry = 0.f;
 	boost = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::LShift) ? 2.0f : 0.6f;
-
+	
 	// Setting running state
 	player.m_IsRunning = boost == 2.0f ? true : false;
 	totalspeed = speed * boost + jumpboost;
-
+	
 	// Handling directional input
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)) {
 		movediry = -totalspeed;
@@ -116,10 +116,10 @@ static inline void InputHandler(Player& player, float dt) {
 		movedirx = totalspeed;
 		player.m_DirectionEnum = Directions::right;
 	}
-
+	
 	// Creating directional vector
 	sf::Vector2f direction({ movedirx, movediry });
-
+	
 	// Check if directions are not 0
 	if (direction.x != 0.f || direction.y != 0.f) {
 		// Getting hypotenuse length
@@ -127,7 +127,7 @@ static inline void InputHandler(Player& player, float dt) {
 		// Normalizing vector movement
 		direction /= length;
 	}
-
+	
 	// Updating player movement
 	player.move(direction * totalspeed * dt);
 	player.m_playerXY.x = PLAYER_POSITION.first += direction.x * totalspeed * dt;
@@ -283,7 +283,7 @@ static void StartGame() {
 	float worlUpdateClock = 0.0f;
 	sf::Time elapsed = sf::Time::Zero;
 	Player player;
-	esrovar::Save = false;
+	// WorldManager world;
 	esroops::WorldManager world(PLAYER_POSITION, gameseed);
 	esroops::HudBox hudbox({ 350, 300 }, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
 	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
