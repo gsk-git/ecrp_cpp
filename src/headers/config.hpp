@@ -11,14 +11,12 @@
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Transformable.hpp>
-#include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <string>
 #include <utility>
-#include "FastNoise/include/FastNoise/FastNoiseLite.h"
 #include <deque>
 #include <SFML/Graphics/Rect.hpp>
-#include <vector>
+#include "chunkManager.hpp"
 
 #ifndef CONFIG_HPP_LOG_MACRO
 #define CONFIG_HPP_LOG_MACRO
@@ -50,9 +48,6 @@ namespace esrovar {
     constexpr unsigned int SCRWDT = 1920u;
     constexpr unsigned int SCRHGT = 1080u;
     constexpr unsigned int FPS = 60u;
-    constexpr int CHUNK_SIZE = 32;
-    constexpr int CHUNK_RADIUS = 2;
-    extern int pixel_size;
     constexpr int PLAYER_SPRITE = 64;
     enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
     enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
@@ -72,9 +67,7 @@ namespace esrovar {
 	extern std::string playerFileURI;
     extern std::string saveFile;
 	extern std::array<sf::Texture, StateCount> kTextures;
-    extern int chunk_area;
 	extern sf::Font mainfont;
-    extern sf::Texture tileset;
     extern bool ChunkBorder;
     extern bool DebugMode;
     extern bool Save;   
@@ -88,26 +81,12 @@ namespace esrovar {
     extern float boost;
     extern float totalspeed;
     extern int jumpboost;
-    extern float globaldelta;    
-    extern sf::RenderWindow GameWindow;
-	extern FastNoiseLite elevationNoise;
+    extern float globaldelta;
     extern std::pair<float, float> PLAYER_POSITION;
 }// namespace esrovar ends
 
 // Global functions
 namespace esrofn {
-
-    bool LoadSpriteSheetsnew();
-    
-    bool LoadTileSheet();
-    
-    bool LoadFonts();
-    
-    std::tuple<int, int> getChunkXY(std::pair<float, float>);
-    
-    std::tuple<int, int> getPlayerXY(std::pair<float, float>);
-    
-    std::tuple<int, int> getPlayerChunkXY(std::pair<float, float>);
 
     [[maybe_unused]] static void initTempHumLayer();
 
@@ -118,38 +97,6 @@ namespace esrofn {
 
 // Global objects and classes
 namespace esroops {
-
-    enum class BlockType {
-        plains,
-        beach,
-        dirt,
-        ocean,
-        forest,
-        mountain
-    };
-
-    struct Tile {
-        BlockType type;
-    };
-
-    class Chunk : public sf::Drawable, public sf::Transformable {
-    public:
-        Chunk() = default;
-        Chunk(int x, int y);
-        ~Chunk() final = default;
-        int m_chunkX;
-        int m_chunkY;
-		bool m_isGenerated;
-        std::vector<Tile> tiles;
-        Tile& tileAt(int x, int y);
-        const Tile& tileAt(int x, int y) const;
-        sf::VertexArray m_grid;
-        sf::Texture m_tileset;
-        // Member functions
-        void generate(sf::Vector2f tilesize, uint32_t worldseed);
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-        bool getContinentLayer(int x, int y);
-    };
 
     class WorldManager {
         public:

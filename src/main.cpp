@@ -244,6 +244,14 @@ static inline void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& secon
 	return static_cast<uint32_t>(t & 0xFFFFFFFFu);
 }
 
+bool LoadFonts() {
+	if (!esrovar::mainfont.openFromFile("res/fonts/Roboto.ttf")) {
+		LOG("Font not found or path is incorrect");
+		return false;
+	}
+	return true;
+}
+
 // Starts the game
 static void StartGame() {
 	
@@ -269,7 +277,7 @@ static void StartGame() {
 	
 	// Loading Assets
 	LoadSpriteSheetsnew();
-	esrofn::LoadFonts();
+	LoadFonts();
 	
 	// loading gamedata
 	loadgame(gamefile);
@@ -341,10 +349,10 @@ static void StartGame() {
 		playerY = PLAYER_POSITION.second;
 		
 		// Getting current chunk and player XY position
-		swapChunk = esrofn::getChunkXY(PLAYER_POSITION);
+		swapChunk = getChunkXY(PLAYER_POSITION);
 		
 		// Getting player XY position and tile type
-		playerXY = esrofn::getPlayerXY(PLAYER_POSITION);
+		playerXY = getPlayerXY(PLAYER_POSITION);
 		tileType = world.getTileType(PLAYER_POSITION);
 		
 		// Updating world player chunk position

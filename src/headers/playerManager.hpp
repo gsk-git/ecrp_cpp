@@ -72,7 +72,15 @@ extern std::pair<float, float> PLAYER_POSITION;
 
 // Player functions
 bool LoadSpriteSheetsnew();
-std::tuple<int, int> getPlayerXY(std::pair<float, float>);
+
+inline std::tuple<int, int> getPlayerXY(std::pair<float, float> playerxy) {
+	// Getting floored player coordinates
+	float x = std::floor(playerxy.first);
+	float y = std::floor(playerxy.second);
+
+	return std::make_tuple(static_cast<int>(x), static_cast<int>(y));
+}
+
 std::tuple<int, int> getPlayerChunkXY(std::pair<float, float>);
 
 // Player & Utility Classes

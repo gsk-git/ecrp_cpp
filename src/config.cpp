@@ -1,9 +1,8 @@
 ﻿// Including necessary libraries
 #include "headers/config.hpp"
+#include "headers/chunkManager.hpp"
 #include <cmath>
 #include <cstdint>
-#include <SFML/Graphics/PrimitiveType.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -19,7 +18,6 @@
 #include <cstdlib>
 #include <format>
 #include <tuple>
-#include <vector>
 
 // Global variables
 namespace esrovar {
@@ -31,144 +29,21 @@ namespace esrovar {
 	float dt = 0.0f;
 	float totalspeed = 0.0f;
 	int jumpboost = 0;
-	int pixel_size = 30;
 	bool ChunkBorder = false;
 	bool DebugMode = false;
 	bool Save = false;
-	int chunk_area = CHUNK_SIZE * pixel_size;
 	std::string playerFileURI = "res\\user_dat\\";
 	std::string saveFile = "data.json";
 	int frame_count = 0;
 	sf::RenderWindow GameWindow;
-	FastNoiseLite elevationNoise;
 	std::pair<float, float> PLAYER_POSITION = {0.0f, 0.0f};
 	std::array<sf::Texture, StateCount> kTextures;
 	sf::Font mainfont;
-	sf::Texture tileset;
-	std::vector<sf::Color> biome_colors = {
-		sf::Color(170, 200, 120),   // 0 - Plains
-		sf::Color(240, 224, 170),   // 1 - Beach
-		sf::Color(216, 184, 100),   // 2 - Desert
-		sf::Color(33, 87, 141),     // 3 - Ocean
-		sf::Color(26, 123, 59),     // 4 - Jungle
-		sf::Color(110, 118, 130)   // 5 - Mountains
-	};
-	std::vector<sf::Color> biome_variants = {
-		// --- OCEAN & WATER ---
-		sf::Color(23, 66, 145),     // 0 - Deep Ocean
-		sf::Color(28, 107, 160),    // 1 - Ocean
-		sf::Color(46, 139, 187),    // 2 - Shallow Ocean
-		sf::Color(70, 160, 200),    // 3 - Lagoon / Coral Sea
-		sf::Color(90, 190, 220),    // 4 - River / Freshwater
-			
-		// --- COAST ---
-		sf::Color(240, 224, 170),   // 5 - Beach (warm sand)
-		sf::Color(228, 193, 119),   // 6 - Desert Coast (dry sand)
-		sf::Color(210, 190, 140),   // 7 - Rocky Shore
-			
-		// --- TEMPERATE ---
-		sf::Color(170, 200, 120),   // 8 - Plains
-		sf::Color(150, 185, 100),   // 9 - Meadow
-		sf::Color(115, 150, 75),    // 10 - Forest
-		sf::Color(34, 139, 69),     // 11 - Jungle
-		sf::Color(98, 140, 88),     // 12 - Swamp / Marsh
-			
-		// --- ARID ---
-		sf::Color(216, 184, 100),   // 13 - Desert
-		sf::Color(190, 170, 90),    // 14 - Savannah
-		sf::Color(150, 120, 65),    // 15 - Badlands
-		sf::Color(180, 130, 70),    // 16 - Mesa / Clay Canyon
-			
-		// --- COLD ---
-		sf::Color(110, 130, 150),   // 17 - Tundra
-		sf::Color(90, 110, 140),    // 18 - Taiga (cold conifer forest)
-			
-		// --- SNOW & ICE ---
-		sf::Color(230, 240, 255),   // 19 - Snow Field
-		sf::Color(200, 220, 240),   // 20 - Ice Sheet
-		sf::Color(180, 200, 225),   // 21 - Frozen Ocean
-			
-		// --- MOUNTAINS ---
-		sf::Color(120, 130, 140),   // 22 - Mountain Base (rock)
-		sf::Color(150, 160, 170),   // 23 - High Mountains (light rock)
-		sf::Color(200, 210, 220),   // 24 - Snowy Peaks
-	};
-	std::ranges::iota_view<int, int> centerPOS = std::views::iota(-esrovar::CHUNK_RADIUS, esrovar::CHUNK_RADIUS + 1);
+	std::ranges::iota_view<int, int> centerPOS = std::views::iota(-CHUNK_RADIUS, CHUNK_RADIUS + 1);
 } // namespace esrovar ends
 
 // Global functions
 namespace esrofn {
-
-	bool LoadSpriteSheetsnew() {
-		// Loading all player textures
-		for (std::size_t i = 0; i < esrovar::StateCount; ++i) {
-			// Convert string_view → std::string for SFML
-			std::string path{ esrovar::kTexturePaths[i] };
-			if (!esrovar::kTextures[i].loadFromFile(path)) {
-				esrovar::kTextures[i].setSmooth(false);
-				LOG("Failed to load texture: " + path);
-				return false;
-			}
-            // set smoothing (or disable) on success if desired
-            esrovar::kTextures[i].setSmooth(false);
-		}
-		return true;
-	}
-
-	bool LoadTileSheet() {
-		// Loading tile sheet
-		if (!esrovar::tileset.loadFromFile("res/tile.png")) {
-			LOG("Tilesheet not found or path is incorrect");
-			return false;
-		}
-		return true;
-	}
-
-	bool LoadFonts() {
-		if (!esrovar::mainfont.openFromFile("res/fonts/Roboto.ttf")) {
-			LOG("Font not found or path is incorrect");
-			return false;
-		}
-		return true;
-	}
-
-	std::tuple<int, int> getChunkXY(std::pair<float, float> playerxy) {
-		float chunkX = std::floorf(playerxy.first / static_cast<float>(esrovar::CHUNK_SIZE * esrovar::pixel_size));
-		float chunkY = std::floorf(playerxy.second / static_cast<float>(esrovar::CHUNK_SIZE * esrovar::pixel_size));
-		
-		return std::make_tuple(static_cast<int>(chunkX), static_cast<int>(chunkY));
-	}
-
-	std::tuple<int, int> getPlayerXY(std::pair<float, float> playerxy) {
-		int playerX = static_cast<int>(std::floorf(playerxy.first / static_cast<float>(esrovar::pixel_size)));
-		int playerY = static_cast<int>(std::floorf(playerxy.second / static_cast<float>(esrovar::pixel_size)));
-
-		return std::make_tuple(playerX, playerY);
-	}
-
-	std::tuple<int, int> getPlayerChunkXY(std::pair<float, float> playerxy) {
-		
-		// Getting floored player coordinates
-		float x = std::floor(playerxy.first);
-		float y = std::floor(playerxy.second);
-		const int chunkSizeInPixels = esrovar::CHUNK_SIZE * esrovar::pixel_size;
-		
-		// Adjusting for negative coordinates
-		if (x < 0)
-			x += std::abs(x * static_cast<float>(chunkSizeInPixels));
-		if (y < 0)
-			y += std::abs(y * static_cast<float>(chunkSizeInPixels));
-		
-		// Getting local chunk coordinates
-		float chunkLocalX = std::fmod(x, static_cast<float>(chunkSizeInPixels));
-		float chunkLocalY = std::fmod(y, static_cast<float>(chunkSizeInPixels));
-		
-		// Converting to chunk local coordinates
-		int playerchunkX = static_cast<int>(std::floorf(chunkLocalX / static_cast<float>(esrovar::pixel_size)));
-		int playerchunkY = static_cast<int>(std::floorf(chunkLocalY / static_cast<float>(esrovar::pixel_size)));
-		
-		return std::make_tuple(playerchunkX, playerchunkY);
-	}
 
 	[[maybe_unused]] static void initTempHumLayer() {
 
@@ -186,29 +61,6 @@ namespace esrofn {
 // Global objects and classes
 namespace esroops {
 
-	inline Tile& Chunk::tileAt(int x, int y) {
-		const std::size_t idx = static_cast<std::size_t>(y) * static_cast<std::size_t>(esrovar::CHUNK_SIZE) + static_cast<std::size_t>(x);
-		return tiles[idx];
-	}
-
-	inline const Tile& Chunk::tileAt(int x, int y) const {
-		const std::size_t idx = static_cast<std::size_t>(y) * static_cast<std::size_t>(esrovar::CHUNK_SIZE) + static_cast<std::size_t>(x);
-		return tiles[idx];
-	}
-
-	Chunk::Chunk(int x, int y) {
-        // allocate contiguous storage for CHUNK_SIZE * CHUNK_SIZE tiles
-        tiles.resize(static_cast<std::size_t>(esrovar::CHUNK_SIZE) * static_cast<std::size_t>(esrovar::CHUNK_SIZE));
-		for (int yy = 0; yy < esrovar::CHUNK_SIZE; ++yy)
-			for (int xx = 0; xx < esrovar::CHUNK_SIZE; ++xx) {
-				tileAt(xx, yy).type = BlockType::plains;
-			}
-		m_chunkX = x;
-		m_chunkY = y;
-		m_tileset = esrovar::tileset;
-		m_isGenerated = false;
-	}
-
 	WorldManager::WorldManager(std::pair<float, float> PLAYERXY, uint32_t seed) {
 		// Initializing member variables
 		m_playerchunk_X = PLAYERXY.first;
@@ -222,104 +74,6 @@ namespace esroops {
 		f_initialize_world();
 	}
 
-	bool Chunk::getContinentLayer(int x, int y) {
-		// Getting continent noise value
-		float worldTileX = static_cast<float>(x * esrovar::CHUNK_SIZE);
-		float worldTileY = static_cast<float>(y * esrovar::CHUNK_SIZE);
-		float noiseValue = esrovar::elevationNoise.GetNoise(worldTileX * 0.005f, worldTileY * 0.005f);
-		noiseValue = (noiseValue + 1.0f) * 0.5f;
-		// Determining land or ocean based on noise value
-		return noiseValue > 0.4f; // Threshold for land
-	}
-
-	void Chunk::generate(sf::Vector2f tilesize, uint32_t seed) {
-		
-		// Get baseMap logic
-		bool isLand = getContinentLayer(m_chunkX, m_chunkY);
-		
-		// Set vertex properties
-		m_grid.setPrimitiveType(sf::PrimitiveType::Triangles);
-		m_grid.resize(static_cast<size_t>(esrovar::CHUNK_SIZE) * esrovar::CHUNK_SIZE * 6);
-		
-		std::size_t tileIndex;
-		float worldTileX;
-		float worldtileY;
-		int noiseIDX;
-		float lerp1;
-		float lerp2;
-		float noiseValue;
-		float chunkOffsetX = m_chunkX * esrovar::CHUNK_SIZE * tilesize.x;
-		float chunkOffsetY = m_chunkY * esrovar::CHUNK_SIZE * tilesize.y;
-		float tx;
-		float ty;
-		
-		// Instantiating vertex grid
-		for (int y = 0; y < esrovar::CHUNK_SIZE; ++y) {
-			for (int x = 0; x < esrovar::CHUNK_SIZE; ++x) {
-				
-				// tileIndex identifies where the tile will sit in this grid
-				tileIndex = (x + y * esrovar::CHUNK_SIZE) * 6;
-				
-				// World Tile XY for noise logic
-				worldTileX = static_cast<float>(m_chunkX * esrovar::CHUNK_SIZE + x);
-				worldtileY = static_cast<float>(m_chunkY * esrovar::CHUNK_SIZE + y);
-				
-				// Getting baseNoise value for current tile
-				noiseIDX = 0;				
-				lerp1 = esrovar::elevationNoise.GetNoise(worldTileX, worldtileY);
-				lerp2 = esrovar::elevationNoise.GetNoise(worldTileX + 0.7f, worldtileY + 0.3f);
-				noiseValue = lerp1 + 0.2f * (lerp2 - lerp1);
-				noiseValue = (noiseValue + 1.0f) * 0.5f;
-				
-				// Determining baseBiome based on baseNoise value
-				if (isLand) {					
-					if (noiseValue < 0.22) noiseIDX = 3;		// lake
-					else if (noiseValue < 0.28) noiseIDX = 1;	// Beach
-					else if (noiseValue < 0.45) noiseIDX = 0;	// Plains -> Forest
-					else if (noiseValue < 0.65) noiseIDX = 4;	// Forest -> Plains
-					else if (noiseValue < 0.85) noiseIDX = 2;	// Dirt
-					else noiseIDX = 5;							// Mountain
-				}
-				else noiseIDX = 3;								// Ocean
-				
-				// XY of independent tile
-				tx = chunkOffsetX + x * tilesize.x;
-				ty = chunkOffsetY + y * tilesize.y;
-				
-				// XY for independent tile texture - Required in future implementations
-				//auto texX = static_cast<float>(tu) * tilesize.x;
-				//auto texY = static_cast<float>(tv) * tilesize.y;
-				// Tile sheet index for now default selection is plains - Required in future implementations
-				//auto tu = noiseIDX;
-				//auto tv = 0;
-				
-				// Triangle 1
-				m_grid[tileIndex + 0].position = sf::Vector2f(tx, ty);
-				m_grid[tileIndex + 1].position = sf::Vector2f(tx + tilesize.x, ty);
-				m_grid[tileIndex + 2].position = sf::Vector2f(tx, ty + tilesize.y);
-				m_grid[tileIndex + 0].color = esrovar::biome_colors[noiseIDX];
-				m_grid[tileIndex + 1].color = esrovar::biome_colors[noiseIDX];
-				m_grid[tileIndex + 2].color = esrovar::biome_colors[noiseIDX];	
-				// Triangle 2
-				m_grid[tileIndex + 3].position = sf::Vector2f(tx + tilesize.x, ty);
-				m_grid[tileIndex + 4].position = sf::Vector2f(tx + tilesize.x, ty + tilesize.y);
-				m_grid[tileIndex + 5].position = sf::Vector2f(tx, ty + tilesize.y);
-				m_grid[tileIndex + 3].color = esrovar::biome_colors[noiseIDX];
-				m_grid[tileIndex + 4].color = esrovar::biome_colors[noiseIDX];
-				m_grid[tileIndex + 5].color = esrovar::biome_colors[noiseIDX];
-				
-				// Setting tile's type at XY
-				tileAt(x, y).type = static_cast<BlockType>(noiseIDX);
-			}
-		}		
-		// Updating chunk generated status		
-		m_isGenerated = true;
-	}
-
-	void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const {
-		target.draw(m_grid, states);
-	}
-
 	void WorldManager::f_initialize_world() {
 		
 		// Layers for map noise generation are initiated
@@ -331,7 +85,7 @@ namespace esroops {
 		// Initializing set to hold required chunk in that frame
 		if (!m_required_chunks.empty() && !m_active_chunks.contains({m_required_chunks.front()})) {
 			Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-			_chunk.generate(sf::Vector2f({ static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size) }), m_world_seed);
+			_chunk.generate(sf::Vector2f({ static_cast<float>(pixel_size), static_cast<float>(pixel_size) }), m_world_seed);
 			m_active_chunks.try_emplace({ m_required_chunks.front() }, _chunk);
 			m_required_chunks.pop_front();
 		}
@@ -355,7 +109,7 @@ namespace esroops {
 		// Function to calculate unrequired chunks outside player's radius
 		for (const auto& [coords, _chunk] : m_active_chunks) {
 			auto& [cx, cy] = coords;
-			if (std::abs(cx - m_playerchunk_X) > esrovar::CHUNK_RADIUS || std::abs(cy - m_playerchunk_Y) > esrovar::CHUNK_RADIUS) {
+			if (std::abs(cx - m_playerchunk_X) > CHUNK_RADIUS || std::abs(cy - m_playerchunk_Y) > CHUNK_RADIUS) {
 				m_unrequired_chunks.push_back({ cx, cy });	
 			}
 		}
@@ -374,7 +128,7 @@ namespace esroops {
 				// Init new Chunk
 				Chunk _chunk(firstChunk.first, firstChunk.second);
 				// Generate initialized chunk
-				_chunk.generate(sf::Vector2f( static_cast<float>(esrovar::pixel_size), static_cast<float>(esrovar::pixel_size)), m_world_seed);
+				_chunk.generate(sf::Vector2f( static_cast<float>(pixel_size), static_cast<float>(pixel_size)), m_world_seed);
 				// Add generated chunk to active chunks registry
 				m_active_chunks.try_emplace(firstChunk, std::move(_chunk));
 			}
@@ -406,23 +160,23 @@ namespace esroops {
 				sf::RectangleShape rectangle;
 				int targetX = static_cast<int>(m_playerchunk_X) + x;
 				int targetY = static_cast<int>(m_playerchunk_Y) + y;
-				rectangle.setSize(sf::Vector2f(static_cast<float>(esrovar::chunk_area), static_cast<float>(esrovar::chunk_area)));
+				rectangle.setSize(sf::Vector2f(static_cast<float>(chunk_area), static_cast<float>(chunk_area)));
 				rectangle.setFillColor(sf::Color::Transparent);
 				rectangle.setOutlineColor(sf::Color::Red);
 				rectangle.setOutlineThickness(1.0f);
-				rectangle.setPosition(sf::Vector2f(static_cast<float>(targetX * esrovar::chunk_area), static_cast<float>(targetY * esrovar::chunk_area)));
+				rectangle.setPosition(sf::Vector2f(static_cast<float>(targetX * chunk_area), static_cast<float>(targetY * chunk_area)));
 				window.draw(rectangle);
 			}			
 		}
 	}
 
 	std::string WorldManager::getTileType(const std::pair<float, float>& playerXY) const {
-		
+
 		// Getting chunk coordinates from player coordinates
-		auto [chunkX, chunkY] = esrofn::getChunkXY(playerXY);
-		
+		auto [chunkX, chunkY] = getChunkXY(playerXY);
+
 		// Getting player local chunk coordinates
-		auto [playerchunkX, playerchunkY] = esrofn::getPlayerChunkXY(playerXY);
+		auto [playerchunkX, playerchunkY] = getPlayerChunkXY(playerXY);
 		
 		// Checking active chunks existance and fetching memory address
 		auto it = m_active_chunks.find({ chunkX, chunkY });
@@ -446,14 +200,14 @@ namespace esroops {
 	}
 
 	void WorldManager::initElevationLayer(uint32_t& seed) {
-		esrovar::elevationNoise.SetSeed(seed);
-		esrovar::elevationNoise.SetFractalOctaves(4);
-		esrovar::elevationNoise.SetFractalGain(0.5f);
-		esrovar::elevationNoise.SetFrequency(0.015f);
-		esrovar::elevationNoise.SetDomainWarpAmp(10.0f);
-		esrovar::elevationNoise.SetFractalLacunarity(2.0f);
-		esrovar::elevationNoise.SetFractalType(FastNoiseLite::FractalType::FractalType_None);
-		esrovar::elevationNoise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2S);
-		esrovar::elevationNoise.SetDomainWarpType(FastNoiseLite::DomainWarpType::DomainWarpType_OpenSimplex2);
+		elevationNoise.SetSeed(seed);
+		elevationNoise.SetFractalOctaves(4);
+		elevationNoise.SetFractalGain(0.5f);
+		elevationNoise.SetFrequency(0.015f);
+		elevationNoise.SetDomainWarpAmp(10.0f);
+		elevationNoise.SetFractalLacunarity(2.0f);
+		elevationNoise.SetFractalType(FastNoiseLite::FractalType::FractalType_None);
+		elevationNoise.SetNoiseType(FastNoiseLite::NoiseType::NoiseType_OpenSimplex2S);
+		elevationNoise.SetDomainWarpType(FastNoiseLite::DomainWarpType::DomainWarpType_OpenSimplex2);
 	}
 } // namespace esroops ends
