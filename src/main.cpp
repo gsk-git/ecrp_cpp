@@ -35,30 +35,53 @@
 #include <utility>
 #include <cstdint>
 
-#ifndef CONFIG_HPP_LOG_MACRO
+#ifndef MAIN_CPP_LOG_MACRO
 #define CONFIG_HPP_LOG_MACRO
 
 #include <sstream>
 #include <iostream>
+#include <fstream>
+#include <chrono>
+
+// Helper function for formatted timestamp
+inline std::string GetTimestamp() {
+	auto now = std::chrono::system_clock::now();
+	auto time = std::chrono::system_clock::to_time_t(now);
+	char buffer[20];
+	std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&time));
+	return std::string(buffer);
+}
+
+// Helper function to write to log file
+inline void WriteToLogFile(const std::string& message) {
+	std::ofstream logFile("game_log.txt", std::ios::app);
+	if (logFile.is_open()) {
+		logFile << "[" << GetTimestamp() << "] " << message << "\n";
+		logFile.close();
+	}
+}
 
 #ifdef _WIN32
 #include <Windows.h>
 #include <tuple>
 #define LOG(x) do { \
     std::ostringstream _oss; _oss << (x); \
-    std::string _s = _oss.str(); _s.push_back('\n'); \
-    OutputDebugStringA(_s.c_str()); \
+    std::string _s = _oss.str(); \
+    OutputDebugStringA(("[" + GetTimestamp() + "] " + _s + "\n").c_str()); \
+    WriteToLogFile(_s); \
 } while (0)
 #else
 #define LOG(x) do { \
     std::ostringstream _oss; _oss << (x); \
-    std::cerr << _oss.str() << '\n'; \
+    std::string _s = _oss.str(); \
+    std::cerr << "[" << GetTimestamp() << "] " << _s << "\n"; \
+    WriteToLogFile(_s); \
 } while (0)
 #endif
 
 #endif
 
-const uint32_t magicNumber = 2135284562;
+const uint32_t magicNumber = 0x4F524553;
 nlohmann::json gamefile;
 
 // Loading game data from file
