@@ -36,12 +36,23 @@
 #include <cstdint>
 
 #ifndef MAIN_CPP_LOG_MACRO
-#define CONFIG_HPP_LOG_MACRO
+#define MAIN_CPP_LOG_MACRO
 
 #include <sstream>
 #include <iostream>
 #include <fstream>
 #include <chrono>
+// Helper function to ensure log directory exists
+inline bool EnsureLogDir() {
+	try {
+		std::filesystem::create_directories("res/logs");
+		return true;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Failed to create log directory: " << e.what() << std::endl;
+		return false;
+	}
+}
 
 // Helper function for formatted timestamp
 inline std::string GetTimestamp() {
@@ -54,7 +65,8 @@ inline std::string GetTimestamp() {
 
 // Helper function to write to log file
 inline void WriteToLogFile(const std::string& message) {
-	std::ofstream logFile("game_log.txt", std::ios::app);
+	EnsureLogDir();
+	std::ofstream logFile("res/logs/game_log.txt", std::ios::app);
 	if (logFile.is_open()) {
 		logFile << "[" << GetTimestamp() << "] " << message << "\n";
 		logFile.close();
@@ -338,11 +350,13 @@ static void StartGame() {
 	std::tuple<int, int> swapChunk = { 0, 0 };
 	sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
 	sf::RenderWindow gamewin(desktop, "ESRO™ v0.1.0", sf::Style::None);
+	LOG("Initializing Game vars and seed");
 	
 	// Loading Assets, fonts and gameData
 	LoadSpriteSheetsnew();
 	LoadFonts();
 	loadgame(gamefile);
+	LOG("Initializing Sprite, fonts and gamefile");
 	
 	// Initializing game objects
 	sf::View view;
@@ -365,7 +379,8 @@ static void StartGame() {
 	esroops::HudText fpsrate(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 7 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText gametime(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 8 }, sf::Color::White, sf::Text::Regular, 18);
 	esroops::HudText tiletype(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 9 }, sf::Color::White, sf::Text::Regular, 18);
-	
+	LOG("Initializing Game world, player and HUD");
+
 	// Setting world seed and player position
 	world.m_world_seed = dist(rng);
 	player.setPosition({ PLAYER_POSITION.first, PLAYER_POSITION.second });
@@ -376,12 +391,14 @@ static void StartGame() {
 	//Init View
 	sf::Vector2f viewArea = {esrovar::SCRWDT, esrovar::SCRHGT};
 	view.setSize(viewArea);
-	view.setCenter(cameraCenter);	
+	view.setCenter(cameraCenter);
+	LOG("Initializing Game camera");
 	
 	// Setting VSync and mouse cursor
 	gamewin.setVerticalSyncEnabled(false);
 	gamewin.setMouseCursorVisible(false);
 	
+	LOG("Initializing Game loop");
 	//Main game loop
 	while (gamewin.isOpen()) {
 		
@@ -485,7 +502,8 @@ static void StartGame() {
 			gamewin.draw(gametime);
 		}
 		gamewin.display();
-	}	
+	}
+	LOG("Game Closed");
 }
 
 //  Game main function
