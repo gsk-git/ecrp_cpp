@@ -35,6 +35,29 @@
 #include <utility>
 #include <cstdint>
 
+#ifndef CONFIG_HPP_LOG_MACRO
+#define CONFIG_HPP_LOG_MACRO
+
+#include <sstream>
+#include <iostream>
+
+#ifdef _WIN32
+#include <Windows.h>
+#include <tuple>
+#define LOG(x) do { \
+    std::ostringstream _oss; _oss << (x); \
+    std::string _s = _oss.str(); _s.push_back('\n'); \
+    OutputDebugStringA(_s.c_str()); \
+} while (0)
+#else
+#define LOG(x) do { \
+    std::ostringstream _oss; _oss << (x); \
+    std::cerr << _oss.str() << '\n'; \
+} while (0)
+#endif
+
+#endif
+
 const uint32_t magicNumber = 2135284562;
 nlohmann::json gamefile;
 
@@ -244,6 +267,23 @@ static inline void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& secon
 	return static_cast<uint32_t>(t & 0xFFFFFFFFu);
 }
 
+// Loads all player sprite sheets 
+bool LoadSpriteSheetsnew() {
+	// Loading all player textures
+	for (std::size_t i = 0; i < StateCount; ++i) {
+		// Convert string_view ? std::string for SFML
+		std::string path{ kTexturePaths[i] };
+		if (!kTextures[i].loadFromFile(path)) {
+			std::cout << ("Failed to load texture: " + path);
+			return false;
+		}
+		// set smoothing (or disable) on success if desired
+		kTextures[i].setSmooth(false);
+	}
+	return true;
+}
+
+// Loads the main font for the game
 bool LoadFonts() {
 	if (!esrovar::mainfont.openFromFile("res/fonts/Roboto.ttf")) {
 		LOG("Font not found or path is incorrect");
@@ -275,11 +315,9 @@ static void StartGame() {
 	sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
 	sf::RenderWindow gamewin(desktop, "ESRO™ v0.1.0", sf::Style::None);
 	
-	// Loading Assets
+	// Loading Assets, fonts and gameData
 	LoadSpriteSheetsnew();
 	LoadFonts();
-	
-	// loading gamedata
 	loadgame(gamefile);
 	
 	// Initializing game objects

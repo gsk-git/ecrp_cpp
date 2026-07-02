@@ -18,29 +18,6 @@
 #include <SFML/Graphics/Rect.hpp>
 #include "chunkManager.hpp"
 
-#ifndef CONFIG_HPP_LOG_MACRO
-#define CONFIG_HPP_LOG_MACRO
-
-#include <sstream>
-#include <iostream>
-
-#ifdef _WIN32
-#include <Windows.h>
-#include <tuple>
-#define LOG(x) do { \
-    std::ostringstream _oss; _oss << (x); \
-    std::string _s = _oss.str(); _s.push_back('\n'); \
-    OutputDebugStringA(_s.c_str()); \
-} while (0)
-#else
-#define LOG(x) do { \
-    std::ostringstream _oss; _oss << (x); \
-    std::cerr << _oss.str() << '\n'; \
-} while (0)
-#endif
-
-#endif
-
 // Global variables
 namespace esrovar {    
         
@@ -84,16 +61,6 @@ namespace esrovar {
     extern float globaldelta;
     extern std::pair<float, float> PLAYER_POSITION;
 }// namespace esrovar ends
-
-// Global functions
-namespace esrofn {
-
-    [[maybe_unused]] static void initTempHumLayer();
-
-    [[maybe_unused]] static void initBiomeLayer();
-
-    [[maybe_unused]] static void initRiverLayer();
-}
 
 // Global objects and classes
 namespace esroops {

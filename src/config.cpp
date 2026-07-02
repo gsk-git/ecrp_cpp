@@ -42,22 +42,6 @@ namespace esrovar {
 	std::ranges::iota_view<int, int> centerPOS = std::views::iota(-CHUNK_RADIUS, CHUNK_RADIUS + 1);
 } // namespace esrovar ends
 
-// Global functions
-namespace esrofn {
-
-	[[maybe_unused]] static void initTempHumLayer() {
-
-	}
-
-	[[maybe_unused]] static void initBiomeLayer() {
-
-	}
-
-	[[maybe_unused]] static void initRiverLayer() {
-
-	}
-} // namespace esrofn ends
-
 // Global objects and classes
 namespace esroops {
 

@@ -24,21 +24,6 @@ int frame_count = 0;
 std::pair<float, float> PLAYER_POSITION = { 0.0f, 0.0f };
 std::array<sf::Texture, StateCount> kTextures;
 
-bool LoadSpriteSheetsnew() {
-	// Loading all player textures
-	for (std::size_t i = 0; i < StateCount; ++i) {
-		// Convert string_view → std::string for SFML
-		std::string path{ kTexturePaths[i] };
-		if (!kTextures[i].loadFromFile(path)) {
-			std::cout<<("Failed to load texture: " + path);
-			return false;
-		}
-		// set smoothing (or disable) on success if desired
-		kTextures[i].setSmooth(false);
-	}
-	return true;
-}
-
 Player::Player() {
 	// Initializing member variables
 	m_IsMoving = false;

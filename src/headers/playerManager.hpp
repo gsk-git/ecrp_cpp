@@ -12,30 +12,6 @@
 #include <utility>
 #include <array>
 
-// Preprocessor to handle LOGS only on DEBUG
-#ifndef PLAYERMANAGER_HPP_LOG_MACRO
-#define PLAYERMANAGER_HPP_LOG_MACRO
-
-#include <sstream>
-#include <iostream>
-
-#ifdef _WIN32
-#include <Windows.h>
-#include <tuple>
-#define LOG(x) do { \
-    std::ostringstream _oss; _oss << (x); \
-    std::string _s = _oss.str(); _s.push_back('\n'); \
-    OutputDebugStringA(_s.c_str()); \
-} while (0)
-#else
-#define LOG(x) do { \
-    std::ostringstream _oss; _oss << (x); \
-    std::cerr << _oss.str() << '\n'; \
-} while (0)
-#endif
-
-#endif
-
 // Compile-time constants
 constexpr int PLAYER_SPRITE = 64;
 enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
@@ -71,8 +47,6 @@ extern int jumpboost;
 extern std::pair<float, float> PLAYER_POSITION;
 
 // Player functions
-bool LoadSpriteSheetsnew();
-
 inline std::tuple<int, int> getPlayerXY(std::pair<float, float> playerxy) {
 	// Getting floored player coordinates
 	float x = std::floor(playerxy.first);
@@ -80,8 +54,6 @@ inline std::tuple<int, int> getPlayerXY(std::pair<float, float> playerxy) {
 
 	return std::make_tuple(static_cast<int>(x), static_cast<int>(y));
 }
-
-std::tuple<int, int> getPlayerChunkXY(std::pair<float, float>);
 
 // Player & Utility Classes
 class Player : public sf::Drawable, public sf::Transformable, public sf::Texture {
