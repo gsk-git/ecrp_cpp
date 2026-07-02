@@ -82,10 +82,11 @@ inline void WriteToLogFile(const std::string& message) {
 #endif
 
 const uint32_t magicNumber = 0x4F524553;
+uint32_t gameseed;
 nlohmann::json gamefile;
 
 // Loading game data from file
-static void loadgame(nlohmann::json& lfile) {	
+static inline void loadgame(nlohmann::json& lfile) {	
 	
 	std::ifstream loadfile(playerFileURI + saveFile, std::ios::binary);
 	if (loadfile) {
@@ -105,7 +106,7 @@ static void loadgame(nlohmann::json& lfile) {
 }
 
 // Saving game data
-static void savegame(nlohmann::json& savefile) {
+static inline void savegame(nlohmann::json& savefile) {
 	
 	// User file directory
 	std::filesystem::create_directories(playerFileURI);	
@@ -223,7 +224,7 @@ static inline void ProcessWindowEvents(Player& player, sf::RenderWindow& gamewin
 static void RunSplash() {
 
 	// Create a borderless window
-	sf::RenderWindow splash(sf::VideoMode({ 800, 600 }), "Floating Character", sf::Style::None);
+	sf::RenderWindow splash(sf::VideoMode({ 800, 600 }), "ESRO_TM", sf::Style::None);
 	HWND hwnd = splash.getNativeHandle();
 	// Set window styles for transparency and click-through
 	SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
@@ -249,7 +250,7 @@ static void RunSplash() {
 	while (splash.isOpen()) {
 		// Check if 10 seconds passed
 		auto now = std::chrono::steady_clock::now();
-		if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 20) {
+		if (std::chrono::duration_cast<std::chrono::seconds>(now - start).count() >= 5) {
 			splash.close();
 		}
 		splash.clear(sf::Color(0,0,0,0));
@@ -277,7 +278,7 @@ static inline void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& secon
 }
 
 // Generates a random world seed
-[[nodiscard]] static inline uint32_t GenerateWorldSeed() noexcept {
+static inline uint32_t GenerateWorldSeed() noexcept {
 	
 	uint64_t t = static_cast<uint64_t>(
 	std::chrono::high_resolution_clock::now().time_since_epoch().count());
@@ -291,7 +292,7 @@ static inline void GameClock(sf::Clock& gameclock, sf::Time& elapsed, int& secon
 }
 
 // Loads all player sprite sheets 
-bool LoadSpriteSheetsnew() {
+static bool LoadSpriteSheetsnew() {
 	// Loading all player textures
 	for (std::size_t i = 0; i < StateCount; ++i) {
 		// Convert string_view ? std::string for SFML
@@ -307,7 +308,7 @@ bool LoadSpriteSheetsnew() {
 }
 
 // Loads the main font for the game
-bool LoadFonts() {
+static bool LoadFonts() {
 	if (!esrovar::mainfont.openFromFile("res/fonts/Roboto.ttf")) {
 		LOG("Font not found or path is incorrect");
 		return false;
@@ -327,7 +328,7 @@ static void StartGame() {
 	float dt = 0.0f;
 	float playerX;
 	float playerY;
-	const uint32_t gameseed = 23091995;
+	gameseed = GenerateWorldSeed();
 	std::string tileType;
 	std::mt19937 rng(gameseed);
 	std::uniform_int_distribution dist(0, 5);
