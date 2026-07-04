@@ -1,0 +1,8 @@
+# ninja log v7
+30	50	8046703315405499	clean	4657a475079c8ec1
+48	113	8046703316190070	CMakeFiles/ESRO.dir/src/worldManager.cpp.obj	20198bded196f5b2
+42	2317	8046703316130065	CMakeFiles/ESRO.dir/src/playerManager.cpp.obj	3b9a4b36cc247b56
+24	2985	8046703315954956	CMakeFiles/ESRO.dir/src/chunkManager.cpp.obj	f28356ab1bac29bd
+30	3546	8046703316009993	CMakeFiles/ESRO.dir/src/config.cpp.obj	243fdbcb3eb96d9d
+36	4676	8046703316070055	CMakeFiles/ESRO.dir/src/main.cpp.obj	1ed7ca593921e2df
+4676	5318	8046703362467679	bin/ESRO.exe	28364713506ed01

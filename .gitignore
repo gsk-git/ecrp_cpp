@@ -70,10 +70,6 @@ installed/
 # Build Artifacts / Binaries
 # ================================
 */game
-/Debug/
-/Release/
-/out/
-/bin/
 
 # Compiled object files, libraries, executables
 *.o
@@ -135,19 +131,6 @@ coverage/
 *.profdata
 
 # For CMake (if any)
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-
-# Build folders
-/build/
-/out/
-/bin/
-/lib/
-/dist/
-/CMakeFiles/
-/CMakeCache.txt
 
 # Visual Studio
 /.vs/

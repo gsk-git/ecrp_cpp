@@ -35,6 +35,7 @@
 #include <utility>
 #include <cstdint>
 
+// Logging macro definition
 #ifndef MAIN_CPP_LOG_MACRO
 #define MAIN_CPP_LOG_MACRO
 
@@ -93,6 +94,7 @@ inline void WriteToLogFile(const std::string& message) {
 
 #endif
 
+// Defining magic number for save file validation
 const uint32_t magicNumber = 0x4F524553;
 uint32_t gameseed;
 nlohmann::json gamefile;
