@@ -98,6 +98,12 @@ inline void WriteToLogFile(const std::string& message) {
 const uint32_t magicNumber = 0x4F524553;
 uint32_t gameseed;
 nlohmann::json gamefile;
+sf::Font mainfont;
+float SCRWDT = 1920.f;
+float SCRHGT = 1080.f;
+unsigned int FPS = 60u;
+bool ChunkBorder = false;
+bool DebugMode = false;
 
 // Loading game data from file
 static inline void loadgame(nlohmann::json& lfile) {	
@@ -215,26 +221,26 @@ static inline void ProcessWindowEvents(Player& player, sf::RenderWindow& gamewin
 				player.m_IsJumping = true;
 			}
 			if (keyReleased->scancode == sf::Keyboard::Scan::B) {
-				if (!esrovar::ChunkBorder)
-					esrovar::ChunkBorder = true;
+				if (!ChunkBorder)
+					ChunkBorder = true;
 				else
-					esrovar::ChunkBorder = false;
+					ChunkBorder = false;
 			}
 			if (keyReleased->scancode == sf::Keyboard::Scan::V) {
-				if (!esrovar::DebugMode)
-					esrovar::DebugMode = true;
+				if (!DebugMode)
+					DebugMode = true;
 				else
-					esrovar::DebugMode = false;
+					DebugMode = false;
 			}
 			if (keyReleased->scancode == sf::Keyboard::Scan::M) {
-				if (!esrovar::Save)
-					esrovar::Save = true;
+				if (!Save)
+					Save = true;
 			}
 		}
 	}
 }
 
-// Generates the suik bmnhplash screen
+// Generates the splash screen
 static void RunSplash() {
 
 	// Create a borderless window
@@ -323,7 +329,7 @@ static bool LoadSpriteSheetsnew() {
 
 // Loads the main font for the game
 static bool LoadFonts() {
-	if (!esrovar::mainfont.openFromFile("res/fonts/Roboto.ttf")) {
+	if (!mainfont.openFromFile("res/fonts/Roboto.ttf")) {
 		LOG("Font not found or path is incorrect");
 		return false;
 	}
@@ -369,18 +375,17 @@ static void StartGame() {
 	float worlUpdateClock = 0.0f;
 	sf::Time elapsed = sf::Time::Zero;
 	Player player;
-	// WorldManager world;
-	esroops::WorldManager world(PLAYER_POSITION, gameseed);
-	esroops::HudBox hudbox({ 350, 300 }, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
-	esroops::HudText playertext(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
-	esroops::HudText playerpos(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 2 }, sf::Color::White, sf::Text::Regular, 18);
-	esroops::HudText playerxy(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 3 }, sf::Color::White, sf::Text::Regular, 18);
-	esroops::HudText cchunkxy(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 4 }, sf::Color::White, sf::Text::Regular, 18);
-	esroops::HudText pchunkxy(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 5 }, sf::Color::White, sf::Text::Regular, 18);
-	esroops::HudText activechunks(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 6 }, sf::Color::White, sf::Text::Regular, 18);
-	esroops::HudText fpsrate(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 7 }, sf::Color::White, sf::Text::Regular, 18);
-	esroops::HudText gametime(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 8 }, sf::Color::White, sf::Text::Regular, 18);
-	esroops::HudText tiletype(esrovar::mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 9 }, sf::Color::White, sf::Text::Regular, 18);
+	WorldManager world(PLAYER_POSITION, gameseed);
+	HudBox hudbox({ 350, 300 }, { 10.f, 10.f }, sf::Color(0, 0, 0, 200), sf::Color::White, 2.f);
+	HudText playertext(mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 1 }, sf::Color::White, sf::Text::Regular, 18);
+	HudText playerpos(mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 2 }, sf::Color::White, sf::Text::Regular, 18);
+	HudText playerxy(mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 3 }, sf::Color::White, sf::Text::Regular, 18);
+	HudText cchunkxy(mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 4 }, sf::Color::White, sf::Text::Regular, 18);
+	HudText pchunkxy(mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 5 }, sf::Color::White, sf::Text::Regular, 18);
+	HudText activechunks(mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 6 }, sf::Color::White, sf::Text::Regular, 18);
+	HudText fpsrate(mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 7 }, sf::Color::White, sf::Text::Regular, 18);
+	HudText gametime(mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 8 }, sf::Color::White, sf::Text::Regular, 18);
+	HudText tiletype(mainfont, { hudbox.getPosition().x + 10.f, 22.5f * 9 }, sf::Color::White, sf::Text::Regular, 18);
 	LOG("Initializing Game world, player and HUD");
 
 	// Setting world seed and player position
@@ -391,7 +396,7 @@ static void StartGame() {
 	sf::Vector2f cameraCenter = player.getPosition();	
 	
 	//Init View
-	sf::Vector2f viewArea = {esrovar::SCRWDT, esrovar::SCRHGT};
+	sf::Vector2f viewArea = {SCRWDT, SCRHGT};
 	view.setSize(viewArea);
 	view.setCenter(cameraCenter);
 	LOG("Initializing Game camera");
@@ -464,19 +469,19 @@ static void StartGame() {
 		view.setCenter(drawCenter);
 		
 		// Saving game data
-		if (esrovar::Save) {
+		if (Save) {
 			savegame(gamefile);
-			esrovar::Save = false;
+			Save = false;
 		}		
 		
 		// Initializating and generating world chunks, player, view and UI elements.
 		gamewin.clear();
 		gamewin.setView(view);
 		world.f_drawChunks(gamewin);
-		if (esrovar::ChunkBorder) world.ChunkBorders(gamewin);
+		if (ChunkBorder) world.ChunkBorders(gamewin);
 		gamewin.draw(player);
 		gamewin.setView(gamewin.getDefaultView());
-		if (esrovar::DebugMode) {
+		if (DebugMode) {
 			// Updating debug UI elements every 0.25 seconds
 			if(debugUIclock.getElapsedTime().asSeconds() >= 0.25f)
 			{
@@ -519,7 +524,7 @@ int main(int argCount, char* argVector[]) {
 		for (int i = 0; i < argCount; i++) {
 			// Checking for debug mode and no-splash flags in command line arguments
 			if (std::string(argVector[i]) == "--debug" || std::string(argVector[i]) == "-d") {
-				esrovar::DebugMode = true;
+				DebugMode = true;
 			}
 			// Checking for no-splash flag in command line arguments
 			else if (std::string(argVector[i]) == "--no-splash" || std::string(argVector[i]) == "-ns") {

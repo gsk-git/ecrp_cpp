@@ -1,96 +1,14 @@
 #pragma once
 
 // Including all necessary libraries
-#include <map>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Transformable.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <string>
-#include <utility>
-#include <deque>
-#include <SFML/Graphics/Rect.hpp>
-#include "chunkManager.hpp"
-
-// Global variables
-namespace esrovar {    
-        
-    // Compile-time constants
-    constexpr unsigned int SCRWDT = 1920u;
-    constexpr unsigned int SCRHGT = 1080u;
-    constexpr unsigned int FPS = 60u;
-    constexpr int PLAYER_SPRITE = 64;
-    enum class State : std::uint8_t { idle = 0, walk, slash, jump, sit, run, COUNT };
-    enum class Directions : std::uint8_t { up = 0, left, down, right, COUNT };
-    inline constexpr std::size_t StateCount = static_cast<std::size_t>(State::COUNT);
-    inline constexpr std::size_t DirectionCount = static_cast<std::size_t>(Directions::COUNT);
-    constexpr std::size_t to_index(State s) noexcept { return static_cast<std::size_t>(s);}
-    constexpr std::size_t to_index(Directions d) noexcept { return static_cast<std::size_t>(d); }
-    constexpr std::array<int, StateCount> kFrameCount = { 2, 9, 6, 5, 3, 8};
-    constexpr std::array<std::string_view, StateCount> kStateNames = { "idle", "walk", "slash", "jump", "sit", "run"};
-    constexpr std::array<std::string_view, StateCount> kTexturePaths = {
-        "res/player_sprite/idle.png",
-        "res/player_sprite/walk.png",
-        "res/player_sprite/slash.png",
-        "res/player_sprite/jump.png",
-        "res/player_sprite/sit.png",
-        "res/player_sprite/run.png" };
-	extern std::string playerFileURI;
-    extern std::string saveFile;
-	extern std::array<sf::Texture, StateCount> kTextures;
-	extern sf::Font mainfont;
-    extern bool ChunkBorder;
-    extern bool DebugMode;
-    extern bool Save;   
-    extern int frame_count;
-    extern int scale;
-    extern float player_size;
-    extern float timer;
-    extern float speed;  
-    extern float movedirx;
-    extern float movediry;
-    extern float boost;
-    extern float totalspeed;
-    extern int jumpboost;
-    extern float globaldelta;
-    extern std::pair<float, float> PLAYER_POSITION;
-}// namespace esrovar ends
-
-// Global objects and classes
-namespace esroops {
-
-    class WorldManager {
-        public:
-			// Member variables
-			WorldManager() = default;
-            WorldManager(std::pair<float, float>, uint32_t seed);
-            ~WorldManager() = default;
-            float m_playerchunk_X;
-            float m_playerchunk_Y;
-            int m_chunkGenerationLimit;
-            uint32_t m_world_seed;
-			unsigned int m_tileColor;
-            std::string getTileType(const std::pair<float, float>&) const;
-            std::map<std::pair<int, int>, Chunk> m_active_chunks;
-            std::deque<std::pair<int, int>> m_required_chunks;
-            std::deque<std::pair<int, int>> m_unrequired_chunks;
-            std::array<std::string, 10> tilevariation = {
-                "plains", "beach", "dirt", "ocean", "forest", "mountain", "swamp", "jungle", "frozenplain", "snow"
-			};			
-            // Member functions
-            void update(float dt);
-			void getRequiredChunks();
-            void f_drawChunks (sf::RenderWindow& window) const;
-            void ChunkBorders(sf::RenderWindow& window) const;
-            void f_initialize_world();
-			void initElevationLayer(uint32_t& seed);
-    };
 
     class HudBox : public sf::Drawable, public sf::Transformable {
         public:
@@ -143,4 +61,3 @@ namespace esroops {
             target.draw(textbox, states);
         }
     };
-}
