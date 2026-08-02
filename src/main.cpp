@@ -15,7 +15,7 @@
 #include "headers/worldManager.hpp"
 #include <Windows.h>
 #include <dwmapi.h>
-#include <Json/json.hpp>
+#include <../src/include/Json/json.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/View.hpp>

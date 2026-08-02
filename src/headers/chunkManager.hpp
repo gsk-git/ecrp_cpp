@@ -1,6 +1,6 @@
 #pragma once
 
-#include <FastNoise/include/FastNoise/FastNoiseLite.h>
+#include <../src/include/FastNoise/include/FastNoise/FastNoiseLite.h>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <cmath>
@@ -17,29 +17,6 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/System/Vector2.hpp>
-
-#ifndef CONFIG_HPP_LOG_MACRO
-#define CONFIG_HPP_LOG_MACRO
-
-#include <sstream>
-#include <iostream>
-
-#ifdef _WIN32
-#include <Windows.h>
-#include <tuple>
-#define LOG(x) do { \
-    std::ostringstream _oss; _oss << (x); \
-    std::string _s = _oss.str(); _s.push_back('\n'); \
-    OutputDebugStringA(_s.c_str()); \
-} while (0)
-#else
-#define LOG(x) do { \
-    std::ostringstream _oss; _oss << (x); \
-    std::cerr << _oss.str() << '\n'; \
-} while (0)
-#endif
-
-#endif
 
 constexpr int CHUNK_SIZE = 32;
 constexpr int CHUNK_RADIUS = 2;
@@ -173,7 +150,7 @@ inline void Chunk::generate(sf::Vector2f tilesize, uint32_t seed) {
 		for (int x = 0; x < CHUNK_SIZE; ++x) {
 
 			// tileIndex identifies where the tile will sit in this grid
-			tileIndex = (x + y * CHUNK_SIZE) * 6;
+			tileIndex = (static_cast<size_t>(x) + static_cast<size_t>(y) * CHUNK_SIZE) * 6;
 
 			// World Tile XY for noise logic
 			worldTileX = static_cast<float>(m_chunkX * CHUNK_SIZE + x);
@@ -234,7 +211,3 @@ inline void Chunk::generate(sf::Vector2f tilesize, uint32_t seed) {
 inline void Chunk::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(m_grid, states);
 }
-
-
-
-

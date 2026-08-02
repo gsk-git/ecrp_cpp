@@ -1,15 +1,6 @@
 # ninja log v7
-23	114	8039772233563016	CMakeFiles/ESRO.dir/src/chunkManager.cpp.obj	447e87388ffc1ae4
-56	143	8039772233901348	CMakeFiles/ESRO.dir/src/worldManager.cpp.obj	83c4da40eff2a55b
-47	3471	8039772233811343	CMakeFiles/ESRO.dir/src/playerManager.cpp.obj	dcfeeb5428ff98da
-31	5530	8039772233642821	CMakeFiles/ESRO.dir/src/config.cpp.obj	855e2fc24bee74bf
-34	5992	8041876374574660	CMakeFiles/ESRO.dir/src/main.cpp.obj	985e95b068b21b31
-5993	6492	8041876434149228	bin/ESRO.exe	bfc723298aa5fae5
-14	38	8039772232951110	clean	4657a475079c8ec1
-19	41	8046706789113507	clean	4657a475079c8ec1
-49	141	8046706789969689	CMakeFiles/ESRO.dir/src/worldManager.cpp.obj	83c4da40eff2a55b
-41	2865	8046706789879692	CMakeFiles/ESRO.dir/src/playerManager.cpp.obj	dcfeeb5428ff98da
-20	3749	8046706789674207	CMakeFiles/ESRO.dir/src/chunkManager.cpp.obj	447e87388ffc1ae4
-27	4919	8046706789744446	CMakeFiles/ESRO.dir/src/config.cpp.obj	855e2fc24bee74bf
-34	7519	8046706789809648	CMakeFiles/ESRO.dir/src/main.cpp.obj	985e95b068b21b31
-7519	27942	8046706864659260	bin/ESRO.exe	bfc723298aa5fae5
+51	6466	8073397979646091	CMakeFiles/ESRO.dir/src/playerManager.cpp.obj	ef84a7e0459f9f31
+20	7672	8073397979328037	CMakeFiles/ESRO.dir/src/chunkManager.cpp.obj	4ccdc36b97f7a766
+69	11223	8073397979807390	CMakeFiles/ESRO.dir/src/worldManager.cpp.obj	e4d733fdfd87735c
+34	18428	8073397979466893	CMakeFiles/ESRO.dir/src/main.cpp.obj	8242dd9419e8565f
+18430	20343	8073398163432188	bin/ESRO.exe	ffeecb0c455cebb3

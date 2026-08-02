@@ -2,14 +2,21 @@
 cmake_minimum_required(VERSION 3.20)
 project(ESRO VERSION 0.1 LANGUAGES CXX)
 
+# DEBUG: Print build type information
+message(STATUS "========== CMAKE BUILD TYPE DEBUG ==========")
+message(STATUS "CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+message(STATUS "CMAKE_CONFIGURATION_TYPES: ${CMAKE_CONFIGURATION_TYPES}")
+message(STATUS "CMAKE_GENERATOR: ${CMAKE_GENERATOR}")
+message(STATUS "==========================================")
+
 # Dev Options ---------------------------------------------------------------
 option(ENABLE_SANITIZERS "Build with ASan/UBSan (debug only)" OFF)
-option(BUILD_TESTS "Build unit tests (Catch2)" OFF)
+option(BUILD_TESTS "Build unit tests (Catch2)" ON)
 
 # -- Compiler settings ----------------------------------------------------
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Make multi-config generators consistent for outputs
@@ -19,9 +26,18 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
 # Enable warnings (tweak for your compiler)
 if (MSVC)
-    add_compile_options(/W4 /permissive-)
+    add_compile_options(/W4 /permissive- /MP)
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter)
+    add_compile_options(-Wall -Wextra -Wpedantic -Wno-unused-parameter -Wconversion -pedantic-errors)
+endif()
+
+# Apply optimization flags dynamically for Release builds
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    if(MSVC)
+        add_compile_options(/O3 /GL)
+    else()
+        add_compile_options(-O3 -flto)
+    endif()
 endif()
 
 # Optional sanitizers (only for non-MSVC)
@@ -67,20 +83,22 @@ endif()
 
 # -- Target ----------------------------------------------------------------
 # Release
-# add_executable(${PROJECT_NAME} WIN32 ${GAME_SOURCES})
+#add_executable(${PROJECT_NAME} WIN32 ${GAME_SOURCES})
 # Debug
-add_executable(${PROJECT_NAME} ${GAME_SOURCES} "src/worldManager.cpp" "src/chunkManager.cpp")
+add_executable(${PROJECT_NAME} ${GAME_SOURCES})
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         ${INCLUDE_DIR}
         ${SRC_DIR}
         ${CMAKE_SOURCE_DIR}/src/include
+        ${CMAKE_SOURCE_DIR}/src/headers
         ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/tests
 )
 
 # Define a macro for test builds so code can enable test-only accessors
-target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<BOOL:${BUILD_TESTS}>:BUILD_TESTS=1>)
+target_compile_definitions(${PROJECT_NAME} PRIVATE $<$<BOOL:${BUILD_TESTS}>:BUILD_TESTS=0>)
 
 # -- FastNoiseLite (header-only) -----------------------------------------
 # If you put FastNoise in src/include/FastNoise/FastNoiseLite.h nothing special needed.
@@ -96,7 +114,7 @@ set(_sfml_ok FALSE)
 # You can set SFML_STATIC_LIBRARIES to ON if you built static SFML libs.
 # e.g. -DSFML_STATIC_LIBRARIES=ON on command line or set in CMakeSettings.
 
-message(STATUS "DEBUG: SFML_DIR (before find_package) = ${SFML_DIR}")
+message(STATUS "SFML_DIR (before find_package) = ${SFML_DIR}")
 
 # Try SFML 3 style (capitalized components). This matches the SFMLConfig.cmake you shared.
 set(_sfml_ok FALSE)
@@ -185,9 +203,11 @@ endif()
 install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/res DESTINATION .) # installs res folder
 
-# -- Tests (optional) -----------------------------------------------------
+# -- Tests (Catch2) --------------------------------------------------------
 if (BUILD_TESTS)
+    enable_testing()
     include(FetchContent)
+
     FetchContent_Declare(
         catch2
         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
@@ -195,16 +215,37 @@ if (BUILD_TESTS)
     )
     FetchContent_MakeAvailable(catch2)
 
-    file(GLOB_RECURSE TEST_SOURCES ${SRC_DIR}/tests/*.cpp)
+    # FIX 1: Point directly to the root /tests folder
+    file(GLOB_RECURSE TEST_SOURCES "${CMAKE_SOURCE_DIR}/tests/*.cpp")
+
     if (TEST_SOURCES)
-        add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
-        target_include_directories(${PROJECT_NAME}_tests PRIVATE ${INCLUDE_DIR} ${SRC_DIR})
-        target_link_libraries(${PROJECT_NAME}_tests PRIVATE Catch2::Catch2WithMain)
-        # Link your game logic if tests depend on it
-        target_link_libraries(${PROJECT_NAME}_tests PRIVATE ${PROJECT_NAME})
-        add_test(NAME unit_tests COMMAND ${PROJECT_NAME}_tests)
+        message(STATUS "Found test sources: ${TEST_SOURCES}")
+
+        # Create the test executable target
+        add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES} ${GAME_SOURCES})
+
+        # Include directories for tests
+        target_include_directories(${PROJECT_NAME}_tests PRIVATE 
+            ${PROJECT_INCLUDE_DIR}
+            ${SRC_DIR}
+            ${CMAKE_SOURCE_DIR}/tests
+        )
+
+        # FIX 2: Link Catch2 v3 main test runner & your game sources/dependencies
+        target_link_libraries(${PROJECT_NAME}_tests PRIVATE 
+            Catch2::Catch2WithMain
+            ${_sfml_targets}  # Allows test cases to instantiate SFML objects
+        )
+
+        # Standard C++20 settings for test executable
+        target_compile_features(${PROJECT_NAME}_tests PRIVATE cxx_std_20)
+
+        # Include CTest integration
+        include(Catch)
+        catch_discover_tests(${PROJECT_NAME}_tests)
+
     else()
-        message(WARNING "BUILD_TESTS enabled but no test sources found in ${SRC_DIR}/tests")
+        message(WARNING "BUILD_TESTS is ON, but no .cpp files were found in ${CMAKE_SOURCE_DIR}/tests")
     endif()
 endif()
 
