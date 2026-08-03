@@ -35,6 +35,7 @@
 #include <utility>
 #include <cstdint>
 #include <dbghelp.h>
+#include <shellapi.h>
 #include "Version.h"
 
 // dgbhelp.h for stack trace generation in case of crashes
@@ -136,19 +137,28 @@ static void WriteCrashLog() {
 // Crash handler function
 static LONG WINAPI CustomCrashHandler(EXCEPTION_POINTERS* exceptionInfo) {
 	// 1. Save minidump (.dmp)
-	HANDLE hFile = CreateFileA("crash_report.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = CreateFileA("res/logs/crash_report.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile != INVALID_HANDLE_VALUE) {
 		MINIDUMP_EXCEPTION_INFORMATION miniDumpInfo;
 		miniDumpInfo.ThreadId = GetCurrentThreadId();
 		miniDumpInfo.ExceptionPointers = exceptionInfo;
 		miniDumpInfo.ClientPointers = TRUE;
 
-		// MiniDumpWithIndirectlyReferencedMemory captures slightly more useful memory details
+		// 1. Combine flags for a highly detailed, but reasonably sized dump
+		MINIDUMP_TYPE dumpType = static_cast<MINIDUMP_TYPE>(
+			MiniDumpWithIndirectlyReferencedMemory | // Gets memory near pointers on the stack
+			MiniDumpWithDataSegs |                   // Gets global/static variables
+			MiniDumpWithHandleData |                 // Gets OS handle information
+			MiniDumpWithUnloadedModules |
+			MiniDumpWithThreadInfo
+			);
+
+		// 2. Pass the custom type into the function
 		MiniDumpWriteDump(
 			GetCurrentProcess(),
 			GetCurrentProcessId(),
 			hFile,
-			MiniDumpNormal,
+			dumpType,                         // Use the balanced flags here
 			&miniDumpInfo,
 			NULL,
 			NULL
@@ -160,12 +170,19 @@ static LONG WINAPI CustomCrashHandler(EXCEPTION_POINTERS* exceptionInfo) {
 	WriteCrashLog();
 
 	// 3. Prompt user
-	MessageBoxA(NULL,
+	int msgboxID = MessageBoxA(NULL,
 		"The game encountered a fatal error.\n\n"
-		"Please send 'crash_report.dmp' and 'crash_info.txt' (or your game.log) to the developer.",
-		"Game Crash",
-		MB_OK | MB_ICONERROR
+		"Click OK to open the folder containing your crash reports, "
+		"then please send them to the developer.",
+		"Game Crashed",
+		MB_OKCANCEL | MB_ICONERROR | MB_TOPMOST | MB_SETFOREGROUND
 	);
+
+	// 4. Automate the file hunt
+	if (msgboxID == IDOK) {
+		// Opens File Explorer to your project's root/log folder
+		ShellExecuteA(NULL, "open", "res\\logs", NULL, NULL, SW_SHOWNORMAL);
+	}
 
 	return EXCEPTION_EXECUTE_HANDLER;
 }
