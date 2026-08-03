@@ -305,3 +305,5 @@ configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/headers/Version.h" 
     @ONLY
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

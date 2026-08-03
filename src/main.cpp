@@ -9,13 +9,13 @@
 #include <cstdlib>
 #include <filesystem>
 #include <optional>
-#include "headers/config.hpp"
-#include "headers/playerManager.hpp"
-#include "headers/chunkManager.hpp"
-#include "headers/worldManager.hpp"
+#include "config.hpp"
+#include "playerManager.hpp"
+#include "chunkManager.hpp"
+#include "worldManager.hpp"
 #include <Windows.h>
 #include <dwmapi.h>
-#include <../src/include/Json/json.hpp>
+#include <Json/json.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -35,9 +35,9 @@
 #include <utility>
 #include <cstdint>
 #include <dbghelp.h>
-#include "headers/Version.h"
+#include "Version.h"
 
-// stack trace generation in case of crashes
+// dgbhelp.h for stack trace generation in case of crashes
 #pragma comment(lib, "dbghelp.lib")
 
 // Logging macro definition
@@ -110,9 +110,11 @@ unsigned int FPS = 60u;
 bool ChunkBorder = false;
 bool DebugMode = false;
 bool SPLASH_FLAG = false;
+volatile int* crashVar = nullptr;
 
 // Function to handle crashes and generate minidumps
 static void WriteCrashLog() {
+	std::filesystem::create_directories("res/logs");
 	std::ofstream log("res/logs/crash_info.txt");
 	if (!log.is_open()) return;
 
@@ -402,6 +404,7 @@ static bool LoadFonts() {
 // Starts the game
 static void StartGame() {
 	
+	*crashVar = 49;
 	// Initializing game variables
 	int fps = 0;
 	int frames = 0;

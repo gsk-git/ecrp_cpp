@@ -1,0 +1,4 @@
+=== GAME CRASH REPORT ===
+App Version: v0.1.0-alpha-14-g5b2bae0-dirty
+Platform: Windows
+=========================
