@@ -11,7 +11,7 @@ message(STATUS "==========================================")
 
 # Dev Options ---------------------------------------------------------------
 option(ENABLE_SANITIZERS "Build with ASan/UBSan (debug only)" OFF)
-option(BUILD_TESTS "Build unit tests (Catch2)" ON)
+option(BUILD_TESTS "Build unit tests (Catch2)" OFF)
 
 # -- Compiler settings ----------------------------------------------------
 set(CMAKE_CXX_STANDARD 20)
@@ -66,9 +66,8 @@ list(FILTER ALL_CPP_REL EXCLUDE REGEX ".*/tests/.*")
 list(FILTER ALL_CPP_REL EXCLUDE REGEX ".*/examples/.*")
 list(FILTER ALL_CPP_REL EXCLUDE REGEX ".*/platform/vulkan/.*")
 list(FILTER ALL_CPP_REL EXCLUDE REGEX ".*/network/.*")
-# Explicitly exclude Windows Recycle Bin artifacts (defensive)
 list(FILTER ALL_CPP_REL EXCLUDE REGEX ".*/\\$Recycle\\.Bin/.*")
-list(FILTER ALL_CPP_REL EXCLUDE REGEX ".*/\\$.*")  # any $-prefixed filename
+list(FILTER ALL_CPP_REL EXCLUDE REGEX ".*/\\$.*") # any $-prefixed filename
 
 # Build an absolute list of source files
 set(GAME_SOURCES "")
@@ -81,11 +80,9 @@ if (NOT GAME_SOURCES)
     message(FATAL_ERROR "No game sources found under ${SRC_DIR}. Check your src/ layout and the exclude filters.")
 endif()
 
-# -- Target ----------------------------------------------------------------
-# Release
-#add_executable(${PROJECT_NAME} WIN32 ${GAME_SOURCES})
-# Debug
+# Target Release & Debug builds
 add_executable(${PROJECT_NAME} ${GAME_SOURCES})
+set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
@@ -286,3 +283,25 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-unused-parameter)
 endif()
 
+# Get the latest Git tag or commit hash
+execute_process(
+    COMMAND git describe --tags --always --dirty
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    OUTPUT_VARIABLE GIT_VERSION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+)
+
+# Fallback if Git is not installed or it's not a Git repo
+if(NOT GIT_VERSION) 
+    set(GIT_VERSION "v0.0.0-unknown")
+endif()
+
+message(STATUS "App Version from Git: ${GIT_VERSION}")
+
+# Generate Version.h in the build directory
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/headers/Version.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/headers/Version.h" 
+    @ONLY
+)

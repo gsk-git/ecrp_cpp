@@ -1,5 +1,0 @@
-if(EXISTS "C:/Users/Sevarkodiyon/Documents/ecrp_cpp/out/build/x64-Debug/ESRO_tests_tests-b12d07c.cmake")
-  include("C:/Users/Sevarkodiyon/Documents/ecrp_cpp/out/build/x64-Debug/ESRO_tests_tests-b12d07c.cmake")
-else()
-  add_test(ESRO_tests_NOT_BUILT-b12d07c ESRO_tests_NOT_BUILT-b12d07c)
-endif()

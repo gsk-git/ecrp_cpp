@@ -34,6 +34,11 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <utility>
 #include <cstdint>
+#include <dbghelp.h>
+#include "headers/Version.h"
+
+// stack trace generation in case of crashes
+#pragma comment(lib, "dbghelp.lib")
 
 // Logging macro definition
 #ifndef MAIN_CPP_LOG_MACRO
@@ -104,6 +109,64 @@ float SCRHGT = 1080.f;
 unsigned int FPS = 60u;
 bool ChunkBorder = false;
 bool DebugMode = false;
+bool SPLASH_FLAG = false;
+
+// Function to handle crashes and generate minidumps
+static void WriteCrashLog() {
+	std::ofstream log("res/logs/crash_info.txt");
+	if (!log.is_open()) return;
+
+	log << "=== GAME CRASH REPORT ===" << std::endl;
+	log << "App Version: " << APP_VERSION << std::endl;
+
+	// Get basic OS information
+	OSVERSIONINFOEX osvi;
+	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
+	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	log << "Platform: Windows" << std::endl;
+
+	// You can write additional custom info here (e.g., current game state, active map)
+	log << "=========================" << std::endl;
+	log.close();
+}
+
+// Crash handler function
+static LONG WINAPI CustomCrashHandler(EXCEPTION_POINTERS* exceptionInfo) {
+	// 1. Save minidump (.dmp)
+	HANDLE hFile = CreateFileA("crash_report.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile != INVALID_HANDLE_VALUE) {
+		MINIDUMP_EXCEPTION_INFORMATION miniDumpInfo;
+		miniDumpInfo.ThreadId = GetCurrentThreadId();
+		miniDumpInfo.ExceptionPointers = exceptionInfo;
+		miniDumpInfo.ClientPointers = TRUE;
+
+		// MiniDumpWithIndirectlyReferencedMemory captures slightly more useful memory details
+		MiniDumpWriteDump(
+			GetCurrentProcess(),
+			GetCurrentProcessId(),
+			hFile,
+			MiniDumpNormal,
+			&miniDumpInfo,
+			NULL,
+			NULL
+		);
+		CloseHandle(hFile);
+	}
+
+	// 2. Generate custom metadata log (App Version, system details, etc.)
+	WriteCrashLog();
+
+	// 3. Prompt user
+	MessageBoxA(NULL,
+		"The game encountered a fatal error.\n\n"
+		"Please send 'crash_report.dmp' and 'crash_info.txt' (or your game.log) to the developer.",
+		"Game Crash",
+		MB_OK | MB_ICONERROR
+	);
+
+	return EXCEPTION_EXECUTE_HANDLER;
+}
 
 // Loading game data from file
 static inline void loadgame(nlohmann::json& lfile) {	
@@ -515,8 +578,8 @@ static void StartGame() {
 
 //  Game main function
 int main(int argCount, char* argVector[]) {
-
-	bool SPLASH_FLAG = false;
+	
+	SetUnhandledExceptionFilter(CustomCrashHandler);
 	
 	// Handling command line arguments
 	if (argCount > 1) {

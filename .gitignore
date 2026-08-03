@@ -163,3 +163,5 @@ Thumbs.db
 /Global settings
 catch2-src
 _deps/
+.ninja_log
+Version.h.in
