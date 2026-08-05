@@ -82,7 +82,7 @@ endif()
 
 # Target Release & Debug builds
 add_executable(${PROJECT_NAME} ${GAME_SOURCES})
-set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
+set_target_properties(${PROJECT_NAME} PROPERTIES $<CONFIG:Release> WIN32)
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE

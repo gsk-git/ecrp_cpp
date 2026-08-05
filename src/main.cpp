@@ -111,7 +111,6 @@ unsigned int FPS = 60u;
 bool ChunkBorder = false;
 bool DebugMode = false;
 bool SPLASH_FLAG = false;
-volatile int* crashVar = nullptr;
 
 // Function to handle crashes and generate minidumps
 static void WriteCrashLog() {
@@ -136,7 +135,7 @@ static void WriteCrashLog() {
 
 // Crash handler function
 static LONG WINAPI CustomCrashHandler(EXCEPTION_POINTERS* exceptionInfo) {
-	// 1. Save minidump (.dmp)
+	// 1. Save dump (.dmp)
 	HANDLE hFile = CreateFileA("res/logs/crash_report.dmp", GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile != INVALID_HANDLE_VALUE) {
 		MINIDUMP_EXCEPTION_INFORMATION miniDumpInfo;
@@ -158,7 +157,7 @@ static LONG WINAPI CustomCrashHandler(EXCEPTION_POINTERS* exceptionInfo) {
 			GetCurrentProcess(),
 			GetCurrentProcessId(),
 			hFile,
-			dumpType,                         // Use the balanced flags here
+			dumpType,
 			&miniDumpInfo,
 			NULL,
 			NULL
@@ -178,9 +177,8 @@ static LONG WINAPI CustomCrashHandler(EXCEPTION_POINTERS* exceptionInfo) {
 		MB_OKCANCEL | MB_ICONERROR | MB_TOPMOST | MB_SETFOREGROUND
 	);
 
-	// 4. Automate the file hunt
+	// 4. Open file explorer to the crash report directory if user clicks OK
 	if (msgboxID == IDOK) {
-		// Opens File Explorer to your project's root/log folder
 		ShellExecuteA(NULL, "open", "res\\logs", NULL, NULL, SW_SHOWNORMAL);
 	}
 
@@ -326,7 +324,7 @@ static inline void ProcessWindowEvents(Player& player, sf::RenderWindow& gamewin
 static void RunSplash() {
 
 	// Create a borderless window
-	sf::RenderWindow splash(sf::VideoMode({ 800, 600 }), "ESRO_TM", sf::Style::None);
+	sf::RenderWindow splash(sf::VideoMode({ 800, 447 }), "ESRO_TM", sf::Style::None);
 	HWND hwnd = splash.getNativeHandle();
 	// Set window styles for transparency and click-through
 	SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED | WS_EX_TRANSPARENT);
@@ -341,7 +339,7 @@ static void RunSplash() {
 		LOG("Splash Logo not found or path is incorrect");
 	// Creating sprite for the logo
 	sf::Sprite logoSprite(logoTexture);
-	logoSprite.setScale(sf::Vector2f(512.f / static_cast<float>(logoTexture.getSize().x), 512.f / static_cast<float>(logoTexture.getSize().y)));
+	logoSprite.setScale(sf::Vector2f(800 / static_cast<float>(logoTexture.getSize().x), 447 / static_cast<float>(logoTexture.getSize().y)));
 	// Set the origin to the center of the logo
 	auto bounds = logoSprite.getLocalBounds();
 	logoSprite.setOrigin(sf::Vector2f(bounds.size.x * 0.5f, bounds.size.y * 0.5f));
@@ -421,7 +419,6 @@ static bool LoadFonts() {
 // Starts the game
 static void StartGame() {
 	
-	*crashVar = 49;
 	// Initializing game variables
 	int fps = 0;
 	int frames = 0;
@@ -599,6 +596,7 @@ static void StartGame() {
 //  Game main function
 int main(int argCount, char* argVector[]) {
 	
+	// Handling unhandled exceptions or crashes and generates .dmp and .log files for debugging purposes
 	SetUnhandledExceptionFilter(CustomCrashHandler);
 	
 	// Handling command line arguments

@@ -1,0 +1,78 @@
+[2026-08-03 23:05:51] Initializing Game vars and seed
+[2026-08-03 23:05:51] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:05:51] Initializing Game world, player and HUD
+[2026-08-03 23:05:51] Initializing Game camera
+[2026-08-03 23:05:51] Initializing Game loop
+[2026-08-03 23:05:58] Game Closed
+[2026-08-03 23:09:24] Initializing Game vars and seed
+[2026-08-03 23:09:24] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:09:24] Initializing Game world, player and HUD
+[2026-08-03 23:09:24] Initializing Game camera
+[2026-08-03 23:09:24] Initializing Game loop
+[2026-08-03 23:09:29] Game Closed
+[2026-08-03 23:11:30] Initializing Game vars and seed
+[2026-08-03 23:11:30] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:11:30] Initializing Game world, player and HUD
+[2026-08-03 23:11:30] Initializing Game camera
+[2026-08-03 23:11:30] Initializing Game loop
+[2026-08-03 23:11:33] Game Closed
+[2026-08-03 23:12:33] Initializing Game vars and seed
+[2026-08-03 23:12:33] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:12:33] Initializing Game world, player and HUD
+[2026-08-03 23:12:33] Initializing Game camera
+[2026-08-03 23:12:33] Initializing Game loop
+[2026-08-03 23:12:35] Game Closed
+[2026-08-03 23:24:37] Initializing Game vars and seed
+[2026-08-03 23:24:37] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:24:37] Initializing Game world, player and HUD
+[2026-08-03 23:24:37] Initializing Game camera
+[2026-08-03 23:24:37] Initializing Game loop
+[2026-08-03 23:24:39] Game Closed
+[2026-08-03 23:28:16] Initializing Game vars and seed
+[2026-08-03 23:28:16] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:28:16] Initializing Game world, player and HUD
+[2026-08-03 23:28:16] Initializing Game camera
+[2026-08-03 23:28:16] Initializing Game loop
+[2026-08-03 23:28:17] Game Closed
+[2026-08-03 23:40:27] Initializing Game vars and seed
+[2026-08-03 23:40:27] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:40:27] Initializing Game world, player and HUD
+[2026-08-03 23:40:27] Initializing Game camera
+[2026-08-03 23:40:27] Initializing Game loop
+[2026-08-03 23:40:38] Game Closed
+[2026-08-03 23:43:38] Initializing Game vars and seed
+[2026-08-03 23:43:38] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:43:38] Initializing Game world, player and HUD
+[2026-08-03 23:43:38] Initializing Game camera
+[2026-08-03 23:43:38] Initializing Game loop
+[2026-08-03 23:43:41] Game Closed
+[2026-08-03 23:44:16] Initializing Game vars and seed
+[2026-08-03 23:44:16] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:44:16] Initializing Game world, player and HUD
+[2026-08-03 23:44:16] Initializing Game camera
+[2026-08-03 23:44:16] Initializing Game loop
+[2026-08-03 23:44:17] Game Closed
+[2026-08-03 23:46:01] Initializing Game vars and seed
+[2026-08-03 23:46:01] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:46:01] Initializing Game world, player and HUD
+[2026-08-03 23:46:01] Initializing Game camera
+[2026-08-03 23:46:01] Initializing Game loop
+[2026-08-03 23:46:03] Game Closed
+[2026-08-03 23:46:51] Initializing Game vars and seed
+[2026-08-03 23:46:51] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:46:51] Initializing Game world, player and HUD
+[2026-08-03 23:46:51] Initializing Game camera
+[2026-08-03 23:46:51] Initializing Game loop
+[2026-08-03 23:46:55] Game Closed
+[2026-08-03 23:47:07] Initializing Game vars and seed
+[2026-08-03 23:47:07] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:47:07] Initializing Game world, player and HUD
+[2026-08-03 23:47:07] Initializing Game camera
+[2026-08-03 23:47:07] Initializing Game loop
+[2026-08-03 23:47:11] Game Closed
+[2026-08-03 23:50:15] Initializing Game vars and seed
+[2026-08-03 23:50:15] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:50:15] Initializing Game world, player and HUD
+[2026-08-03 23:50:15] Initializing Game camera
+[2026-08-03 23:50:15] Initializing Game loop
+[2026-08-03 23:50:17] Game Closed

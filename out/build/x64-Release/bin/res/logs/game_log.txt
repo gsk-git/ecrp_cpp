@@ -64,3 +64,9 @@
 [2026-08-03 20:54:17] Initializing Game camera
 [2026-08-03 20:54:17] Initializing Game loop
 [2026-08-03 20:55:00] Game Closed
+[2026-08-03 23:12:51] Initializing Game vars and seed
+[2026-08-03 23:12:51] Initializing Sprite, fonts and gamefile
+[2026-08-03 23:12:51] Initializing Game world, player and HUD
+[2026-08-03 23:12:51] Initializing Game camera
+[2026-08-03 23:12:51] Initializing Game loop
+[2026-08-03 23:12:53] Game Closed
