@@ -41,6 +41,5 @@ public:
     void getRequiredChunks();
     void f_drawChunks(sf::RenderWindow& window) const;
     void ChunkBorders(sf::RenderWindow& window) const;
-    void f_initialize_world();
     void initElevationLayer(uint32_t& seed);
 };

@@ -23,32 +23,18 @@ std::ranges::iota_view<int, int> centerPOS = std::views::iota(-CHUNK_RADIUS, CHU
 
 WorldManager::WorldManager(std::pair<float, float> PLAYERXY, uint32_t seed) {
 	// Initializing member variables
-	m_playerchunk_X = PLAYERXY.first;
-	m_playerchunk_Y = PLAYERXY.second;
+	auto [chunkX, chunkY] = getChunkXY(PLAYERXY);
+	m_playerchunk_X = static_cast<float>(chunkX);
+	m_playerchunk_Y = static_cast<float>(chunkY);
 	m_chunkGenerationLimit = 2;
 	m_active_chunks;
 	m_required_chunks;
 	m_unrequired_chunks;
 	m_world_seed = seed;
 	m_tileColor = 0u;
-	f_initialize_world();
-}
-
-void WorldManager::f_initialize_world() {
-
-	// Layers for map noise generation are initiated
 	initElevationLayer(m_world_seed);
-
-	// Get initial chunks required around player
 	getRequiredChunks();
-
-	// Initializing set to hold required chunk in that frame
-	if (!m_required_chunks.empty() && !m_active_chunks.contains({ m_required_chunks.front() })) {
-		Chunk _chunk(m_required_chunks.front().first, m_required_chunks.front().second);
-		_chunk.generate(sf::Vector2f({ static_cast<float>(pixel_size), static_cast<float>(pixel_size) }), m_world_seed);
-		m_active_chunks.try_emplace({ m_required_chunks.front() }, _chunk);
-		m_required_chunks.pop_front();
-	}
+	update(0.0f);
 }
 
 void WorldManager::getRequiredChunks() {
