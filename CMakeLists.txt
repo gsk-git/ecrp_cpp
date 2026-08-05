@@ -34,7 +34,7 @@ endif()
 # Apply optimization flags dynamically for Release builds
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     if(MSVC)
-        add_compile_options(/O3 /GL)
+        add_compile_options(/O2 /GL)
     else()
         add_compile_options(-O3 -flto)
     endif()
@@ -82,7 +82,7 @@ endif()
 
 # Target Release & Debug builds
 add_executable(${PROJECT_NAME} ${GAME_SOURCES})
-set_target_properties(${PROJECT_NAME} PROPERTIES $<CONFIG:Release> WIN32)
+set_target_properties(${PROJECT_NAME} PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)
 
 target_include_directories(${PROJECT_NAME}
     PRIVATE
