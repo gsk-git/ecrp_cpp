@@ -533,7 +533,7 @@ static void StartGame() {
 		}
 		
 		// New required chunks will be generated for every 5ms to prevent frame drops, and world will be updated with new chunks
-		if (worlUpdateClock >= 0.05f) {
+		if (worlUpdateClock >= 0.1f) {
 			world.update(dt);
 			worlUpdateClock = 0.0f;
 		}
