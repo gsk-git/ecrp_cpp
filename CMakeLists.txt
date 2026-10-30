@@ -301,7 +301,7 @@ message(STATUS "App Version from Git: ${GIT_VERSION}")
 
 # Generate Version.h in the build directory
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/headers/Version.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/headers/Version.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/src/headers/Version.h" 
     @ONLY
 )
