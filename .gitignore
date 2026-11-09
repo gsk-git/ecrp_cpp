@@ -164,4 +164,3 @@ Thumbs.db
 catch2-src
 _deps/
 .ninja_log
-Version.h.in
