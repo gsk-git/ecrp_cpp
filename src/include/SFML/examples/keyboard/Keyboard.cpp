@@ -444,14 +444,14 @@ private:
     struct Cell
     {
         Cell(sf::Keyboard::Scancode theScancode, sf::Vector2f sizeRatio = {1.f, 1.f}, float marginRightRatio = 0.f) :
-        scancode(theScancode),
-        size(sizeRatio * keySize),
-        marginRight(marginRightRatio * keySize)
+            scancode(theScancode),
+            size(sizeRatio * keySize),
+            marginRight(marginRightRatio * keySize)
         {
         }
 
         Cell(sf::Keyboard::Scancode theScancode, float marginRightRatio) :
-        Cell(theScancode, {1.f, 1.f}, marginRightRatio)
+            Cell(theScancode, {1.f, 1.f}, marginRightRatio)
         {
         }
 
@@ -463,8 +463,8 @@ private:
     struct Row
     {
         Row(std::vector<Cell> theCells, float marginBottomRatio = 0.f) :
-        cells(std::move(theCells)),
-        marginBottom(marginBottomRatio * keySize)
+            cells(std::move(theCells)),
+            marginBottom(marginBottomRatio * keySize)
         {
         }
 
@@ -734,7 +734,7 @@ sf::String textEventDescription(const sf::Event::TextEntered& textEntered)
     text += "\nU+";
 
     std::ostringstream oss;
-    oss << std::hex << std::setw(4) << std::setfill('0') << textEntered.unicode;
+    oss << std::hex << std::setw(4) << std::setfill('0') << std::uint32_t{textEntered.unicode};
     text += oss.str();
 
     return text;

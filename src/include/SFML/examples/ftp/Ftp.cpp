@@ -6,6 +6,12 @@
 #include <iostream>
 #include <optional>
 
+#ifdef _MSC_VER
+#pragma warning(disable : 4996)
+#else
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 
 namespace
 {
@@ -87,7 +93,7 @@ int main()
                 // Wrong choice
                 std::cout << "Invalid choice!" << std::endl;
                 std::cin.clear();
-                std::cin.ignore(10000, '\n');
+                std::cin.ignore(10'000, '\n');
                 break;
             }
 
@@ -203,6 +209,6 @@ int main()
 
     // Wait until the user presses 'enter' key
     std::cout << "Press enter to exit..." << std::endl;
-    std::cin.ignore(10000, '\n');
-    std::cin.ignore(10000, '\n');
+    std::cin.ignore(10'000, '\n');
+    std::cin.ignore(10'000, '\n');
 }

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2026 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -104,7 +104,7 @@ public:
     ///
     /// \param filename Path of the sound file
     ///
-    /// \return A new sound file reader that can read the given file, or null if no reader can handle it
+    /// \return A new sound file reader that can read the given file, or `nullptr` if no reader can handle it
     ///
     /// \see `createReaderFromMemory`, `createReaderFromStream`
     ///
@@ -117,7 +117,7 @@ public:
     /// \param data        Pointer to the file data in memory
     /// \param sizeInBytes Total size of the file data, in bytes
     ///
-    /// \return A new sound file codec that can read the given file, or null if no codec can handle it
+    /// \return A new sound file codec that can read the given file, or `nullptr` if no codec can handle it
     ///
     /// \see `createReaderFromFilename`, `createReaderFromStream`
     ///
@@ -129,7 +129,7 @@ public:
     ///
     /// \param stream Source stream to read from
     ///
-    /// \return A new sound file codec that can read the given file, or null if no codec can handle it
+    /// \return A new sound file codec that can read the given file, or `nullptr` if no codec can handle it
     ///
     /// \see `createReaderFromFilename`, `createReaderFromMemory`
     ///
@@ -141,7 +141,7 @@ public:
     ///
     /// \param filename Path of the sound file
     ///
-    /// \return A new sound file writer that can write given file, or null if no writer can handle it
+    /// \return A new sound file writer that can write given file, or `nullptr` if no writer can handle it
     ///
     ////////////////////////////////////////////////////////////
     [[nodiscard]] static std::unique_ptr<SoundFileWriter> createWriterFromFilename(const std::filesystem::path& filename);

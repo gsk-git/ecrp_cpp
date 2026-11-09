@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2026 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -57,9 +57,31 @@ constexpr Vector3<T>::operator Vector3<U>() const
 
 ////////////////////////////////////////////////////////////
 template <typename T>
+T Vector3<T>::length() const
+{
+    static_assert(std::is_floating_point_v<T>, "Vector3::length() is only supported for floating point types");
+
+    // don't use std::hypot because of slow performance
+    return std::sqrt(x * x + y * y + z * z);
+}
+
+
+////////////////////////////////////////////////////////////
+template <typename T>
 constexpr T Vector3<T>::lengthSquared() const
 {
     return dot(*this);
+}
+
+
+////////////////////////////////////////////////////////////
+template <typename T>
+Vector3<T> Vector3<T>::normalized() const
+{
+    static_assert(std::is_floating_point_v<T>, "Vector3::normalized() is only supported for floating point types");
+
+    assert(*this != Vector3<T>() && "Vector3::normalized() cannot normalize a zero vector");
+    return (*this) / length();
 }
 
 

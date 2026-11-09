@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2026 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -46,8 +46,8 @@ namespace sf::priv
 /// \brief Helper functions to copy `sf::Transform` to `sf::Glsl::Mat3/4`
 ///
 ////////////////////////////////////////////////////////////
-void SFML_GRAPHICS_API copyMatrix(const Transform& source, Matrix<3, 3>& dest);
-void SFML_GRAPHICS_API copyMatrix(const Transform& source, Matrix<4, 4>& dest);
+SFML_GRAPHICS_API void copyMatrix(const Transform& source, Matrix<3, 3>& dest);
+SFML_GRAPHICS_API void copyMatrix(const Transform& source, Matrix<4, 4>& dest);
 
 ////////////////////////////////////////////////////////////
 /// \brief Copy array-based matrix with given number of elements
@@ -56,7 +56,7 @@ void SFML_GRAPHICS_API copyMatrix(const Transform& source, Matrix<4, 4>& dest);
 /// <algorithm> and MSVC's annoying 4996 warning in header
 ///
 ////////////////////////////////////////////////////////////
-void SFML_GRAPHICS_API copyMatrix(const float* source, std::size_t elements, float* dest);
+SFML_GRAPHICS_API void copyMatrix(const float* source, std::size_t elements, float* dest);
 
 
 ////////////////////////////////////////////////////////////
@@ -160,10 +160,10 @@ struct Vector4
 ////////////////////////////////////////////////////////////
 template <>
 constexpr Vector4<float>::Vector4(Color color) :
-x(color.r / 255.f),
-y(color.g / 255.f),
-z(color.b / 255.f),
-w(color.a / 255.f)
+    x(color.r / 255.f),
+    y(color.g / 255.f),
+    z(color.b / 255.f),
+    w(color.a / 255.f)
 {
 }
 

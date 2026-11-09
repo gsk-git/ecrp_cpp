@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2026 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -174,6 +174,54 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     [[nodiscard]] FloatRect getBounds() const;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Return an iterator to the beginning of the array
+    ///
+    /// \return Read-write iterator to the beginning of the vertices
+    ///
+    /// \see `end`
+    ///
+    ////////////////////////////////////////////////////////////
+    [[nodiscard]] std::vector<Vertex>::iterator begin();
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Return an iterator to the beginning of the array
+    ///
+    /// \return Read-only iterator to the beginning of the vertices
+    ///
+    /// \see `end`
+    ///
+    ////////////////////////////////////////////////////////////
+    [[nodiscard]] std::vector<Vertex>::const_iterator begin() const;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Return an iterator to the end of the array
+    ///
+    /// The end iterator refers to 1 position past the last vertex;
+    /// thus it represents an invalid vertex and should never be
+    /// accessed.
+    ///
+    /// \return Read-write iterator to the end of the vertices
+    ///
+    /// \see `begin`
+    ///
+    ////////////////////////////////////////////////////////////
+    [[nodiscard]] std::vector<Vertex>::iterator end();
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Return an iterator to the end of the array
+    ///
+    /// The end iterator refers to 1 position past the last vertex;
+    /// thus it represents an invalid vertex and should never be
+    /// accessed.
+    ///
+    /// \return Read-only iterator to the end of the vertices
+    ///
+    /// \see `begin`
+    ///
+    ////////////////////////////////////////////////////////////
+    [[nodiscard]] std::vector<Vertex>::const_iterator end() const;
 
 private:
     ////////////////////////////////////////////////////////////

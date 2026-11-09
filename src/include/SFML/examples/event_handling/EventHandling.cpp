@@ -3,11 +3,19 @@
 ////////////////////////////////////////////////////////////
 #include <SFML/Graphics.hpp>
 
+#include <SFML/Main.hpp>
 #include <vector>
-
 
 namespace
 {
+std::filesystem::path resourcesDir()
+{
+#ifdef SFML_SYSTEM_IOS
+    return "";
+#else
+    return "resources";
+#endif
+}
 std::string vec2ToString(const sf::Vector2i vec2)
 {
     return '(' + std::to_string(vec2.x) + ", " + std::to_string(vec2.y) + ')';
@@ -59,7 +67,12 @@ public:
                 application.m_handlerText.setString("Current Handler: Overload");
             }
 
-            return "Key Pressed: " + sf::Keyboard::getDescription(keyPress.scancode);
+            return "Key Pressed: " + sf::Keyboard::getDescription(keyPress.scancode).toAnsiString();
+        }
+
+        std::optional<std::string> operator()(const sf::Event::KeyReleased& keyRelease)
+        {
+            return "Key Released: " + sf::Keyboard::getDescription(keyRelease.scancode).toAnsiString();
         }
 
         std::optional<std::string> operator()(const sf::Event::MouseMoved& mouseMoved)
@@ -75,6 +88,16 @@ public:
         std::optional<std::string> operator()(const sf::Event::TouchBegan& touchBegan)
         {
             return "Touch Began: " + vec2ToString(touchBegan.position);
+        }
+
+        std::optional<std::string> operator()(const sf::Event::TouchEnded& touchEnded)
+        {
+            return "Touch Ended: " + vec2ToString(touchEnded.position);
+        }
+
+        std::optional<std::string> operator()(const sf::Event::TouchMoved& touchMoved)
+        {
+            return "Touch Moved: " + vec2ToString(touchMoved.position);
         }
 
         // When defining a visitor, make sure all event types can be handled by it.
@@ -116,7 +139,8 @@ public:
 
                     if (const auto* keyPress = event->getIf<sf::Event::KeyPressed>())
                     {
-                        m_log.emplace_back("Key Pressed: " + sf::Keyboard::getDescription(keyPress->scancode));
+                        m_log.emplace_back(
+                            "Key Pressed: " + sf::Keyboard::getDescription(keyPress->scancode).toAnsiString());
 
                         // When the enter key is pressed, switch to the next handler type
                         if (keyPress->code == sf::Keyboard::Key::Enter)
@@ -124,6 +148,11 @@ public:
                             m_handlerType = HandlerType::Visitor;
                             m_handlerText.setString("Current Handler: Visitor");
                         }
+                    }
+                    else if (const auto* keyRelease = event->getIf<sf::Event::KeyReleased>())
+                    {
+                        m_log.emplace_back(
+                            "Key Released: " + sf::Keyboard::getDescription(keyRelease->scancode).toAnsiString());
                     }
                     else if (const auto* mouseMoved = event->getIf<sf::Event::MouseMoved>())
                     {
@@ -136,6 +165,14 @@ public:
                     else if (const auto* touchBegan = event->getIf<sf::Event::TouchBegan>())
                     {
                         m_log.emplace_back("Touch Began: " + vec2ToString(touchBegan->position));
+                    }
+                    else if (const auto* touchEnded = event->getIf<sf::Event::TouchEnded>())
+                    {
+                        m_log.emplace_back("Touch Ended: " + vec2ToString(touchEnded->position));
+                    }
+                    else if (const auto* touchMoved = event->getIf<sf::Event::TouchMoved>())
+                    {
+                        m_log.emplace_back("Touch Moved: " + vec2ToString(touchMoved->position));
                     }
                     else
                     {
@@ -163,7 +200,8 @@ public:
                                       [&](const sf::Event::KeyPressed& keyPress)
                                       {
                                           m_log.emplace_back(
-                                              "Key Pressed: " + sf::Keyboard::getDescription(keyPress.scancode));
+                                              "Key Pressed: " +
+                                              sf::Keyboard::getDescription(keyPress.scancode).toAnsiString());
 
                                           // When the enter key is pressed, switch to the next handler type
                                           if (keyPress.code == sf::Keyboard::Key::Enter)
@@ -172,11 +210,20 @@ public:
                                               m_handlerText.setString("Current Handler: Generic");
                                           }
                                       },
+                                      [&](const sf::Event::KeyReleased& keyRelease) {
+                                          m_log.emplace_back(
+                                              "Key Released: " +
+                                              sf::Keyboard::getDescription(keyRelease.scancode).toAnsiString());
+                                      },
                                       [&](const sf::Event::MouseMoved& mouseMoved)
                                       { m_log.emplace_back("Mouse Moved: " + vec2ToString(mouseMoved.position)); },
                                       [&](const sf::Event::MouseButtonPressed&) { m_log.emplace_back("Mouse Pressed"); },
                                       [&](const sf::Event::TouchBegan& touchBegan)
-                                      { m_log.emplace_back("Touch Began: " + vec2ToString(touchBegan.position)); });
+                                      { m_log.emplace_back("Touch Began: " + vec2ToString(touchBegan.position)); },
+                                      [&](const sf::Event::TouchEnded& touchEnded)
+                                      { m_log.emplace_back("Touch Ended: " + vec2ToString(touchEnded.position)); },
+                                      [&](const sf::Event::TouchMoved& touchMoved)
+                                      { m_log.emplace_back("Touch Moved: " + vec2ToString(touchMoved.position)); });
 
                 // To handle unhandled events, just add the following lambda to the set of handlers
                 // [&](const auto&) { m_log.emplace_back("Other Event"); }
@@ -197,7 +244,8 @@ public:
                         }
                         else if constexpr (std::is_same_v<T, sf::Event::KeyPressed>)
                         {
-                            m_log.emplace_back("Key Pressed: " + sf::Keyboard::getDescription(event.scancode));
+                            m_log.emplace_back(
+                                "Key Pressed: " + sf::Keyboard::getDescription(event.scancode).toAnsiString());
 
                             // When the enter key is pressed, switch to the next handler type
                             if (event.code == sf::Keyboard::Key::Enter)
@@ -205,6 +253,11 @@ public:
                                 m_handlerType = HandlerType::Forward;
                                 m_handlerText.setString("Current Handler: Forward");
                             }
+                        }
+                        else if constexpr (std::is_same_v<T, sf::Event::KeyReleased>)
+                        {
+                            m_log.emplace_back(
+                                "Key Released: " + sf::Keyboard::getDescription(event.scancode).toAnsiString());
                         }
                         else if constexpr (std::is_same_v<T, sf::Event::MouseMoved>)
                         {
@@ -217,6 +270,14 @@ public:
                         else if constexpr (std::is_same_v<T, sf::Event::TouchBegan>)
                         {
                             m_log.emplace_back("Touch Began: " + vec2ToString(event.position));
+                        }
+                        else if constexpr (std::is_same_v<T, sf::Event::TouchEnded>)
+                        {
+                            m_log.emplace_back("Touch Ended: " + vec2ToString(event.position));
+                        }
+                        else if constexpr (std::is_same_v<T, sf::Event::TouchMoved>)
+                        {
+                            m_log.emplace_back("Touch Moved: " + vec2ToString(event.position));
                         }
                         else
                         {
@@ -270,7 +331,7 @@ public:
 
     void handle(const sf::Event::KeyPressed& keyPress)
     {
-        m_log.emplace_back("Key Pressed: " + sf::Keyboard::getDescription(keyPress.scancode));
+        m_log.emplace_back("Key Pressed: " + sf::Keyboard::getDescription(keyPress.scancode).toAnsiString());
 
         // When the enter key is pressed, switch to the next handler type
         if (keyPress.code == sf::Keyboard::Key::Enter)
@@ -278,6 +339,11 @@ public:
             m_handlerType = HandlerType::Classic;
             m_handlerText.setString("Current Handler: Classic");
         }
+    }
+
+    void handle(const sf::Event::KeyReleased& keyRelease)
+    {
+        m_log.emplace_back("Key Released: " + sf::Keyboard::getDescription(keyRelease.scancode).toAnsiString());
     }
 
     void handle(const sf::Event::MouseMoved& mouseMoved)
@@ -293,6 +359,16 @@ public:
     void handle(const sf::Event::TouchBegan& touchBegan)
     {
         m_log.emplace_back("Touch Began: " + vec2ToString(touchBegan.position));
+    }
+
+    void handle(const sf::Event::TouchEnded& touchEnded)
+    {
+        m_log.emplace_back("Touch Ended: " + vec2ToString(touchEnded.position));
+    }
+
+    void handle(const sf::Event::TouchMoved& touchMoved)
+    {
+        m_log.emplace_back("Touch Moved: " + vec2ToString(touchMoved.position));
     }
 
     template <typename T>
@@ -316,7 +392,7 @@ private:
     // Member data
     ////////////////////////////////////////////////////////////
     sf::RenderWindow m_window{sf::VideoMode({800u, 600u}), "SFML Event Handling", sf::Style::Titlebar | sf::Style::Close};
-    const sf::Font           m_font{"resources/tuffy.ttf"};
+    const sf::Font           m_font{resourcesDir() / "tuffy.ttf"};
     sf::Text                 m_logText{m_font, "", 20};
     sf::Text                 m_handlerText{m_font, "Current Handler: Classic", 24};
     sf::Text                 m_instructions{m_font, "Press Enter to change handler type", 24};
@@ -335,4 +411,5 @@ int main()
 {
     Application application;
     application.run();
+    return 0;
 }

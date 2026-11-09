@@ -30,11 +30,16 @@ int main()
 
     if (protocol == 't')
     {
+        // Enable TLS ?
+        char tls = 0;
+        std::cout << "Do you want to enable TLS (y) or not (n)? ";
+        std::cin >> tls;
+
         // Test the TCP protocol
         if (who == 's')
-            runTcpServer(port);
+            runTcpServer(port, tls == 'y');
         else
-            runTcpClient(port);
+            runTcpClient(port, tls == 'y');
     }
     else
     {
@@ -47,6 +52,6 @@ int main()
 
     // Wait until the user presses 'enter' key
     std::cout << "Press enter to exit..." << std::endl;
-    std::cin.ignore(10000, '\n');
-    std::cin.ignore(10000, '\n');
+    std::cin.ignore(10'000, '\n');
+    std::cin.ignore(10'000, '\n');
 }

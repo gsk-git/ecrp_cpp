@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2026 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -32,7 +32,9 @@
 #include <SFML/System/Utf.hpp>
 
 #include <locale>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include <cstddef>
 #include <cstdint>
@@ -171,6 +173,18 @@ public:
     String(const std::string& ansiString, const std::locale& locale = {});
 
     ////////////////////////////////////////////////////////////
+    /// \brief Construct from an ANSI string view and a locale
+    ///
+    /// The source string is converted to UTF-32 according
+    /// to the given locale.
+    ///
+    /// \param ansiString ANSI string to convert
+    /// \param locale     Locale to use for conversion
+    ///
+    ////////////////////////////////////////////////////////////
+    String(std::string_view ansiString, const std::locale& locale = {});
+
+    ////////////////////////////////////////////////////////////
     /// \brief Construct from null-terminated C-style wide string
     ///
     /// \param wideString Wide string to convert
@@ -185,6 +199,14 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     String(const std::wstring& wideString);
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Construct from a wide string view
+    ///
+    /// \param wideString Wide string to convert
+    ///
+    ////////////////////////////////////////////////////////////
+    String(std::wstring_view wideString);
 
     ////////////////////////////////////////////////////////////
     /// \brief Construct from a null-terminated C-style UTF-32 string
@@ -203,10 +225,19 @@ public:
     String(std::u32string utf32String);
 
     ////////////////////////////////////////////////////////////
+    /// \brief Construct from an UTF-32 string view
+    ///
+    /// \param utf32String UTF-32 string to assign
+    ///
+    ////////////////////////////////////////////////////////////
+    String(std::u32string_view utf32String);
+
+    ////////////////////////////////////////////////////////////
     /// \brief Create a new `sf::String` from a UTF-8 encoded string
     ///
-    /// \param begin Forward iterator to the beginning of the UTF-8 sequence
-    /// \param end   Forward iterator to the end of the UTF-8 sequence
+    /// \param begin       Forward iterator to the beginning of the UTF-8 sequence
+    /// \param end         Forward iterator to the end of the UTF-8 sequence
+    /// \param replacement Replacement for characters not convertible from UTF-8 (use nullopt to skip them)
     ///
     /// \return A `sf::String` containing the source string
     ///
@@ -214,13 +245,14 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     template <typename T>
-    [[nodiscard]] static String fromUtf8(T begin, T end);
+    [[nodiscard]] static String fromUtf8(T begin, T end, std::optional<char32_t> replacement = std::nullopt);
 
     ////////////////////////////////////////////////////////////
     /// \brief Create a new `sf::String` from a UTF-16 encoded string
     ///
-    /// \param begin Forward iterator to the beginning of the UTF-16 sequence
-    /// \param end   Forward iterator to the end of the UTF-16 sequence
+    /// \param begin       Forward iterator to the beginning of the UTF-16 sequence
+    /// \param end         Forward iterator to the end of the UTF-16 sequence
+    /// \param replacement Replacement for characters not convertible from UTF-16 (use nullopt to skip them)
     ///
     /// \return A `sf::String` containing the source string
     ///
@@ -228,7 +260,7 @@ public:
     ///
     ////////////////////////////////////////////////////////////
     template <typename T>
-    [[nodiscard]] static String fromUtf16(T begin, T end);
+    [[nodiscard]] static String fromUtf16(T begin, T end, std::optional<char32_t> replacement = std::nullopt);
 
     ////////////////////////////////////////////////////////////
     /// \brief Create a new `sf::String` from a UTF-32 encoded string
@@ -263,7 +295,7 @@ public:
     /// \see `toAnsiString`, `operator std::wstring`
     ///
     ////////////////////////////////////////////////////////////
-    operator std::string() const;
+    [[deprecated("Use toAnsiString() instead")]] operator std::string() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Implicit conversion operator to `std::wstring` (wide string)
@@ -278,57 +310,60 @@ public:
     /// \see `toWideString`, `operator std::string`
     ///
     ////////////////////////////////////////////////////////////
-    operator std::wstring() const;
+    [[deprecated("Use toWideString() instead")]] operator std::wstring() const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Convert the Unicode string to an ANSI string
     ///
     /// The UTF-32 string is converted to an ANSI string in
     /// the encoding defined by `locale`.
-    /// Characters that do not fit in the target encoding are
-    /// discarded from the returned string.
     ///
-    /// \param locale Locale to use for conversion
+    /// \param locale      Locale to use for conversion
+    /// \param replacement Replacement for characters not convertible to ANSI (use nullopt to skip them)
     ///
     /// \return Converted ANSI string
     ///
     /// \see `toWideString`, `operator std::string`
     ///
     ////////////////////////////////////////////////////////////
-    [[nodiscard]] std::string toAnsiString(const std::locale& locale = {}) const;
+    [[nodiscard]] std::string toAnsiString(const std::locale&  locale      = {},
+                                           std::optional<char> replacement = std::nullopt) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Convert the Unicode string to a wide string
     ///
-    /// Characters that do not fit in the target encoding are
-    /// discarded from the returned string.
+    /// \param replacement Replacement for characters not convertible to wide char (use nullopt to skip them)
     ///
     /// \return Converted wide string
     ///
     /// \see `toAnsiString`, `operator std::wstring`
     ///
     ////////////////////////////////////////////////////////////
-    [[nodiscard]] std::wstring toWideString() const;
+    [[nodiscard]] std::wstring toWideString(std::optional<wchar_t> replacement = std::nullopt) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Convert the Unicode string to a UTF-8 string
+    ///
+    /// \param replacement Replacement for characters not convertible to UTF-8 (use nullopt to skip them)
     ///
     /// \return Converted UTF-8 string
     ///
     /// \see `toUtf16`, `toUtf32`
     ///
     ////////////////////////////////////////////////////////////
-    [[nodiscard]] sf::U8String toUtf8() const;
+    [[nodiscard]] sf::U8String toUtf8(std::optional<std::uint8_t> replacement = std::nullopt) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Convert the Unicode string to a UTF-16 string
+    ///
+    /// \param replacement Replacement for characters not convertible to UTF-16 (use nullopt to skip them)
     ///
     /// \return Converted UTF-16 string
     ///
     /// \see `toUtf8`, `toUtf32`
     ///
     ////////////////////////////////////////////////////////////
-    [[nodiscard]] std::u16string toUtf16() const;
+    [[nodiscard]] std::u16string toUtf16(std::optional<std::uint16_t> replacement = std::nullopt) const;
 
     ////////////////////////////////////////////////////////////
     /// \brief Convert the Unicode string to a UTF-32 string
@@ -551,9 +586,68 @@ public:
     ////////////////////////////////////////////////////////////
     [[nodiscard]] ConstIterator end() const;
 
+    ////////////////////////////////////////////////////////////
+    /// \brief Check if the position before a character is a grapheme boundary
+    ///
+    /// When manipulating unicode strings, removing single codepoints
+    /// does not always make sense since they might be a part
+    /// of a grapheme composed of multiple codepoints. In the case of
+    /// a text editor, it is more intuitive to the user if entire
+    /// graphemes are removed when e.g. delete or backspace is pressed
+    /// rather than single codepoints. For this reason, the visual caret
+    /// that marks the insertion/deletion point should only be
+    /// positioned at a grapheme boundaries.
+    ///
+    /// \param position The position of the character to check
+    ///
+    /// \return `true` if the position before a character is a grapheme boundary
+    ///
+    /// \see `isWordBoundary`, `isSentenceBoundary`
+    ///
+    ////////////////////////////////////////////////////////////
+    [[nodiscard]] bool isGraphemeBoundary(std::size_t position) const;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Check if the position before a character is a word boundary
+    ///
+    /// When breaking text into multiple lines, it is important to know
+    /// where each word ends so that lines aren't broken in the middle
+    /// of a word. This should be used in combination with
+    /// `isSentenceBoundary` to ensure punctuation isn't broken into a
+    /// new line by itself.
+    ///
+    /// \param position The position of the character to check
+    ///
+    /// \return `true` if the position before a character is a word boundary
+    ///
+    /// \see `isGraphemeBoundary`, `isSentenceBoundary`
+    ///
+    ////////////////////////////////////////////////////////////
+    [[nodiscard]] bool isWordBoundary(std::size_t position) const;
+
+    ////////////////////////////////////////////////////////////
+    /// \brief Check if the position before a character is a sentence boundary
+    ///
+    /// This can be used together with `isWordBoundary` to break
+    /// lines. See `isWordBoundary` for more information.
+    ///
+    /// \param position The position of the character to check
+    ///
+    /// \return `true` if the position before a character is a sentence boundary
+    ///
+    /// \see `isGraphemeBoundary`, `isWordBoundary`
+    ///
+    ////////////////////////////////////////////////////////////
+    [[nodiscard]] bool isSentenceBoundary(std::size_t position) const;
+
 private:
+#if defined(SFML_SYSTEM_WINDOWS)
     friend SFML_SYSTEM_API bool operator==(const String& left, const String& right);
     friend SFML_SYSTEM_API bool operator<(const String& left, const String& right);
+#else
+    friend bool operator==(const String& left, const String& right);
+    friend bool operator<(const String& left, const String& right);
+#endif
 
     ////////////////////////////////////////////////////////////
     // Member data

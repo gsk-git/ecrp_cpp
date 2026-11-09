@@ -126,16 +126,19 @@ void doClient(unsigned short port)
     do
     {
         std::cout << "Type address or name of the server to connect to: ";
-        std::cin >> server;
+        std::string hostname;
+        std::cin >> hostname;
+        if (const auto addresses = sf::Dns::resolve(hostname); addresses.has_value() && !addresses->empty())
+            server = addresses->front();
     } while (!server.has_value());
 
     // Create an instance of our custom recorder
     NetworkRecorder recorder(server.value(), port);
 
     // Wait for user input...
-    std::cin.ignore(10000, '\n');
+    std::cin.ignore(10'000, '\n');
     std::cout << "Press enter to start recording audio";
-    std::cin.ignore(10000, '\n');
+    std::cin.ignore(10'000, '\n');
 
     // Start capturing audio data
     if (!recorder.start(44100))
@@ -145,6 +148,6 @@ void doClient(unsigned short port)
     }
 
     std::cout << "Recording... press enter to stop";
-    std::cin.ignore(10000, '\n');
+    std::cin.ignore(10'000, '\n');
     recorder.stop();
 }

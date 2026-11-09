@@ -37,6 +37,7 @@
 #include <dbghelp.h>
 #include <shellapi.h>
 #include "Version.h"
+#include "headers/application.hpp"
 
 // dgbhelp.h for stack trace generation in case of crashes
 #pragma comment(lib, "dbghelp.lib")
@@ -597,7 +598,7 @@ static void StartGame() {
 int main(int argCount, char* argVector[]) {
 	
 	// Handling unhandled exceptions or crashes and generates .dmp and .log files for debugging purposes
-	SetUnhandledExceptionFilter(CustomCrashHandler);
+	// SetUnhandledExceptionFilter(CustomCrashHandler);
 	
 	// Handling command line arguments
 	if (argCount > 1) {
@@ -615,11 +616,13 @@ int main(int argCount, char* argVector[]) {
 	}
 	
 	// Displays splash image
-	if (!SPLASH_FLAG) RunSplash();
+	// if (!SPLASH_FLAG) RunSplash();
 	
 	// Starts game
-	StartGame();
-	
+	// StartGame();
+
+	application app;
+	app.run();
 	// Exits game
 	return EXIT_SUCCESS;
 }

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////
 //
 // SFML - Simple and Fast Multimedia Library
-// Copyright (C) 2007-2024 Laurent Gomila (laurent@sfml-dev.org)
+// Copyright (C) 2007-2026 Laurent Gomila (laurent@sfml-dev.org)
 //
 // This software is provided 'as-is', without any express or implied warranty.
 // In no event will the authors be held liable for any damages arising from the use of this software.
@@ -82,7 +82,13 @@ public:
     /// When the audio engine sources sound data from sound
     /// sources it will pass the data through an effects
     /// processor if one is set. The sound data will already be
-    /// converted to the internal floating point format.
+    /// converted to the internal floating point format and have
+    /// the same sample rate as the audio device and engine. The
+    /// device sample rate can differ from the sample rate of
+    /// the source data so keep this in mind when setting up
+    /// processing that is dependent on the sample rate. The
+    /// sample rate of the current playback device can be
+    /// retrieved using `sf::PlaybackDevice::getDeviceSampleRate()`.
     ///
     /// Sound data that is processed this way is provided in
     /// frames. Each frame contains 1 floating point sample per

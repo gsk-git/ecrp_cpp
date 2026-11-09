@@ -173,9 +173,9 @@ class PitchVolume : public Effect
 {
 public:
     PitchVolume() :
-    Effect("Pitch / Volume"),
-    m_pitchText(getFont(), "Pitch: " + std::to_string(m_pitch)),
-    m_volumeText(getFont(), "Volume: " + std::to_string(m_volume))
+        Effect("Pitch / Volume"),
+        m_pitchText(getFont(), "Pitch: " + std::to_string(m_pitch)),
+        m_volumeText(getFont(), "Volume: " + std::to_string(m_volume))
     {
         // Load the music file
         if (!m_music.openFromFile(resourcesDir() / "doodle_pop.ogg"))
@@ -365,11 +365,11 @@ class Tone : public sf::SoundStream, public Effect
 {
 public:
     Tone() :
-    Effect("Tone Generator"),
-    m_instruction(getFont(), "Press up and down arrows to change the current wave type"),
-    m_currentType(getFont(), "Wave Type: Triangle"),
-    m_currentAmplitude(getFont(), "Amplitude: 0.05"),
-    m_currentFrequency(getFont(), "Frequency: 200 Hz")
+        Effect("Tone Generator"),
+        m_instruction(getFont(), "Press up and down arrows to change the current wave type"),
+        m_currentType(getFont(), "Wave Type: Triangle"),
+        m_currentAmplitude(getFont(), "Amplitude: 0.05"),
+        m_currentFrequency(getFont(), "Frequency: 200 Hz")
     {
         m_instruction.setPosition({windowWidth / 2.f - 370.f, windowHeight / 2.f - 200.f});
         m_currentType.setPosition({windowWidth / 2.f - 150.f, windowHeight / 2.f - 100.f});
@@ -527,9 +527,9 @@ class Doppler : public sf::SoundStream, public Effect
 {
 public:
     Doppler() :
-    Effect("Doppler Shift"),
-    m_currentVelocity(getFont(), "Velocity: " + std::to_string(m_velocity)),
-    m_currentFactor(getFont(), "Doppler Factor: " + std::to_string(m_factor))
+        Effect("Doppler Shift"),
+        m_currentVelocity(getFont(), "Velocity: " + std::to_string(m_velocity)),
+        m_currentFactor(getFont(), "Doppler Factor: " + std::to_string(m_factor))
     {
         m_listener.setPosition({(windowWidth - 20.f) / 2.f, (windowHeight - 20.f) / 2.f});
         m_listener.setFillColor(sf::Color::Red);
@@ -667,9 +667,9 @@ public:
 
 protected:
     explicit Processing(std::string name) :
-    Effect(std::move(name)),
-    m_enabledText(getFont(), "Processing: Enabled"),
-    m_instructions(getFont(), "Press Space to enable/disable processing")
+        Effect(std::move(name)),
+        m_enabledText(getFont(), "Processing: Enabled"),
+        m_instructions(getFont(), "Press Space to enable/disable processing")
     {
         m_listener.setPosition({(windowWidth - 20.f) / 2.f, (windowHeight - 20.f) / 2.f});
         m_listener.setFillColor(sf::Color::Red);
@@ -811,7 +811,8 @@ struct HighPassFilter : BiquadFilter
     {
         static constexpr auto cutoffFrequency = 2000.f;
 
-        const auto c = std::tan(pi * cutoffFrequency / static_cast<float>(getMusic().getSampleRate()));
+        const auto c = std::tan(
+            pi * cutoffFrequency / static_cast<float>(sf::PlaybackDevice::getDeviceSampleRate().value_or(44100)));
 
         Coefficients coefficients;
 
@@ -835,7 +836,8 @@ struct LowPassFilter : BiquadFilter
     {
         static constexpr auto cutoffFrequency = 500.f;
 
-        const auto c = 1.f / std::tan(pi * cutoffFrequency / static_cast<float>(getMusic().getSampleRate()));
+        const auto c = 1.f / std::tan(pi * cutoffFrequency /
+                                      static_cast<float>(sf::PlaybackDevice::getDeviceSampleRate().value_or(44100)));
 
         Coefficients coefficients;
 
@@ -864,7 +866,7 @@ struct Echo : Processing
         static constexpr auto wet   = 0.8f;
         static constexpr auto dry   = 1.f;
 
-        const auto sampleRate    = music.getSampleRate();
+        const auto sampleRate    = sf::PlaybackDevice::getDeviceSampleRate().value_or(44100);
         const auto delayInFrames = static_cast<unsigned int>(static_cast<float>(sampleRate) * delay);
 
         // We use a mutable lambda to tie the lifetime of the state to the lambda itself
@@ -930,7 +932,7 @@ public:
         // this lambda hence we need to always have a usable state until the Music and the
         // associated lambda are destroyed
         music.setEffectProcessor(
-            [sampleRate = music.getSampleRate(),
+            [sampleRate = sf::PlaybackDevice::getDeviceSampleRate().value_or(44100),
              filters    = std::vector<ReverbFilter<float>>(),
              enabled    = getEnabled()](const float*  inputFrames,
                                      unsigned int& inputFrameCount,
@@ -1019,17 +1021,18 @@ private:
     {
     public:
         ReverbFilter(unsigned int sampleRate, float feedbackGain) :
-        m_allPass{{{sampleRate / 10, 0.6f}, {sampleRate / 30, -0.6f}, {sampleRate / 90, 0.6f}, {sampleRate / 270, -0.6f}}},
-        m_fir({0.003369f,  0.002810f,  0.001758f,  0.000340f,  -0.001255f, -0.002793f, -0.004014f, -0.004659f,
-               -0.004516f, -0.003464f, -0.001514f, 0.001148f,  0.004157f,  0.006986f,  0.009003f,  0.009571f,
-               0.008173f,  0.004560f,  -0.001120f, -0.008222f, -0.015581f, -0.021579f, -0.024323f, -0.021933f,
-               -0.012904f, 0.003500f,  0.026890f,  0.055537f,  0.086377f,  0.115331f,  0.137960f,  0.150407f,
-               0.150407f,  0.137960f,  0.115331f,  0.086377f,  0.055537f,  0.026890f,  0.003500f,  -0.012904f,
-               -0.021933f, -0.024323f, -0.021579f, -0.015581f, -0.008222f, -0.001120f, 0.004560f,  0.008173f,
-               0.009571f,  0.009003f,  0.006986f,  0.004157f,  0.001148f,  -0.001514f, -0.003464f, -0.004516f,
-               -0.004659f, -0.004014f, -0.002793f, -0.001255f, 0.000340f,  0.001758f,  0.002810f,  0.003369f}),
-        m_buffer(sampleRate / 5, {}), // sample rate / 5 = 200ms buffer size
-        m_feedbackGain(feedbackGain)
+            m_allPass{
+                {{sampleRate / 10, 0.6f}, {sampleRate / 30, -0.6f}, {sampleRate / 90, 0.6f}, {sampleRate / 270, -0.6f}}},
+            m_fir({0.003369f,  0.002810f,  0.001758f,  0.000340f,  -0.001255f, -0.002793f, -0.004014f, -0.004659f,
+                   -0.004516f, -0.003464f, -0.001514f, 0.001148f,  0.004157f,  0.006986f,  0.009003f,  0.009571f,
+                   0.008173f,  0.004560f,  -0.001120f, -0.008222f, -0.015581f, -0.021579f, -0.024323f, -0.021933f,
+                   -0.012904f, 0.003500f,  0.026890f,  0.055537f,  0.086377f,  0.115331f,  0.137960f,  0.150407f,
+                   0.150407f,  0.137960f,  0.115331f,  0.086377f,  0.055537f,  0.026890f,  0.003500f,  -0.012904f,
+                   -0.021933f, -0.024323f, -0.021579f, -0.015581f, -0.008222f, -0.001120f, 0.004560f,  0.008173f,
+                   0.009571f,  0.009003f,  0.006986f,  0.004157f,  0.001148f,  -0.001514f, -0.003464f, -0.004516f,
+                   -0.004659f, -0.004014f, -0.002793f, -0.001255f, 0.000340f,  0.001758f,  0.002810f,  0.003369f}),
+            m_buffer(sampleRate / 5, {}), // sample rate / 5 = 200ms buffer size
+            m_feedbackGain(feedbackGain)
         {
         }
 
