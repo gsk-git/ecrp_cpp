@@ -337,7 +337,7 @@ static void RunSplash() {
 	SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	// Texture for the logo
 	sf::Texture logoTexture;
-	if (!logoTexture.loadFromFile("res/splash.png"))
+	if (!logoTexture.loadFromFile("res/img/splash.png"))
 		LOG("Splash Logo not found or path is incorrect");
 	// Creating sprite for the logo
 	sf::Sprite logoSprite(logoTexture);
