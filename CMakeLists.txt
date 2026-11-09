@@ -23,6 +23,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(SFML_DIR "${ESRO_SOURCE_DIR}/src/include/SFML/lib/cmake/SFML")
+set(GENERATED_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
+
 
 # Enable warnings (tweak for your compiler)
 if (MSVC)
@@ -92,6 +95,7 @@ target_include_directories(${PROJECT_NAME}
         ${CMAKE_SOURCE_DIR}/src/headers
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/tests
+        ${GENERATED_DIR}
 )
 
 # Define a macro for test builds so code can enable test-only accessors
@@ -283,27 +287,51 @@ else()
     target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Wno-unused-parameter)
 endif()
 
-# Get the latest Git tag or commit hash
-execute_process(
-    COMMAND git describe --tags --always --dirty
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_VARIABLE GIT_VERSION
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
-# Fallback if Git is not installed or it's not a Git repo
-if(NOT GIT_VERSION) 
-    set(GIT_VERSION "v0.0.0-unknown")
+# --------------------------------------------------
+# Automatic application version generation
+# --------------------------------------------------
+
+find_package(Git QUIET)
+
+set(APP_VERSION "v0.0.0-unknown")
+
+if(GIT_FOUND)
+
+    execute_process(
+        COMMAND
+            "${GIT_EXECUTABLE}"
+            describe
+            --tags
+            --long
+            --dirty
+            --always
+
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+
+        RESULT_VARIABLE GIT_DESCRIBE_RESULT
+        OUTPUT_VARIABLE GIT_DESCRIBE_OUTPUT
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    if(GIT_DESCRIBE_RESULT EQUAL 0 AND NOT GIT_DESCRIBE_OUTPUT STREQUAL "")
+        set(APP_VERSION "${GIT_DESCRIBE_OUTPUT}")
+    endif()
+
 endif()
 
-message(STATUS "App Version from Git: ${GIT_VERSION}")
+message(STATUS "ESRO Application Version: ${APP_VERSION}")
+# ==================================================
+# GENERATE VERSION HEADER
+# ==================================================
 
-# Generate Version.h in the build directory
+
+file(MAKE_DIRECTORY "${GENERATED_DIR}")
+
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/headers/Version.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/headers/Version.h" 
+    "${PROJECT_SOURCE_DIR}/src/headers/Version.h.in"
+    "${GENERATED_DIR}/Version.h"
     @ONLY
 )
-
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

@@ -620,7 +620,7 @@ int main(int argCount, char* argVector[]) {
 	
 	// Starts game
 	// StartGame();
-
+	std::cout << APP_VERSION;
 	application app;
 	app.run();
 	// Exits game

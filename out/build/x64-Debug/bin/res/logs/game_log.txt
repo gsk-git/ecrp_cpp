@@ -1,6 +1,0 @@
-[2026-11-09 22:23:07] Initializing Game vars and seed
-[2026-11-09 22:23:07] Initializing Sprite, fonts and gamefile
-[2026-11-09 22:23:07] Initializing Game world, player and HUD
-[2026-11-09 22:23:07] Initializing Game camera
-[2026-11-09 22:23:07] Initializing Game loop
-[2026-11-09 22:23:28] Game Closed
