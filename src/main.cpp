@@ -17,6 +17,7 @@
 #include <dwmapi.h>
 #include <Json/json.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Audio.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/View.hpp>
 #include <SFML/Graphics/Rect.hpp>
@@ -622,6 +623,17 @@ int main(int argCount, char* argVector[]) {
 	// StartGame();
 	std::cout << APP_VERSION;
 	application app;
+	sf::Music music;
+
+	if (!music.openFromFile("res/tracks/track1.mp3"))
+	{
+		std::cerr << "Failed to load music!\n";
+		return -1;
+	}
+
+	music.setVolume(40.f);
+	music.setLooping(true);
+	music.play();
 	app.run();
 	// Exits game
 	return EXIT_SUCCESS;

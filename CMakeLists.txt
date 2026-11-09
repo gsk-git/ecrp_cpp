@@ -130,11 +130,11 @@ endif()
 
 
 # First try explicit SFML 3 call (capitalized component names)
-find_package(SFML COMPONENTS Graphics Window System Main QUIET)
+find_package(SFML COMPONENTS Graphics Window System Audio Main QUIET)
 if (SFML_FOUND)
     message(STATUS "Found SFML via: find_package(SFML COMPONENTS Graphics Window System)")
     set(_sfml_ok TRUE)
-    set(_sfml_targets SFML::Graphics SFML::Window SFML::System SFML::Main)
+    set(_sfml_targets SFML::Graphics SFML::Window SFML::System SFML::Audio SFML::Main)
 endif()
 
 # If not found, try lowercase (SFML 2.x style)
