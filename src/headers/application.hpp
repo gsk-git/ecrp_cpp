@@ -4,12 +4,14 @@
 #include <optional>
 #include <memory>
 
-
 class application {
 private:
+    // Member variables
     sf::RenderWindow m_window;
     sf::Clock m_clock;
     stateManager m_statemanager;
+
+    // Member functions
     void processEvents() {
         while (const std::optional<sf::Event> event = m_window.pollEvent())
         {
@@ -28,7 +30,7 @@ private:
     };
 public:
     application() : m_window(sf::VideoMode::getDesktopMode(), "ESRO™ v0.1.0", sf::Style::None) {
-        m_statemanager.pushState(std::make_unique<splashState>());
+        m_statemanager.pushState(std::make_unique<gameState>());
     };
     void run() {
         while (m_window.isOpen())

@@ -599,7 +599,7 @@ static void StartGame() {
 int main(int argCount, char* argVector[]) {
 	
 	// Handling unhandled exceptions or crashes and generates .dmp and .log files for debugging purposes
-	// SetUnhandledExceptionFilter(CustomCrashHandler);
+	SetUnhandledExceptionFilter(CustomCrashHandler);
 	
 	// Handling command line arguments
 	if (argCount > 1) {
@@ -615,12 +615,12 @@ int main(int argCount, char* argVector[]) {
 			}
 		}
 	}
-	
-	// Displays splash image
-	// if (!SPLASH_FLAG) RunSplash();
-	
+		
 	// Starts game
 	// StartGame();
+	// Displays splash image
+	if (!SPLASH_FLAG) RunSplash();
+
 	std::cout << APP_VERSION;
 	application app;
 	sf::Music music;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "splashState.hpp"
+#include "gameState.hpp"
 #include <memory>
 #include <vector>
 

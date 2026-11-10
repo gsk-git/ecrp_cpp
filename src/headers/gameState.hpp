@@ -4,11 +4,14 @@
 #include "stateManager.hpp"
 #include <iostream>
 
-class splashState : public IState {
+class gameState : public IState {
 private:
 	bool m_closeApp = false;
 public:
+	// Member variables
 	sf::RectangleShape rectBox;
+	
+	// Member functions
 	void init() override {
 		std::cout << "Hello from splash state \n";
 		rectBox.setSize({ 100.f,600.f });
@@ -26,12 +29,7 @@ public:
 	};
 	void onEnter() override {}
 	void onExit() override {}
-
-	// State policies
 	bool updateBelow() override { return 0; };
 	bool renderBelow() override { return 0; };
-	bool shouldCloseApp() const override
-	{
-		return m_closeApp;
-	}
+	bool shouldCloseApp() const override { return m_closeApp; }
 };
