@@ -619,7 +619,7 @@ int main(int argCount, char* argVector[]) {
 	// Starts game
 	// StartGame();
 	// Displays splash image
-	if (!SPLASH_FLAG) RunSplash();
+	// if (!SPLASH_FLAG) RunSplash();
 
 	std::cout << APP_VERSION;
 	application app;

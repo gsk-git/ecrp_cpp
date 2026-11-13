@@ -21,17 +21,10 @@ private:
             }
 
             m_statemanager.handleEvent(*event);
-
-            if (m_statemanager.isAppCloseRequested()) {
-                m_window.close();
-                return;
-            }
         }
     };
 public:
-    application() : m_window(sf::VideoMode::getDesktopMode(), "ESRO™ v0.1.0", sf::Style::None) {
-        m_statemanager.pushState(std::make_unique<gameState>());
-    };
+    application() : m_window(sf::VideoMode::getDesktopMode(), "ESRO™ v0.1.0", sf::Style::None), m_statemanager(m_window) {};
     void run() {
         while (m_window.isOpen())
         {
@@ -43,11 +36,13 @@ public:
 
             m_statemanager.update(dt);
 
-            m_window.clear();
+            if (m_statemanager.processPendingRequest()) m_window.close();
 
-            m_statemanager.render(m_window);
-
-            m_window.display();
+            if (m_window.isOpen()) {
+                m_window.clear();
+                m_statemanager.render(m_window);
+                m_window.display();
+            }
         }
         m_window.close();
     };
